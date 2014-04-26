@@ -14,21 +14,30 @@ responsibility: get content of folder,
 */
 
 if(!defined('INCLUDE_CHECK')) { define('INCLUDE_CHECK',true); }
-$_SERVER['DOCUMENT_ROOT'] = "/Users/judge/Sites";
+if(!defined($_SERVER['DOCUMENT_ROOT'])) { $_SERVER['DOCUMENT_ROOT'] = "/Users/judge/Sites"; }
 
 require_once('celldata.class.php');
 require_once('functions.php');
 require_once('newhead.php');
 
-$root="/Users/judge/Sites/";
-$path="testpage/";
-$base=$root.$path;
+if(gethostname() == "skynet") 
+{
+    $root = "/home/www/html";
+    $path = "/testing/testpage/"; 
+}
+else 
+{
+    $root = "/USers/judge/Sites";
+    $path = "/testpage"; 
+}
+
+$base = $root.$path;
 
 
 $cells = FolderItemFactory::create()->read($base);
 $content = $cells->html();
 
-$page=Page::createPage();
+$page = Page::createPage();
 echo $page->html($content);
 
 

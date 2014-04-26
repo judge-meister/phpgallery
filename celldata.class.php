@@ -46,6 +46,7 @@ class FolderItem implements iFolderItem
 		//$this->opt = "1_100";
 		//$this->id = null;
 		//$this->class = null;  ->addClass($this->class)
+        $this->type = null;
 		
 		$this->span = HtmlTag::createElement('span')
 			->set('style',createCSS($this->width+Config2::wplus, Config2::full_ht));
