@@ -125,22 +125,25 @@ class WiredPussy implements iPlugin
 			$dates=array();
 			for($j=0; $j<count($vids); $j++)// v in vids:
 			{
-				$v=$vids[$i];
-				if(substr($v,0,1) != '.' && strpos($v,'_1.') !== false)
-				{
-					if(file_exists('/data/sdd1/videos/www.wiredpussy.com/'.$x.'/'.$v))
-					{
+                if(count($vids) > $i)
+                {
+				    $v=$vids[$i];
+				    if(substr($v,0,1) != '.' && strpos($v,'_1.') !== false)
+				    {
+					    if(file_exists('/data/sdd1/videos/www.wiredpussy.com/'.$x.'/'.$v))
+					    {
 					        $stat=stat('/data/sdd1/videos/www.wiredpussy.com/'.$x.'/'.$v);
-						$date=$stat['mtime'];
+						    $date=$stat['mtime'];
 
 					        if(!array_key_exists($date, $dates)) // date not in dates.keys():
-						{
+						    {
 					            $dates[$date]=$v;
-						}
+						    }
 					        else
-						{
+						    {
 					            $html = $html.$date.'exists';
-						}
+						    }
+                        }
 					}
 				}
 			}
