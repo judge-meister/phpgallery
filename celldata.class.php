@@ -22,7 +22,7 @@ abstract class FileType
 interface iFolderItem { public function html(); }
 class FolderItem implements iFolderItem
 {
-	public function __construct($base, $f)
+	public function __construct($base, $f, $ignored)
 	{
 		$this->item = null; //
 		$this->thumb = null; //
@@ -48,6 +48,9 @@ class FolderItem implements iFolderItem
 		//$this->class = null;  ->addClass($this->class)
         $this->type = null;
 		
+		$this->ignore = $ignored;
+		echo $f, $ignored;
+		
 		$this->span = HtmlTag::createElement('span')
 			->set('style',createCSS($this->width+Config2::wplus, Config2::full_ht));
 		//$this->span->showTextBeforeContent(True);
@@ -59,14 +62,14 @@ class FolderItem implements iFolderItem
 	}
 	public function ignore()
 	{
-		$this->type = FileType::ignored;
+		$this->ignore = True; // = FileType::ignored;
 		return $this;
 	}
 	public function html()
 	{
-		if($this->type != FileType::ignored)
+		if(!$this->ignore)
 		{
-			return '<span style="border:1px solid #ddd;padding:5px;margin:5px;">'.$this->base.' '.$this->file.'</span>';
+			return '<span style="border:1px solid #ddd;padding:5px;margin:5px;">'.$this->base.' '.$this->file.' '.$this->type.' '.$this->ignore.'</span>';
 		}
 		else
 		{
@@ -76,21 +79,30 @@ class FolderItem implements iFolderItem
 }
 class MovieCell extends FolderItem
 {
+	public function __construct($base, $f, $ignored)
+	{
+		parent::__construct($base, $f, $ignored);
+		$this->type = FileType::movie;
+	}
 }
 class ImageCell extends FolderItem
 {
+	public function __construct($base, $f, $ignored)
+	{
+		parent::__construct($base, $f, $ignored);
+		$this->type = FileType::image;
+	}
 }
 class DirCell extends FolderItem
 {
-	//private $url = null;
-	//private $file = null;
-	
-	public function __construct($base, $f)
+	public function __construct($base, $f, $ignored)
 	{
-		parent::__construct($base, $f);
+		parent::__construct($base, $f, $ignored);
 		$this->imgurl = FILE_FOLDER;
 		$this->url = mkUrl(array($base,$f));
-		//echo $f;
+		$this->type = FileType::directory;
+		if($ignored){ $this->type = FileType::ignored; }
+		echo $f, $ignored;
 	}
 	public function html()
 	{
@@ -119,9 +131,19 @@ class DirCell extends FolderItem
 }
 class NonMediaCell extends FolderItem
 {
+	public function __construct($base, $f, $ignored)
+	{
+		parent::__construct($base, $f, $ignored);
+		$this->type = FileType::nonMedia;
+	}
 }
 class MiscCell extends FolderItem
 {
+	public function __construct($base, $f, $ignored)
+	{
+		parent::__construct($base, $f, $ignored);
+		$this->type = FileType::misc;
+	}
 }
 class FolderItemFactory
 {
@@ -166,17 +188,17 @@ class FolderItemFactory
 	}
 	private function categorize($f, $base)
 	{
-		if(ismovie($base.$f))         {return new MovieCell($base,$f);}//{ $this->setAttr('type',FileType::movie); }
-		elseif(isimage($base.$f))     {return new ImageCell($base,$f);}//{ $this->setAttr('type',FileType::image); }
-		elseif(is_dir($base.$f))      {return new DirCell($base,$f);}//{ $this->setAttr('type',FileType::directory); }
-		elseif(isNonMedia($base.$f))  {return new NonMediaCell($base,$f);}//{ $this->setAttr('type',FileType::nonMedia); }
-		elseif(!isNonMedia($base.$f)) {return new MiscCell($base,$f);}//{ $this->setAttr('type',FileType::misc); }
-		elseif($this->ignores->inIgnores($f)) 
-		{ 
-			$fi = new FolderItem($base, $f);
-			$fi->ignore();
-			return $fi;
-		}
+		if(ismovie($base.$f))         {return new MovieCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::movie); }
+		elseif(isimage($base.$f))     {return new ImageCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::image); }
+		elseif(is_dir($base.$f))      {return new DirCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::directory); }
+		elseif(isNonMedia($base.$f))  {return new NonMediaCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::nonMedia); }
+		elseif(!isNonMedia($base.$f)) {return new MiscCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::misc); }
+		//elseif($this->ignores->inIgnores($f)) 
+		//{ 
+		//	$fi = new FolderItem($base, $f);
+		//	$fi->ignore();
+		//	return $fi;
+		//}
 	}
 }
 
