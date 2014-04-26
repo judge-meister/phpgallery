@@ -1,0 +1,356 @@
+@charset "iso-8859-1";
+
+/* $Log: femjoy.css,v $
+ * Revision 1.2  2007/05/13 15:26:22  judge
+ * added styles for calendar blocks
+ * added styles for #choices .blurb
+ * made some general layout adjustments
+ *
+
+*/
+
+
+/*
+    G A L L E R Y   P A G E
+*/
+
+
+body {background-color: #000;
+      color: #fff;
+      font-family: Arial, Helvetica, Geneva, Verdana, sans-serif;
+      font-size: 8pt;
+      padding: 0px 0px 0px 0px;
+      margin: 0px 0px 0px 0px;}
+
+a {font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
+   font-size: 8pt;
+   text-decoration: none;}
+
+#title {font-size: 24pt;
+        text-align: center;
+        margin: 3px 0px 4px 0px;}
+
+#navigation {text-align: center;
+             margin: 3px 0px 3px 3px;}
+
+#navigation select {font-size: 8pt;
+                    text-decoration: none;
+                    border: 0px solid #fff;
+                    margin: 0px 0px 0px 0px;
+                    color: #fff;
+                    background-color: #000;}
+
+#navigation option {border: 0px solid #fff;
+                    color: #fff;
+                    background-color: #000;}
+
+#choices {text-align: center;
+          margin: 2px;
+          padding: 3px;
+          width: 150px;
+          border: 1px solid #333}
+
+#choices  select {font-size: 8pt;
+                  text-decoration: none;
+                  border: 0px solid #fff;
+                  margin: 0px 0px 0px 0px;
+                  color: #fff;
+                  width: 100px;
+                  background-color: #000;}
+
+#choices  option {border: 0px solid #fff;
+                  color: #fff;
+                  background-color: #000;}
+
+#pagenavigation {border-top: 1px solid #777;
+                 border-bottom: 1px solid #777;
+                 padding: 0px 0px 2px 0px;
+                 margin: 3px 0px 4px 0px;
+                 /*width: 100%;*/}
+
+#pagenavigation a        {color: #fff;
+                          font-size: 9pt;
+                          text-decoration: none;}
+
+#pagenavigation a:hover  {color: #f47c0e;}
+#pagenavigation table    {width: 99%;}
+#pagenavigation td       {padding: 1px; margin: 1px;}
+#pagenavigation td.spacel    {width: 15%;                     /* spacer */
+                              text-align: left;
+                              font-size: 7pt;
+                              color: #555}
+#pagenavigation td.spacel a       {font-size: 7pt;}
+#pagenavigation td.spacel a.alphabet9    {font-size: 9pt;}
+#pagenavigation td.spacel a.alphabet9:hover    {font-size: 9pt;}
+#pagenavigation td.spacel span.alphabet9 {font-size: 9pt;}
+#pagenavigation td.spacel a:hover {color: #f47c0e;
+                                   font-size: 7pt;}
+#pagenavigation td.prevdir   {width: 27%;text-align: right;}  /* directory */
+#pagenavigation td.firstpage {width: 4%; text-align: right;}  /* first page */
+#pagenavigation td.prevpage  {width: 2%; text-align: right;}  /* page */
+#pagenavigation td.up        {width: 4%; text-align: center;} /* up */
+#pagenavigation td.nextpage  {width: 2%; text-align: left;}   /* page */
+#pagenavigation td.lastpage  {width: 4%; text-align: left;}   /* last page */
+#pagenavigation td.nextdir   {width: 27%;text-align: left;}   /* directory */
+#pagenavigation td.spacer    {width: 15%;                     /* spacer */
+                              text-align: right;
+                              font-size: 7pt;
+                              color: #555;}
+
+
+#thumbnails      {/*border: 1px solid #00a;*/
+                  padding: 0px;
+                  margin: 0px;
+                  text-align: center;}
+		  
+#thumbnails	  .nothumb_outer {padding:10px 5px;margin:0px 0px;height:100px;background-color:#000;border: 0px solid #555;}
+#thumbnails	  .nothumb_middle {padding:10px 5px;background-color:#222;}
+#thumbnails	  .nothumb_inner {font-size:16pt;margin:0px 0px;border: 0px solid #333;vertical-align:center;height:80px;}
+
+#thumbnails span {margin: 0px;
+                  padding: 0px;
+                  border: 0px solid #333;/*1*/
+                  text-align: center;
+                  color: #fff;
+                  float: left;
+                  font-size: 8pt;
+                  /*background-image: url(../images/shadow.png);*/
+                  /*height:120px;*/}
+
+#thumbnails span a {font-size: 8pt;
+                    color: #fff;
+                    text-decoration: none;
+                    color: #fff;}
+
+#thumbnails img {margin-bottom: .25em;}
+#thumbnails a:link        {color: #fff;}
+#thumbnails a:link    img {border: 0px solid #fff;}
+#thumbnails a:visited     {color: #fff;}
+#thumbnails a:visited img {border: 0px solid #fff;}
+#thumbnails a:hover       {color: #f47c0e;}
+#thumbnails a:hover   img {border: 0px solid #f47c0e;}
+
+#thumbnailstable {/*width:1180px;*/
+                  margin-left: 0px;
+                  margin-right: 0px;
+                  border: 0px solid #555;}
+
+#thumbnails a:link img.missing  {color:#ccc;border:0px solid red;}
+#thumbnails a:link img.normal   {color:#ccc;border:0px solid white; margin: 0px;}
+#thumbnails a:link img.nothumb  {color:#ccc;border:0px solid orange;margin: 0px;}
+#thumbnails a:link img.folder   {color:#ccc;border:none; margin: 2px 2px 2px 2px;width: 54px; height: 52px;padding-top:25px;}
+#thumbnails a:link img.html     {color:#ccc;border:none; margin: 2px 2px 2px 2px;width: 54px; height: 52px;padding-top:25px;}
+#thumbnails a:link img.file     {color:#ccc;border:none; margin: 2px 2px 2px 2px;width: 54px; height: 52px;padding-top:25px;}
+#thumbnails a:link img.python   {color:#ccc;border:none; margin: 2px 2px 2px 2px;width: 54px; height: 52px;padding-top:25px;}
+#thumbnails a:link img.movie    {color:#ccc;border:none; margin: 2px 2px 2px 2px;width: 54px; height: 52px;padding-top:25px;}
+#thumbnails a:link img.moviethm {color:#ccc;border:0px solid #fff; margin: 0px;} /*height:%dpx" ' % thumbsize*/
+
+#pagenavigation a.yearmonth {color: #aaa;}
+
+
+.alphabet9  {font-family:DeJaVuSans;font-size:9pt;white-space:nowrap; word-spacing:em;}
+.alphabet10 {font-family:DeJaVuSans;font-size:10pt;white-space:nowrap; word-spacing:em;}
+
+.gallery {padding: 0px;}
+
+.standard {padding-top: 25px}
+
+.separator {clear: both}
+
+.topblurb    {font-size:16pt;
+              margin-top: 0px;}
+.blurb       {font-size: 8pt;}
+.bottomblurb {font-size: 8pt;
+              margin-bottom: 0px;}
+
+.wplink {text-transform: uppercase;
+         cursor: pointer;
+         color: #ff0000;
+ 	 margin: 3px;}
+
+.wplink a:link    {color: #f00;}
+.wplink a:visited {color: #f00;}
+.wplink a:hover   {color: #f47c0e;}
+
+#rollover {overflow: hidden; height:120px;}
+img.rollover {margin-top:0px; overflow:hidden;}
+img.rollover:hover {margin-top:-120px; overflow:hidden;}
+
+.rollover2 {display:none;}
+.rollover2:hover {display:block;}
+
+.caption_format { text-shadow: 1px 1px 2px #333, -1px 1px 2px #333, 1px -1px 2px #333, -1px -1px 2px #333; color: #ddd; }
+
+#configuration {text-align: center;
+                margin: 0px 0px 0px 0px;
+                padding: 5px 0px 0px 0px;
+                line-height: 120%;}
+
+#configuration select {font-size: 8pt;
+                       text-decoration: none;
+                       border: 0px solid #fff;
+                       margin: 0px 0px 0px 0px;
+                       padding: 0px 0px 0px 0px;
+                       color: #fff;
+                       background-color: #000;}
+
+#configuration option {border: 0px solid #fff;
+                       color: #fff;
+                       background-color: #000;}
+
+#configuration a:link        {color: #fff;}
+#configuration a:link    img {border: 1px solid #fff;}
+#configuration a:visited     {color: #fff;}
+#configuration a:visited img {border: 1px solid #fff;}
+#configuration a:hover       {color: #f47c0e;}
+#configuration a:hover   img {border: 1px solid #f47c0e;}
+
+/*  P H O T O   P A G E */
+
+.phototitle {
+        color: #fff;
+}
+div.photoimage img {
+        border:#fff 0px solid;
+        padding: 0px;
+        background-color: #000;
+}
+div.photocaption {}
+div.photocaption a {color: #fff;
+                    font-size: 9pt;
+                    text-decoration: none;}
+div.photocaption a:hover {color: #f47c0e}
+
+.fs_nav {
+        background-color: #fff;
+        color: #000;
+        border: 0px solid #fff;
+        padding: 0px 0px 0px 0px;
+        margin: 0px 0px 0px 0px;
+        width: 12px;
+        height: 12px;
+}
+.fs_buttons {
+        background-color: #fff;
+        color: #000;
+        border: 0px solid #fff;
+        padding: 0px;
+        text-align: left;
+        width: 12px;
+        height: 12px;
+}
+
+/*  C A L E N D A R   B L O C K */
+
+div.calendar {
+        font-size: 7pt;
+        font-family: Arial;
+}
+div.calendar td {
+        border: 0px solid #fff;
+        margin: 4px 4px 4px 4px;
+        padding: 3px 3px 3px 3px;
+}
+#caltitle {
+        font-size: 13pt;
+        font-weight: normal;
+        text-align:center;
+}
+
+.callinkinact {
+        font-size: 7pt;
+        font-weight: bold;
+        text-align: center;
+        color:#838383;
+        text-decoration: none;
+        font-family: Arial;
+}
+.callinkact {
+        text-align: center;
+        font-size: 7pt;
+        font-weight: bold;
+}
+.callinkact a {
+        color:#FFFFFF;
+        text-decoration: none;
+}
+/*.callinkact a:hover {
+        color:#000000;
+        background-color: #FFFFFF;
+        font-weight: bold;
+}*/
+
+/*#caltitleact a {
+        font-size: 13pt;
+        font-weight: bold;
+        text-align:center;
+        padding-top: 1px;
+        padding-right: 4px;
+        padding-bottom: 1px;
+        padding-left: 4px;
+        color:#FFFFFF;
+        text-decoration: none;
+}*/
+
+/*#caltitleact a:hover {
+        color:#000000;
+        background-color: #FFFFFF;
+}*/
+
+div#tagcloud
+{
+        font-family: verdana, arial, sans-serif;
+        font-size:10pt;
+        text-align: center;
+        margin-left:10px;
+}
+
+div#tagcloud a
+{
+        text-decoration: none;
+        font-weight: normal;
+        color: #ccc;
+        font-variant: small-caps;
+}
+
+div#tagcloud a.tag1 {
+        font-size: 120%;
+        font-weight: normal;
+        color: #ddd;
+}
+
+div#tagcloud a.tag2 {
+        font-size: 110%;
+        font-weight: bold;
+        color: #bbb;
+}
+
+div#tagcloud a.tag3 {
+        font-size: 110%;
+        font-weight: normal;
+        color: #aaa;
+}
+
+div#tagcloud a.tag4 {
+        font-size: 100%;
+        font-weight: normal;
+        color: #888;
+}
+
+div#tagcloud a.tag5 {
+        font-size: 100%;
+        font-weight: lighter;
+        color: #777;
+}
+
+div#tagcloud a.tag6 {
+        font-size: 80%;
+        font-weight: lighter;
+        color: #666;
+}
+
+div#tagcloud a:hover {
+        /*text-decoration: underline;*/
+        color: #f47c0e;
+}
+
