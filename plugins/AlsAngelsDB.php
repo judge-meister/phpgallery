@@ -26,12 +26,20 @@ class AlsAngelsDB implements iPlugin
 	/* End config */
 	function __construct() 
 	{
+		if(gethostname() == "skynet")
+		{
+			$this->sqlConnect();
+		}
+	}
+	
+	private function sqlConnect()
+	{
 		$link = mysql_connect($this->db_host,$this->db_user,$this->db_pass) or die('Unable to establish a DB connection');
 
 		mysql_select_db($this->db_database,$link);
 		mysql_query("SET names UTF8");
 	}
-	
+
 	private function sqlquery($sql)
 	{
 		$result = mysql_query($sql); 
@@ -115,7 +123,10 @@ class AlsAngelsDB implements iPlugin
 	}
 	public function isWhole()       { return $this->whole; }
 	public function html()          { return $this->html; }
-	public function isActive($path) { return (hasModelDB($path) && strpos($path, 'www.alsangels.com/members')!== false); }
+	public function isActive($path) 
+	{ 
+		return (hasModelDB($path) && strpos($path, 'www.alsangels.com/members') !== false && gethostname() == "skynet" ); 
+	}
 }
 
 
