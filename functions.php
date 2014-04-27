@@ -166,7 +166,16 @@ function captionName($s,$w)
 }
 function dotFileExists($d,$f)
 {
-	if(file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$d.'/'.$f)) { return true; } else { return false; }
+	if(file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$d.'/'.$f)) 
+	{ 
+		//echo $_SERVER['DOCUMENT_ROOT'].'/'.$d.'/'.$f." TRUE\n"; 
+		return true; 
+	} 
+	else 
+	{ 
+		//echo $_SERVER['DOCUMENT_ROOT'].'/'.$d.'/'.$f." FALSE\n"; 
+		return false; 
+	}
 }
 function hasModelDB($d)		{ return  dotFileExists($d,'.modeldb'); } // used to call modeldetails for specific directories
 function hasThumbs($d)		{ return  dotFileExists($d,'.thumbs'); } // used in www2.alsscan.com for model pages

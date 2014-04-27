@@ -1,4 +1,5 @@
 <?php
+
 require_once('functions.php');
 require_once('HtmlTag.class.php');
 
@@ -17,39 +18,41 @@ abstract class FileType
 	const nonMedia = 3;
 	const misc = 4;
 	const ignored = 5;
+	public function toStr($ign) 
+	{
+		if($ign == FileType::image) { return "::image"; }
+		else if($ign == FileType::movie) { return "::movie"; }
+		else if($ign == FileType::directory) { return "::directory"; }
+		else if($ign == FileType::nonMedia) { return "::nonMedia"; }
+		else if($ign == FileType::misc) { return "::misc"; }
+		else { return ""; }
+	}
 }
 
 interface iFolderItem { public function html(); }
+
 class FolderItem implements iFolderItem
 {
-	public function __construct($base, $f, $ignored)
+	public function __construct($base, $f, $ignored, $logo)
 	{
 		$this->item = null; //
 		$this->thumb = null; //
 		$this->tsize = null;
-		//$this->dim = null; //
-		//$this->path = null; //
-		//$this->caption = null; //
 		$this->id = null;
 		$this->imgurl = null; //
 		$this->url = null; //
 		$this->opt = "1_100"; //
 	
-		//$this->file = null;
 		$this->base = null;
 		$this->width = 120;
 		$this->height = 120;
-		//echo $f;
 		$this->file = $f;
 		$this->base = $base;
 		$this->caption = $f;
-		//$this->opt = "1_100";
-		//$this->id = null;
-		//$this->class = null;  ->addClass($this->class)
         $this->type = null;
 		
 		$this->ignore = $ignored;
-		echo $f, $ignored;
+		$this->logo = $logo;
 		
 		$this->span = HtmlTag::createElement('span')
 			->set('style',createCSS($this->width+Config2::wplus, Config2::full_ht));
@@ -67,82 +70,144 @@ class FolderItem implements iFolderItem
 	}
 	public function html()
 	{
-		if(!$this->ignore)
+		if(!$this->ignore && !$this->logo->inFiles($this->file))
 		{
-			return '<span style="border:1px solid #ddd;padding:5px;margin:5px;">'.$this->base.' '.$this->file.' '.$this->type.' '.$this->ignore.'</span>';
+			return $this->html2();
 		}
-		else
+		else if($this->logo->inFiles($this->file))
 		{
-			return '';
+			//$this->span->showTextBeforeContent(True);
+			//$this->span->setText("<!-- span logo -->");
+			//$this->span->addElement($this->logo->html($this->file));
+			return $this->logo->html($this->file);
 		}
+		else { return ""; }
 	}
 }
 class MovieCell extends FolderItem
 {
-	public function __construct($base, $f, $ignored)
+	public function __construct($base, $f, $ignored, $logo)
 	{
-		parent::__construct($base, $f, $ignored);
+		parent::__construct($base, $f, $ignored, $logo);
 		$this->type = FileType::movie;
+	}
+	public function html2()
+	{
+		return '<span style="border:1px solid #ddd;padding:5px;margin:5px;">'.$this->base.' '.$this->file.' '.FileType::toStr($this->type).' '.$this->ignore.'</span>';
 	}
 }
 class ImageCell extends FolderItem
 {
-	public function __construct($base, $f, $ignored)
+	public function __construct($base, $f, $ignored, $logo)
 	{
-		parent::__construct($base, $f, $ignored);
+		parent::__construct($base, $f, $ignored, $logo);
 		$this->type = FileType::image;
+	}
+	public function html2()
+	{
+		return '<span style="border:1px solid #ddd;padding:5px;margin:5px;">'.$this->base.' '.$this->file.' '.FileType::toStr($this->type).' '.$this->ignore.'</span>';
 	}
 }
 class DirCell extends FolderItem
 {
-	public function __construct($base, $f, $ignored)
+	public function __construct($base, $f, $ignored, $logo)
 	{
-		parent::__construct($base, $f, $ignored);
+		parent::__construct($base, $f, $ignored, $logo);
 		$this->imgurl = FILE_FOLDER;
 		$this->url = mkUrl(array($base,$f));
 		$this->type = FileType::directory;
-		if($ignored){ $this->type = FileType::ignored; }
-		echo $f, $ignored;
 	}
-	public function html()
+	public function html2()
 	{
 		$this->img = HtmlTag::createELement('img')->set('src',$this->imgurl);
 		$this->span->setText('<!-- span_dir -->');
 		$this->span->showTextBeforeContent(True);
-		
+	
 		$this->anchor->set('href',PROGRAM.'?opt='.$this->opt.'&path='.$this->url);
 		$this->anchor->setText(captionName($this->file, 120));
-		
+	
 		$div1 = HtmlTag::createElement('div')
 			->set('style',createCSS(120,120)->set('margin','0 8px')
-					->set('background-image','url(\''.$this->imgurl.'\')')->set('background-size','120px'));
-		
+				->set('background-image','url(\''.$this->imgurl.'\')')->set('background-size','120px'));
+	
 		$div2 = HtmlTag::createElement('div')
 			->set('style',CssStyle::createStyle()->set('width','90px')->set('padding','35px 8px')
-					->set('color','#ddd')->set('font','bold 150% arial')->set('text-align','left'))
+				->set('color','#ddd')->set('font','bold 150% arial')->set('text-align','left'))
 			->setText(displayName($this->file));
 		//echo displayName($this->file);
 		$div1->addElement($div2);
 		$this->anchor->addElement($div1);
 		$this->span->addElement($this->anchor);
 		return $this->span;
-		//return '<span style="border:1px solid #ddd;padding:5px;margin:5px;">'.$this->base.' '.$this->file.'</span>';
 	}
 }
 class NonMediaCell extends FolderItem
 {
-	public function __construct($base, $f, $ignored)
+	public function __construct($base, $f, $ignored, $logo)
 	{
-		parent::__construct($base, $f, $ignored);
+		parent::__construct($base, $f, $ignored, $logo);
 		$this->type = FileType::nonMedia;
+		$this->ext = getExt($f);
+		global $nonMediaThumbs;
+		list($this->imgurl, $this->width, $this->height) = $nonMediaThumbs[$this->ext];
+		$this->url = mkUrl(array($base,$f));
+	}
+	public function html2()
+	{
+		$this->span->setText(comment('SpanPhoto NonMedia'));
+
+		$this->anchor->set('href',$this->url)->set('rel','doSlideshow:true')->set('title',$this->file);
+		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height','120px'));
+			//->setText($overlay); // **
+		$img = HtmlTag::createElement('img')->addClass('thumb')
+			->set('style',$this->imgStyle)
+			->set('src',$this->imgurl);
+		$div->addElement($img);
+		$this->anchor->addElement($div);
+		$this->span->addElement($this->anchor);
+		return "\n".$this->span;
 	}
 }
 class MiscCell extends FolderItem
 {
-	public function __construct($base, $f, $ignored)
+	public function __construct($base, $f, $ignored, $logo)
 	{
-		parent::__construct($base, $f, $ignored);
+		parent::__construct($base, $f, $ignored, $logo);
 		$this->type = FileType::misc;
+		$this->ext = getExt($f);
+		$this->url = mkUrl(array($base,$f));
+	}
+	public function html2()
+	{
+		$this->span->setText('<!-- span_misc -->');
+		$this->span->showTextBeforeContent(True);
+		$this->anchor->set('href',$this->url);
+		
+		// these styles need to be classes and put in css file
+		$div1 = HtmlTag::createElement('div')
+			->set('style',CssStyle::createStyle()->set('width','120px')->set('height','120px')
+			->set('background-image',"url('".FILE_BLANK."')")->set('background-size','120px'));
+		$div2 = HtmlTag::createElement('div')
+			->set('style',CssStyle::createStyle()->set('padding','90px 20px')->set('color','#ddd')
+			->set('font','bold 200% arial')->set('text-align','left'));
+		
+		$unknown = HtmlTag::createElement('font')
+			->set('style',CssStyle::createStyle()->set('color','#ddd')->set('font','italic bold 100% arial'))
+			->setText('unk');
+		
+		if($this->ext == NULL) 
+		{ 
+			$div2->addElement($unknown);
+		}
+		else
+		{ 
+			$div2->setText($this->ext);
+		}
+		$div1->addElement($div2);
+		$this->anchor->addElement($div1);
+		$this->span->addElement($this->anchor);
+		
+		return "\n".$this->span;
 	}
 }
 class FolderItemFactory
@@ -162,8 +227,9 @@ class FolderItemFactory
 	{
 		$this->ignores = Ignores::read($base);
 		$this->logofiles = LogoFile::read($base);
+		//echo $this->logofiles->
 		
-		$files = scandir($base);
+		$files = scandir($_SERVER['DOCUMENT_ROOT'].$base);
 		$this->cells = array();
 		if($files != false)
 		{
@@ -188,78 +254,19 @@ class FolderItemFactory
 	}
 	private function categorize($f, $base)
 	{
-		if(ismovie($base.$f))         {return new MovieCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::movie); }
-		elseif(isimage($base.$f))     {return new ImageCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::image); }
-		elseif(is_dir($base.$f))      {return new DirCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::directory); }
-		elseif(isNonMedia($base.$f))  {return new NonMediaCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::nonMedia); }
-		elseif(!isNonMedia($base.$f)) {return new MiscCell($base,$f,$this->ignores->inIgnores($f));}//{ $this->setAttr('type',FileType::misc); }
-		//elseif($this->ignores->inIgnores($f)) 
-		//{ 
-		//	$fi = new FolderItem($base, $f);
-		//	$fi->ignore();
-		//	return $fi;
-		//}
+		if(ismovie($_SERVER['DOCUMENT_ROOT'].$base.$f))         { return new MovieCell   ($base, $f, $this->ignores->inIgnores($f), $this->logofiles ); }
+		elseif(isimage($_SERVER['DOCUMENT_ROOT'].$base.$f))     { return new ImageCell   ($base, $f, $this->ignores->inIgnores($f), $this->logofiles ); }
+		elseif(is_dir($_SERVER['DOCUMENT_ROOT'].$base.$f))      { return new DirCell     ($base, $f, $this->ignores->inIgnores($f), $this->logofiles ); }
+		elseif(isNonMedia($_SERVER['DOCUMENT_ROOT'].$base.$f))  { return new NonMediaCell($base, $f, $this->ignores->inIgnores($f), $this->logofiles ); }
+		elseif(!isNonMedia($_SERVER['DOCUMENT_ROOT'].$base.$f)) { return new MiscCell    ($base, $f, $this->ignores->inIgnores($f), $this->logofiles ); }
 	}
 }
 
-function mkUrl($paths){return str_replace('%2F','/', urlencode(joinUrl($paths)));}
-function mkRawUrl($paths){return str_replace('%2F','/', rawurlencode(joinUrl($paths)));}
-function joinUrl($paths){return preg_replace('#/+#','/', join("/",$paths));}
-function mkImgUrl($path, $thumb){return mkRawUrl(array($path, $thumb));}
+function mkUrl($paths) { return str_replace('%2F','/', urlencode(joinUrl($paths))); }
+function mkRawUrl($paths) { return str_replace('%2F','/', rawurlencode(joinUrl($paths))); }
+function joinUrl($paths) { return preg_replace('#/+#','/', join("/",$paths)); }
+function mkImgUrl($path, $thumb) { return mkRawUrl(array($path, $thumb)); }
 
-class FolderItem2 implements iFolderItem
-{
-	private $path;
-	private $attr;
-	
-	public function __construct($f, $base, $ignores, $logofiles)
-	{
-		$this->ignores = $ignores;
-		$this->logofiles = $logofiles;
-		$this->path = $f;
-		$this->attr = array();
-		$this->categorize($f, $base);
-	}
-	//private function categorize($f, $base)
-	//{
-	//	if(ismovie($base.$f))         { $this->setAttr('type',FileType::movie); }
-	//	elseif(isimage($base.$f))     { $this->setAttr('type',FileType::image); }
-	//	elseif(is_dir($base.$f))      { $this->setAttr('type',FileType::directory); }
-	//	elseif(isNonMedia($base.$f))  { $this->setAttr('type',FileType::nonMedia); }
-	//	elseif(!isNonMedia($base.$f)) { $this->setAttr('type',FileType::misc); }
-	//	if($this->ignores->inIgnores($f)) { $this->setAttr('ignore',true); }
-	//	// process logo
-	//	if($this->logofiles->inFiles($f)) { $this->setAttr('logo',true); }
-	//}
-	public function html() {}
-	public function __toString()
-	{
-		$s=$this->path.' : ';
-		//foreach(get_object_vars($this) as $name => $var)
-		foreach($this->attr as $name => $val)
-		{
-			$s.=$name.'=>'.$val." : ";
-		} 
-		return "<span>".$s."</span>";
-	}
-	private function setAttr($name, $val)
-	{
-		if (isset($this->attr[$name]))
-		{
-			$this->attr[$name] = $val;
-		} else {
-			$this->attr[$name] = $val;
-		}
-	}
-	private function getAttr($name) 
-	{
-		if(isset($this->attr[$name]))
-		{
-			return $this->attr[$name];
-		}
-		return null;
-	}
-}
 class LogoItem
 {
 	private $item = null; //
@@ -277,8 +284,8 @@ class LogoItem
 	{
 		$this->path = $path;
 		list($this->item, $this->thumb, $this->tsize, $this->dim) = $this->load($l);
-		$this->url = '/'.mkUrl(array($this->path, $this->item));
-		$this->imgurl = '/'.mkImgUrl($this->path, $this->thumb);
+		$this->url = mkUrl(array($this->path, $this->item));
+		$this->imgurl = mkImgUrl($this->path, $this->thumb);
 	}
 	private function load($l)
 	{
@@ -292,14 +299,18 @@ class LogoItem
 			list($width, $height, $type, $attr) = getImgSize($_SERVER['DOCUMENT_ROOT'].$this->path.'/'.$t);
 		}
 		$size = (int)$s;
-		return array($i, $t, $size, array('width' => $width, 'height' => $height));
+		return array($i, $t, $size, array('width' => (int)$width, 'height' => (int)$height));
 	}
 	public function html()
 	{
-		//return '<a href="'.$this->item.'"><img src="'.$this->thumb.'" style="height:'.$this->height.'; width:'.$this->width.';">'.$this->item.'</a>';
-		$anchor = HtmlTag::createElement('a')->setText(captionName($this->caption,$this->dim['width']));
+		$this->id='';
+
+		$span = HtmlTag::createElement('span')
+			->set('style',createCSS($this->dim['width']+Config2::wplus, Config2::full_ht));
+		$span->showTextBeforeContent(True);
+		$anchor = HtmlTag::createElement('a')->setText(captionName(basename($this->item),$this->dim['width']));
 		$anchor->set('href',PROGRAM."?opt=".$this->opt."&path=".$this->url)
-			->set('style',CssStyle::createStyle()->set('height','120px')->set('overflow','hidden'));
+			->set('style',createCSS($this->dim['width']+Config2::wplus, Config2::full_ht)->set('overflow','hidden'));
 		$img = HtmlTag::createELement('img')->set('src',$this->imgurl);
 		$imgStyle = createCSS($this->dim['width'],$this->dim['height']);
 
@@ -308,14 +319,15 @@ class LogoItem
 
 		$div->addElement($img);
 		$anchor->addElement($div);
-		return $anchor;
+		$span->addElement($anchor);
+		return $span;
 	}
 }
 class LogoFile
 {
 	private static $_instance = null;
-	private $files;
-	private $logos;
+	//private $files;
+	//private $logos;
 	
 	private function __construct()
 	{
@@ -325,17 +337,22 @@ class LogoFile
 		self::$_instance = new LogoFile();
 		if(DotFiles::hasLogo($path)) 
 		{ 
+			//echo "[hasLogo]LogoFile::load(".$path.")\n";
 			self::$_instance->load($path);
 		}
+		//echo "LogoFile::load(".$path.")\n";
 		return self::$_instance;
 	}
 	public function inFiles($f) 
 	{ 
+		//echo "LogoFiles::files=".$f;
+		//var_dump($this->files);
+		//echo "\n";
 		return in_array($f, $this->files); 
 	}
 	private function load($path)
 	{
-		$files=array();
+		//$files = array();
 		$lines = file($_SERVER['DOCUMENT_ROOT'].'/'.$path.'/.logo', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		for($i=0;$i<count($lines);$i++)
 		{
@@ -344,22 +361,22 @@ class LogoFile
 				$pieces = explode(",", $lines[$i]);
 				if(file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$path.'/'.$pieces[0]))
 				{
-					$files[] = $pieces[0];
-					$logos[basename($pieces[0])] = new LogoItem($path, $pieces);
+					$this->files[] = $pieces[0];
+					$this->logos[basename($pieces[0])] = new LogoItem($path, $pieces);
 				}
-				elseif(file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$pieces[0]))
+				elseif(file_exists($_SERVER['DOCUMENT_ROOT'].$pieces[0]))
 				{
-					$files[] = basename($pieces[0]);
-					$logos[basename($pieces[0])] = new LogoItem($path, $pieces);
+					$this->files[] = basename($pieces[0]);
+					$this->logos[basename($pieces[0])] = new LogoItem($path, $pieces);
 				}
 				else
 				{
-					echo $_SERVER['DOCUMENT_ROOT'].'/'.$path.'/'.$pieces[0]." not found\n";
+					echo $pieces[0]." not found\n";
 				}
 			}
 		}
-		$this->logos = $logos;
-		$this->files = $files;
+		//$this->logos = $logos;
+		//$this->files = $files;
 	}
 	public function html($f)
 	{
@@ -408,13 +425,13 @@ class Ignores
 				|| substr(basename($f),0,3)==":2e" || getExt($f) == ".$$$");
 	}
 }
+//function dotFileExists($d,$f)
+//{
+//	if(file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$d.'/'.$f)) { return true; } else {return false; }
+//}
 class DotFiles
 {
 	private function __construct() {}
-	private function dotFileExists($d,$f)
-	{
-		if(file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$d.'/'.$f)) { return true; } else {return false; }
-	}
 	public static function hasModelDB($d)		{ return  dotFileExists($d,'.modeldb'); } // used to call modeldetails for specific directories
 	public static function hasThumbs($d)		{ return  dotFileExists($d,'.thumbs'); } // used in www2.alsscan.com for model pages
 	public static function hasGalleryIgnore($d)	{ return  dotFileExists($d,'.gallery_ignore'); } // not sure this is actually required
@@ -432,34 +449,50 @@ class DotFiles
 	public static function hasBookmarks($d)		{ return  dotFileExists($d,'.bookmarks'); }
 	public static function hasRollovers($d)		{ return  dotFileExists($d,'.rollovers'); }
 }
-//private $img_ht;
-//private $opt;
-//private $caption;
-//private $thumb;
-//private $overlay;
-//private $movieLen;
 
-//$this->img_ht = 0;
-//$this->opt = null;
-//$this->caption = null;
-//$this->thumb = null;
-//$this->overlay = null;
-//$this->movieLen = 0;
+/*
 
-//$cd = new CellData("/path/to/file");
-//echo $cd->getAttr('path')."\n";
-//$cd->setAttr('width',120);
-//echo $cd->getAttr('width')."\n";
-//$cd->setAttr('unknown',3);
-//echo $cd->getAttr('unknown')."\n";
+class FolderItem2 implements iFolderItem
+{
+	private $path;
+	private $attr;
+	
+	public function __construct($f, $base, $ignores, $logofiles)
+	{
+		$this->ignores = $ignores;
+		$this->logofiles = $logofiles;
+		$this->path = $f;
+		$this->attr = array();
+		$this->categorize($f, $base);
+	}
+	public function html() {}
+	public function __toString()
+	{
+		$s=$this->path.' : ';
+		foreach($this->attr as $name => $val)
+		{
+			$s.=$name.'=>'.$val." : ";
+		} 
+		return "<span>".$s."</span>";
+	}
+	private function setAttr($name, $val)
+	{
+		if (isset($this->attr[$name]))
+		{
+			$this->attr[$name] = $val;
+		} else {
+			$this->attr[$name] = $val;
+		}
+	}
+	private function getAttr($name) 
+	{
+		if(isset($this->attr[$name]))
+		{
+			return $this->attr[$name];
+		}
+		return null;
+	}
+}
 
-//$ci = new CellImage("/path/to/image");
-//echo $ci->getAttr('path')."\n";
-//$ci->setAttr('width',120);
-//echo $ci->getAttr('width')."\n";
-//$ci->setAttr('unknown',3);
-//echo $ci->getAttr('unknown')."\n";
-//$ci->setAttr('img_ht',12);
-//echo $ci->getAttr('img_ht')."\n";
-
+*/
 ?>
