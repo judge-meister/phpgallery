@@ -19,6 +19,6 @@ define('PASSWD_DB', False);
 define('PHPTHUMB', '/phpthumb/');
 define('PLUGINS_DIR', 'plugins/');
 
-require_once('include_check.php');
+require_once($_SERVER['DOCUMENT_ROOT'].PROGRAM.'include_check.php');
 
 ?>
