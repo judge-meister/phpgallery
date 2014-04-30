@@ -132,7 +132,7 @@ function displayName($s)
 		//echo $s[$i].'=>'.$letters[$s[$i]].' '.$size."\n";
 		if(array_key_exists($s[$i], $letters)) {
 			$size = $size + ((float)$base / (float)$letters[$s[$i]]);
-		} else { echo "<!-- displayName [".$s[$i]."] is missing -->"; }
+		} else { echo "<!-- displayName: [".$s[$i]."] is missing -->"; }
 		$j = $i;
 	}
 	$s = wordwrap($s, $j+1, "<br />\n", true);
@@ -465,7 +465,7 @@ class SpanPhoto extends SpanLogo // SpanLogo + image
 		}
 		else
 		{
-			echo "<!-- ".$this->cell['thumb']." -->";
+			echo "<!-- SpanPhoto: ".$this->cell['thumb']." -->";
 			$this->picurl = $this->mkRawUrl(array($this->cell['thumb']));
 		}
 	}

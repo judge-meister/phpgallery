@@ -46,6 +46,7 @@ class FolderItem implements iFolderItem
 		$this->base = null;
 		$this->width = 120;
 		$this->height = 120;
+		$this->img_ht = 120;
 		$this->file = $f;
 		$this->base = $base;
 		$this->caption = $f;
@@ -63,25 +64,41 @@ class FolderItem implements iFolderItem
 		//$this->img = HtmlTag::createELement('img')->set('src',$this->imgurl);
 		$this->imgStyle = createCSS($this->width,$this->height);
 	}
+	public function getType() { return $this->type; }
 	public function ignore()
 	{
 		$this->ignore = True; // = FileType::ignored;
 		return $this;
 	}
-	public function html()
+	public function html($force = False)
 	{
-		if(!$this->ignore && !$this->logo->inFiles($this->file))
+		if((!$this->ignore && !$this->logo->inFiles($this->file)) || $force)
 		{
 			return $this->html2();
 		}
 		else if($this->logo->inFiles($this->file))
 		{
-			//$this->span->showTextBeforeContent(True);
-			//$this->span->setText("<!-- span logo -->");
-			//$this->span->addElement($this->logo->html($this->file));
 			return $this->logo->html($this->file);
 		}
 		else { return ""; }
+	}
+	public function normalizeThmSize($getsizes=true)
+	{
+		if($getsizes == true)
+		{
+			list($this->width, $this->height, $type, $attr) = getImgSize($_SERVER['DOCUMENT_ROOT'].'/'.$this->base.'/'.$this->thumb);
+			$this->img_ht = $this->height;
+		}
+		if((int)$this->height > 120)
+		{ 
+			$this->width = (int)((float)$this->width / ((float)$this->height / 120.0)); 
+			$this->height = 120; 
+		}
+		if((int)$this->width > 1200)
+		{
+			$this->width = 1200; 
+			$this->height = (int)((float)$this->height / ((float)$this->width / 1200.0)); 
+		}
 	}
 }
 class MovieCell extends FolderItem
@@ -90,10 +107,101 @@ class MovieCell extends FolderItem
 	{
 		parent::__construct($base, $f, $ignored, $logo);
 		$this->type = FileType::movie;
+		$this->movieLen = $this->movieLength();
+
+		global $mediaTypes;
+		$thm = removeExt($this->file).'.thm';
+		$tbn = removeExt($this->file).'.tbn';
+		if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->base.'/'.$thm))
+		{
+			$this->thumb = $thm;
+			$this->normalizeThmSize();
+		}
+		else if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->base.'/.pics/'.$thm))
+		{
+			$this->thumb = '.pics/'.$thm;
+			$this->normalizeThmSize();
+		}
+		else if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->base.'/'.$tbn))
+		{
+			$this->thumb = $tbn;
+			$this->normalizeThmSize();
+		}
+		else if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->base.'/.pics/'.$tbn))
+		{
+			$this->thumb = '.pics/'.$tbn;
+			$this->normalizeThmSize();
+		}
+		else
+		{
+			list($this->thumb,$this->width,$this->height) = $mediaTypes['movie']['thm'];
+		}
+		//$this->m_html .= "\n<!-- doMovie -->";
+		$this->dir = $this->base.'/'.$this->file;
+
+		$this->imgurl = joinUrl(array($this->base, $this->thumb));
+		$this->image = $this->file;
+		$this->caption = $this->file;
+		
+		echo "<!-- MovieCell: imgurl ".$this->imgurl." -->\n";
+		echo "<!-- MovieCell: thumb  ".$this->thumb." -->\n";
+	}
+	private function comments()
+	{
+		if(hasComments($this->base))
+		{
+			include_once($_SERVER['DOCUMENT_ROOT'].$this->base.'/comments.php');
+			$this->m_comments = getComments();
+		}
+	}
+	private function movieLength()
+	{
+		$this->comments();
+		$min = $secs = '';
+		if (in_array($this->file, array_keys($this->m_comments)))
+		{
+			$length = $this->m_comments[$this->file];
+			$min = sprintf("%d",(int)($length/60.0));
+			$secs = sprintf("%02d",(int)($length-($min*60)));
+		}
+		return array($min, $secs);
 	}
 	public function html2()
 	{
-		return '<span style="border:1px solid #ddd;padding:5px;margin:5px;">'.$this->base.' '.$this->file.' '.FileType::toStr($this->type).' '.$this->ignore.'</span>';
+		$this->span = HtmlTag::createElement('span')
+			->set('style',createCSS($this->width+Config2::wplus, Config2::full_ht));
+		//$this->span->showTextBeforeContent(True);
+		
+		$this->anchor = HtmlTag::createElement('a')->setText(captionName($this->caption,$this->width));
+		
+		//$this->img = HtmlTag::createELement('img')->set('src',$this->imgurl);
+		$this->imgStyle = createCSS($this->width,$this->height);
+		
+		$this->span->setText(comment('SpanLogoMovie'));
+		
+		$this->img = HtmlTag::createELement('img')->set('src',$this->imgurl);
+		$this->anchor->set('href',joinUrl(array($this->dir)));
+		if(strpos($this->thumb, "/")===0) { 
+			//echo "\nUse MovieClip\n";
+			$this->img->set('src',mkRawUrl(array($this->thumb))); 
+		}
+		
+		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height','120px'));
+
+		$overlayBtn = Overlay::create()->mkBtn(PLAY_BUTTON,'-90')->html();
+		
+		$overlayTime = null;
+		list($min,$secs) = $this->movieLen;
+		if($min != "" || $secs != "") {
+			$overlayTime = Overlay::create()->mkLabel($min,$secs)->html();
+		}
+		$this->img->set('style',$this->imgStyle);
+		$div->addElement($this->img);
+		$div->addElement($overlayBtn);
+		$div->addElement($overlayTime);
+		$this->anchor->addElement($div);
+		$this->span->addElement($this->anchor);
+		return "\n".$this->span;
 	}
 }
 class ImageCell extends FolderItem
@@ -102,10 +210,54 @@ class ImageCell extends FolderItem
 	{
 		parent::__construct($base, $f, $ignored, $logo);
 		$this->type = FileType::image;
+		
+		//echo "<!-- ImageCell:".$_SERVER['DOCUMENT_ROOT'].$this->base.'.pics/'.$this->file." -->\n";
+		if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->base.'.pics/'.$this->file))
+		{
+			$this->thumb = '.pics/'.$this->file;
+		}
+		else
+		{
+			$this->thumb = $this->file;
+		}
+		$this->normalizeThmSize();
+		$this->thumb = $this->base.'/'.$this->thumb;
+		$this->dir = "";
+		$this->image = $this->file;
+		$this->caption = $this->file;
+
+		$this->url = mkRawUrl(array($this->base, $this->image));
+		$this->imgurl = joinUrl(array($this->thumb));
+
+		$phpThumb = new iPhpThumb($this);
+		if($phpThumb->isActive())
+		{
+			$this->imgurl = $phpThumb->picUrl2($this->img_ht, $this->thumb, $this->imgurl);
+			//echo "<!-- ImageCell:".$this->imgurl." -->\n";
+		}
+		else
+		{
+			//echo "<!-- ImageCell:".$this->thumb." ".$this->width." ".$this->height." -->\n";
+			$this->imgurl = mkRawUrl(array($this->thumb));
+		}
 	}
 	public function html2()
 	{
-		return '<span style="border:1px solid #ddd;padding:5px;margin:5px;">'.$this->base.' '.$this->file.' '.FileType::toStr($this->type).' '.$this->ignore.'</span>';
+		$this->span->set('style',createCSS($this->width+Config2::wplus, Config2::full_ht));
+		$this->span->setText(comment('SpanPhoto ARSE'));
+
+		$this->anchor = HtmlTag::createElement('a')->setText(captionName($this->caption,$this->width));
+		$this->anchor->set('href',$this->url)->set('rel','doSlideshow:true')->set('title',$this->caption);
+		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height','120px'));
+			//->setText($overlay); // **
+		$this->imgStyle = createCSS($this->width,$this->height);
+		$img = HtmlTag::createElement('img')->addClass('thumb')
+			->set('style',$this->imgStyle)
+			->set('src',$this->imgurl);
+		$div->addElement($img);
+		$this->anchor->addElement($div);
+		$this->span->addElement($this->anchor);
+		return "\n".$this->span;
 	}
 }
 class DirCell extends FolderItem
@@ -124,7 +276,7 @@ class DirCell extends FolderItem
 		$this->span->showTextBeforeContent(True);
 	
 		$this->anchor->set('href',PROGRAM.'?opt='.$this->opt.'&path='.$this->url);
-		$this->anchor->setText(captionName($this->file, 120));
+		$this->anchor->setText(captionName($this->file, $this->width));
 	
 		$div1 = HtmlTag::createElement('div')
 			->set('style',createCSS(120,120)->set('margin','0 8px')
@@ -262,12 +414,12 @@ class FolderItemFactory
 	}
 }
 
+function joinUrl($paths) { return preg_replace('#/+#','/', join("/",$paths)); }
 function mkUrl($paths) { return str_replace('%2F','/', urlencode(joinUrl($paths))); }
 function mkRawUrl($paths) { return str_replace('%2F','/', rawurlencode(joinUrl($paths))); }
-function joinUrl($paths) { return preg_replace('#/+#','/', join("/",$paths)); }
 function mkImgUrl($path, $thumb) { return mkRawUrl(array($path, $thumb)); }
 
-class LogoItem
+class LogoItem extends FolderItem
 {
 	private $item = null; //
 	private $thumb = null; //
@@ -286,6 +438,7 @@ class LogoItem
 		list($this->item, $this->thumb, $this->tsize, $this->dim) = $this->load($l);
 		$this->url = mkUrl(array($this->path, $this->item));
 		$this->imgurl = mkImgUrl($this->path, $this->thumb);
+		$this->type = null;
 	}
 	private function load($l)
 	{
@@ -326,8 +479,6 @@ class LogoItem
 class LogoFile
 {
 	private static $_instance = null;
-	//private $files;
-	//private $logos;
 	
 	private function __construct()
 	{
@@ -352,7 +503,6 @@ class LogoFile
 	}
 	private function load($path)
 	{
-		//$files = array();
 		$lines = file($_SERVER['DOCUMENT_ROOT'].'/'.$path.'/.logo', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		for($i=0;$i<count($lines);$i++)
 		{
@@ -364,25 +514,25 @@ class LogoFile
 					$this->files[] = $pieces[0];
 					$this->logos[basename($pieces[0])] = new LogoItem($path, $pieces);
 				}
-				elseif(file_exists($_SERVER['DOCUMENT_ROOT'].$pieces[0]))
+				elseif(file_exists($_SERVER['DOCUMENT_ROOT'].$pieces[0])) //
 				{
+					echo "<!-- LogoFiles: movie? ".$pieces[0]."-->\n";
 					$this->files[] = basename($pieces[0]);
-					$this->logos[basename($pieces[0])] = new LogoItem($path, $pieces);
+					//$this->logos[basename($pieces[0])] = new LogoItem($path, $pieces);
+					$this->logos[basename($pieces[0])] = new MovieCell($path, basename($pieces[0]), False, $this);
 				}
 				else
 				{
-					echo $pieces[0]." not found\n";
+					echo "LogoFile: ".$pieces[0]." not found\n";
 				}
 			}
 		}
-		//$this->logos = $logos;
-		//$this->files = $files;
 	}
 	public function html($f)
 	{
-		if(in_array($f, $this->files))
+		if(in_array($f, $this->files))// && $this->logos[$f]->getType() != FileType::movie)
 		{
-			return $this->logos[$f]->html();
+			return $this->logos[$f]->html(True);
 		}
 		else
 		{

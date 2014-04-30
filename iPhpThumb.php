@@ -23,21 +23,42 @@ class iPhpThumb
 	}
 	public function isActive() { return $this->phpThumbs; }
 
-	public function picUrl($cell, $pic)
+    public function picurl2($img_ht, $thumb, $pic)
 	{
+		$cell = array('img_ht' => $img_ht, 'thumb' => $thumb);
 		$picurl = "";
-		echo "<!-- ".$cell['img_ht']." -->";
+		//echo "<!-- iPhpThumb:picurl2: ".$cell['img_ht']." -->\n";
 		if((int)$cell['img_ht']>160 && $this->isActive()==True)
 		{
 			$query = 'src='.urlencode($pic).'&h='.$this->thmHeight.'&q='.$this->quality;
 			$picurl = htmlspecialchars(phpThumbURL($query));//, 'phpThumb.php'));
-			echo "<!-- ".$picurl." -->";
+			//echo "<!-- iPhpThumb:picurl2: ".$picurl." -->";
 			return str_replace($_SERVER['DOCUMENT_ROOT'],"",$picurl);
 		}
 		else
 		{
-			echo "<!-- ".$cell['thumb']." -->";
+			//echo "<!-- iPhpThumb:picurl2: ".$cell['thumb']." -->\n";
+			//$this->picurl = $this->span->mkRawUrl(array($cell['thumb']));
+			$this->picurl = mkRawUrl(array($cell['thumb']));
+			return $this->picurl;
+		}
+	}
+	public function picUrl($cell, $pic) // img_ht thumb
+	{
+		$picurl = "";
+		//echo "<!-- iPhpThumb:picurl: ".$cell['img_ht']." -->\n";
+		if((int)$cell['img_ht']>160 && $this->isActive()==True)
+		{
+			$query = 'src='.urlencode($pic).'&h='.$this->thmHeight.'&q='.$this->quality;
+			$picurl = htmlspecialchars(phpThumbURL($query));//, 'phpThumb.php'));
+			//echo "<!-- iPhpThumb: ".$picurl." -->";
+			return str_replace($_SERVER['DOCUMENT_ROOT'],"",$picurl);
+		}
+		else
+		{
+			//echo "<!-- iPhpThumb:picurl: ".$cell['thumb']." -->\n";
 			$this->picurl = $this->span->mkRawUrl(array($cell['thumb']));
+			//$this->picurl = mkRawUrl(array($cell['thumb']));
 			return $this->picurl;
 		}
 	}
