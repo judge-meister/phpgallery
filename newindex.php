@@ -17,7 +17,7 @@ if(!defined('INCLUDE_CHECK')) { define('INCLUDE_CHECK',true); }
 //if(!defined($_SERVER['DOCUMENT_ROOT'])) { $_SERVER['DOCUMENT_ROOT'] = "/Users/judge/Sites"; }
 
 require_once('celldata.class.php');
-require_once('functions.php');
+//require_once('functions.php');
 require_once('newhead.php');
 
 if(gethostname() == "skynet") 

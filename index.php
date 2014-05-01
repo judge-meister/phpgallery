@@ -40,6 +40,7 @@ if(!isset($_POST['PHPUNIT']))      { include( gethostname().'/config.php' ); }
 else   if($_POST['PHPUNIT']!=True) { include( gethostname().'/config.php' ); }
 
 require_once( 'functions.php' );
+require_once( 'Span.class.php' );
 require_once( 'pluginLoader.php' );
 
 

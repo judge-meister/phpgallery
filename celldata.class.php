@@ -2,6 +2,7 @@
 
 require_once('functions.php');
 require_once('HtmlTag.class.php');
+require_once('Overlay.class.php');
 
 abstract class Config2
 {
@@ -71,6 +72,10 @@ class FolderItem implements iFolderItem
 		$this->ignore = True; // = FileType::ignored;
 		return $this;
 	}
+	public function joinUrl($paths) { return preg_replace('#/+#','/', join("/",$paths)); }
+	public function mkUrl($paths) { return str_replace('%2F','/', urlencode($this->joinUrl($paths))); }
+	public function mkRawUrl($paths) { return str_replace('%2F','/', rawurlencode($this->joinUrl($paths))); }
+	public function mkImgUrl($path, $thumb) { return $this->mkRawUrl(array($path, $thumb)); }
 	public function html($force = False)
 	{
 		if((!$this->ignore && !$this->logo->inFiles($this->file)) || $force)
@@ -140,7 +145,7 @@ class MovieCell extends FolderItem
 		//$this->m_html .= "\n<!-- doMovie -->";
 		$this->dir = $this->base.'/'.$this->file;
 
-		$this->imgurl = joinUrl(array($this->base, $this->thumb));
+		$this->imgurl = $this->joinUrl(array($this->base, $this->thumb));
 		$this->image = $this->file;
 		$this->caption = $this->file;
 		
@@ -181,10 +186,10 @@ class MovieCell extends FolderItem
 		$this->span->setText(comment('SpanLogoMovie'));
 		
 		$this->img = HtmlTag::createELement('img')->set('src',$this->imgurl);
-		$this->anchor->set('href',joinUrl(array($this->dir)));
+		$this->anchor->set('href',$this->joinUrl(array($this->dir)));
 		if(strpos($this->thumb, "/")===0) { 
 			//echo "\nUse MovieClip\n";
-			$this->img->set('src',mkRawUrl(array($this->thumb))); 
+			$this->img->set('src',$this->mkRawUrl(array($this->thumb))); 
 		}
 		
 		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height','120px'));
@@ -227,8 +232,8 @@ class ImageCell extends FolderItem
 		$this->image = $this->file;
 		$this->caption = $this->file;
 
-		$this->url = mkRawUrl(array($this->base, $this->image));
-		$this->imgurl = joinUrl(array($this->thumb));
+		$this->url = $this->mkRawUrl(array($this->base, $this->image));
+		$this->imgurl = $this->joinUrl(array($this->thumb));
 
 		$phpThumb = new iPhpThumb($this);
 		if($phpThumb->isActive())
@@ -239,7 +244,7 @@ class ImageCell extends FolderItem
 		else
 		{
 			//echo "<!-- ImageCell:".$this->thumb." ".$this->width." ".$this->height." -->\n";
-			$this->imgurl = mkRawUrl(array($this->thumb));
+			$this->imgurl = $this->mkRawUrl(array($this->thumb));
 		}
 	}
 	public function html2()
@@ -267,7 +272,7 @@ class DirCell extends FolderItem
 	{
 		parent::__construct($base, $f, $ignored, $logo);
 		$this->imgurl = FILE_FOLDER;
-		$this->url = mkUrl(array($base,$f));
+		$this->url = $this->mkUrl(array($base,$f));
 		$this->type = FileType::directory;
 	}
 	public function html2()
@@ -303,7 +308,7 @@ class NonMediaCell extends FolderItem
 		$this->ext = getExt($f);
 		global $nonMediaThumbs;
 		list($this->imgurl, $this->width, $this->height) = $nonMediaThumbs[$this->ext];
-		$this->url = mkUrl(array($base,$f));
+		$this->url = $this->mkUrl(array($base,$f));
 	}
 	public function html2()
 	{
@@ -328,7 +333,7 @@ class MiscCell extends FolderItem
 		parent::__construct($base, $f, $ignored, $logo);
 		$this->type = FileType::misc;
 		$this->ext = getExt($f);
-		$this->url = mkUrl(array($base,$f));
+		$this->url = $this->mkUrl(array($base,$f));
 	}
 	public function html2()
 	{
@@ -420,10 +425,6 @@ class FolderItemFactory
 	}
 }
 
-function joinUrl($paths) { return preg_replace('#/+#','/', join("/",$paths)); }
-function mkUrl($paths) { return str_replace('%2F','/', urlencode(joinUrl($paths))); }
-function mkRawUrl($paths) { return str_replace('%2F','/', rawurlencode(joinUrl($paths))); }
-function mkImgUrl($path, $thumb) { return mkRawUrl(array($path, $thumb)); }
 
 function cmpType($a, $b)
 {
@@ -454,8 +455,8 @@ class LogoItem extends FolderItem
 	{
 		$this->path = $path;
 		list($this->item, $this->thumb, $this->tsize, $this->dim) = $this->load($l);
-		$this->url = mkUrl(array($this->path, $this->item));
-		$this->imgurl = mkImgUrl($this->path, $this->thumb);
+		$this->url = $this->mkUrl(array($this->path, $this->item));
+		$this->imgurl = $this->mkImgUrl($this->path, $this->thumb);
 		$this->type = null;
 	}
 	private function load($l)
@@ -504,7 +505,7 @@ class LogoFile
 	}
 	public static function read($path){
 		self::$_instance = new LogoFile();
-		if(DotFiles::hasLogo($path)) 
+		if(hasLogo($path)) 
 		{ 
 			//echo "[hasLogo]LogoFile::load(".$path.")\n";
 			self::$_instance->load($path);
@@ -578,7 +579,7 @@ class Ignores
 	}
 	private function load($path)
 	{
-		if(DotFiles::hasIgnore($path)) 
+		if(hasIgnore($path)) 
 		{
 			$ignores = file($_SERVER['DOCUMENT_ROOT'].'/'.$path.'/.ignore', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 			if ($ignores !== False) 
@@ -593,31 +594,71 @@ class Ignores
 				|| substr(basename($f),0,3)==":2e" || getExt($f) == ".$$$");
 	}
 }
-//function dotFileExists($d,$f)
-//{
-//	if(file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$d.'/'.$f)) { return true; } else {return false; }
-//}
-class DotFiles
+
+class HttpEnv
 {
-	private function __construct() {}
-	public static function hasModelDB($d)		{ return  dotFileExists($d,'.modeldb'); } // used to call modeldetails for specific directories
-	public static function hasThumbs($d)		{ return  dotFileExists($d,'.thumbs'); } // used in www2.alsscan.com for model pages
-	public static function hasGalleryIgnore($d)	{ return  dotFileExists($d,'.gallery_ignore'); } // not sure this is actually required
-	public static function hasTitle($d)			{ return  dotFileExists($d,'.title'); } // optional page title
-	public static function hasIgnore($d)		{ return  dotFileExists($d,'.ignore'); } // list of files/dirs to ignore
-	public static function hasImgsize($d)		{ return  dotFileExists($d,'.imgsize'); } // list of image dimensions
-	public static function hasPics($d)			{ return  dotFileExists($d,'.pics'); } // hidden dir full of thumbnails
-	public static function hasLogo($d)			{ return  dotFileExists($d,'.logo'); } // list of dir to thumbs associations
-	public static function hasAlpha($d)			{ return  dotFileExists($d,'.alpha'); }
-	public static function hasAlphabet($d)		{ return  dotFileExists($d,'.alphabet'); }
-	public static function hasCalendar($d)		{ return  dotFileExists($d,'.calendar'); } // use calendar links
-	public static function hasIndex($d)			{ return (dotFileExists($d,'igallery.html') || dotFileExists($d,'igallery.php')); }
-	public static function hasComments($d)		{ return  dotFileExists($d,'comments.php'); }
-	public static function hasFavourites($d)	{ return  dotFileExists($d,'.favourites'); }
-	public static function hasBookmarks($d)		{ return  dotFileExists($d,'.bookmarks'); }
-	public static function hasRollovers($d)		{ return  dotFileExists($d,'.rollovers'); }
+	private function __construct()
+	{
+		return $this;
+	}
+	public static function input(){
+		self::$_instance = new HttpEnv();
+		return self::$_instance;
+	}
+	public function param($key)
+	{
+		if(isset($_POST[$key]))     { return $_POST[$key]; }
+		else if(isset($_GET[$key])) { return $_GET[$key]; }
+		return NULL;
+	}
+	
 }
 
+///////////////////////////////////////////////////////////////
+// F U N C T I O N S
+/*
+function getImgSize($path)
+{
+	if(file_exists($path))
+	{
+		return getimagesize($path);
+	}
+	else
+	{
+		return array(120, 120, "", "");
+	}
+}
+function shorten($s, $w)
+{
+	if($w > 0) { $ln = (int)($w / 5.4); } else { $ln = 18; }
+	$s = str_replace('_', ' ', $s);
+	if(strlen($s) > $ln) { $s = substr($s, 0, $ln); }
+	return $s;
+}
+function captionName($s,$w)
+{
+	//$s = removeExt($s);
+	$s = cleanStr($s);
+	$s = shorten($s, $w);
+	return $s;
+}
+function cleanStr($s)
+{
+	$s = str_replace('_',' ',$s);
+	$s = str_replace('-',' ',$s);
+	$s = str_replace('.',' ',$s);
+	return $s;
+}
+function removeExt($s)
+{
+	//return substr($s, 0, strrpos($s,"."));
+	if(strrpos($s, '.') !== False){ return substr($s, 0, strrpos($s, '.')); }
+	else{ return $s; }
+}
+function isimage($path) { return mediatype(strtolower($path), 'image'); }
+function ismovie($path) { return mediatype(strtolower($path), 'movie'); }
+*/
+///////////////////////////////////////////////////////////////
 /*
 
 class FolderItem2 implements iFolderItem
