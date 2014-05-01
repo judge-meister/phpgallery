@@ -12,9 +12,9 @@ abstract class Config2
 }
 abstract class FileType
 {
-	const image = 0;
+	const directory = 0;
 	const movie = 1;
-	const directory = 2;
+	const image = 2;
 	const nonMedia = 3;
 	const misc = 4;
 	const ignored = 5;
@@ -65,6 +65,7 @@ class FolderItem implements iFolderItem
 		$this->imgStyle = createCSS($this->width,$this->height);
 	}
 	public function getType() { return $this->type; }
+    public function getName() { return $this->file; }
 	public function ignore()
 	{
 		$this->ignore = True; // = FileType::ignored;
@@ -398,14 +399,19 @@ class FolderItemFactory
 	public function html()
 	{
 		$s='';
+		//var_dump($this->cells);
+        uasort($this->cells, "cmpName");
+		//var_dump($this->cells);
 		foreach($this->cells as $f => $c)
 		{
+			//echo "<p>".$c->getName()." ".FileType::toStr($c->getType())."\n";
 			$s.=$c->html()."\n";
 		}
 		return $s;
 	}
 	private function categorize($f, $base)
 	{
+		//echo "<p>CATEGORIZE: ".$_SERVER['DOCUMENT_ROOT'].$base.$f." is_dir()=".is_dir($_SERVER['DOCUMENT_ROOT'].$base.$f);
 		if(ismovie($_SERVER['DOCUMENT_ROOT'].$base.$f))         { return new MovieCell   ($base, $f, $this->ignores->inIgnores($f), $this->logofiles ); }
 		elseif(isimage($_SERVER['DOCUMENT_ROOT'].$base.$f))     { return new ImageCell   ($base, $f, $this->ignores->inIgnores($f), $this->logofiles ); }
 		elseif(is_dir($_SERVER['DOCUMENT_ROOT'].$base.$f))      { return new DirCell     ($base, $f, $this->ignores->inIgnores($f), $this->logofiles ); }
@@ -419,18 +425,30 @@ function mkUrl($paths) { return str_replace('%2F','/', urlencode(joinUrl($paths)
 function mkRawUrl($paths) { return str_replace('%2F','/', rawurlencode(joinUrl($paths))); }
 function mkImgUrl($path, $thumb) { return mkRawUrl(array($path, $thumb)); }
 
+function cmpType($a, $b)
+{
+    if ($a->getType() == $b->getType()) {
+        return 0;
+    }
+    return ($a->getType() < $b->getType()) ? -1 : 1;
+}
+function cmpName($a, $b)
+{
+    return (strcmp($a->getName(), $b->getName()));
+}
+
 class LogoItem extends FolderItem
 {
-	private $item = null; //
+	private $item  = null; //
 	private $thumb = null; //
 	private $tsize = null;
-	private $dim = null; //
-	private $path = null; //
+	private $dim   = null; //
+	private $path  = null; //
 	private $caption = null; //
-	private $id = null;
+	private $id    = null;
 	private $imgurl = null; //
-	private $url = null; //
-	private $opt = "1_100"; //
+	private $url   = null; //
+	private $opt   = "1_100"; //
 	
 	public function __construct($path, $l)
 	{

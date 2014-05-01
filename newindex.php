@@ -30,7 +30,7 @@ else
 {
 	$_SERVER['DOCUMENT_ROOT'] = "/Users/judge/Sites";
     $root = "/Users/judge/Sites";
-    $path = "/testpage"; 
+    $path = "/testpage/"; 
 }
 
 $base = $root.$path;
