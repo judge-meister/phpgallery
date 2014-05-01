@@ -39,7 +39,7 @@ class iPhpThumb
 		{
 			//echo "<!-- iPhpThumb:picurl2: ".$cell['thumb']." -->\n";
 			//$this->picurl = $this->span->mkRawUrl(array($cell['thumb']));
-			$this->picurl = mkRawUrl(array($cell['thumb']));
+			$this->picurl = $cell['thumb']; //mkRawUrl(array($cell['thumb']));
 			return $this->picurl;
 		}
 	}

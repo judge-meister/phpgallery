@@ -238,7 +238,7 @@ class ImageCell extends FolderItem
 		$phpThumb = new iPhpThumb($this);
 		if($phpThumb->isActive())
 		{
-			$this->imgurl = $phpThumb->picUrl2($this->img_ht, $this->thumb, $this->imgurl);
+			$this->imgurl = $phpThumb->picUrl2($this->img_ht, $this->mkRawUrl(array($this->thumb)), $this->imgurl);
 			//echo "<!-- ImageCell:".$this->imgurl." -->\n";
 		}
 		else
