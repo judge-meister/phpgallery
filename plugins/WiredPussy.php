@@ -17,7 +17,7 @@ class WiredDB
 	{
 		if(gethostname() == "skynet")
 		{
-			sqlConnect();
+			$this->sqlConnect();
 		}
 	}
 	private function sqlConnect()

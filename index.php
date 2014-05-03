@@ -114,7 +114,7 @@ class Gallery
 	}
 	public function findPageWidth($w)
 	{
-		if(($this->rowWidth + $w) < 1230) 
+		if(($this->rowWidth + $w + 2) < 1230) 
 		{ 
 			$this->rowWidth = $this->rowWidth + $w;
 			echo "<!-- ".$this->rowWidth." ".$w." -->\n";
