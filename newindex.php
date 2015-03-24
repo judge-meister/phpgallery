@@ -23,14 +23,15 @@ require_once('newhead.php');
 if(gethostname() == "skynet") 
 {
 	$_SERVER['DOCUMENT_ROOT'] = "/home/www/html";
-    $root = "/home/www/html";
-    $path = "/testing/testpage/"; 
+	$root = "/home/www/html";
+	$path = "/testing/testpage/"; 
+	$path = "/secret/sdc1/inthecrack.com/videos/";
 }
 else 
 {
 	$_SERVER['DOCUMENT_ROOT'] = "/Users/judge/Sites";
-    $root = "/Users/judge/Sites";
-    $path = "/testpage/"; 
+	$root = "/Users/judge/Sites";
+	$path = "/testpage/"; 
 }
 
 $base = $root.$path;

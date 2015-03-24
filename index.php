@@ -51,7 +51,14 @@ if(LOGIN_ENABLED == True && param('PHPUNIT') != True)
 	require $_SERVER['DOCUMENT_ROOT'].LOGIN_PATH.'/logoff.php';
 	$Config['logon']=True;
 }
-
+function getBrowserWidth()
+{
+	if(isset($_COOKIE['currBrowserWidth']))
+	{
+		return (int)$_COOKIE['currBrowserWidth'];
+	}
+	return 1280;
+}
 
 class Gallery
 {
@@ -114,10 +121,9 @@ class Gallery
 	}
 	public function findPageWidth($w)
 	{
-		if(($this->rowWidth + $w + 2) < 1230) 
+		if(($this->rowWidth + $w + 2) < ($this->Config['screenWidth'] - 50)) 
 		{ 
 			$this->rowWidth = $this->rowWidth + $w;
-			echo "<!-- ".$this->rowWidth." ".$w." -->\n";
 		}
 		else //if($this->prevRowWidth == 0)
 		{
@@ -125,10 +131,8 @@ class Gallery
 			{
 				$this->prevRowWidth = $this->rowWidth;
 			}
-			echo "<!-- row=".$this->prevRowWidth." -->\n";
 			$this->rowWidth = 0;
 		}
-		//echo "<!-- ".$w." -->\n";
 	}
 	public function resetCellData()
 	{
@@ -559,13 +563,13 @@ class Gallery
 			} 
 			// previous next page
 			$prevnum = $nextnum = 0;
-			$last = (int)($this->m_item_count / $this->Config['pagesize']) + 1;
-			if($this->m_pagenum > 1)     {$prevnum = $this->m_pagenum - 1;$prevnumstr = "[".$prevnum."]";} else {$prevnumstr = "";}
+			$last = (int)(($this->m_item_count-1) / $this->Config['pagesize']) + 1;
+			if($this->m_pagenum > 1)      {$prevnum = $this->m_pagenum - 1;$prevnumstr = "[".$prevnum."]";} else {$prevnumstr = "";}
 			if($this->m_pagenum < $last) {$nextnum = $this->m_pagenum + 1;$nextnumstr = "[".$nextnum."]";} else {$nextnumstr = "";}
 
 			if($last > 1) {$laststr='['.$last.']'; $firststr = "[1]";} else {$laststr = ""; $firststr = "";}
-                        if($nextnum >= $last || $this->m_pagenum >= $last) {$laststr = "";}
-                        if($prevnum <= 1) {$firststr = "";}
+			if($nextnum >= $last || $this->m_pagenum >= $last) {$laststr = "";}
+			if($prevnum <= 1) {$firststr = "";}
 			?>
 	<div id="pagenavigation">
 
@@ -600,28 +604,30 @@ class Gallery
 	}
 }
 
+// ----------------------------------- //
+// ------- S T A R T   H E R E ------- //
+// ----------------------------------- //
 
-if(param('PHPUNIT') != True)
+if(param('PHPUNIT') != True) 
 {
-
+	if(param('media') != NULL)
+	{ 
+		header("Location: http://".$_SERVER['SERVER_NAME']."/".param('media'));
+		die();
+	}
+	$Config['screenWidth'] = getBrowserWidth();
 	$G = new Gallery($stdIgnores, $Config, param('path'), param('opt'));
-
-
-	//if(param('path') != NULL && strpos(param('path'), "alsvideo") !== false)
-	//{
-		//header("Location: http://skynet/cgi-bin/alsmpegs.py");
-		//die();
-	//}
-
+	
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
 <html>
-<?php require('head.php');?>
+<?php require('head.php'); ?>
 <body>
 <?php if($Config['logon'] == True) { login_panel(); } ?>
 
 	<form name="gallery" action="/<?php echo PROGRAM; ?>" method="get">
-
+	</form>
+	
 	<div id="title">
 
 	    <?php echo title($G->getPath()); ?>
@@ -629,12 +635,12 @@ if(param('PHPUNIT') != True)
 	</div>
 
 <?php 
-if(!$G->wholePages())
-{
-	$G->buildThumbs();
-}
-$G->pagebreakcomment();
-$G->pageNavigation(); 
+	if(!$G->wholePages())
+	{
+		$G->buildThumbs();
+	}
+	$G->pagebreakcomment();
+	$G->pageNavigation(); 
 
 ?>
 
@@ -650,6 +656,10 @@ $G->pageNavigation();
   </div>
  </table>
 </div>
+<div id="appModeNote" style="display:none;">
+	<em><a href="">Refresh!</a></em>
+</div>
+
 </body>
 </html>
 

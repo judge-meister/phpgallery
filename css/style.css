@@ -354,3 +354,33 @@ div#tagcloud a:hover {
         color: #f47c0e;
 }
 
+/* start web app mode note */
+#appModeNote {
+    background-color: rgba(21,21,21,0.98) ;
+    border-top: 5px solid #000000 ;
+    bottom: 0px ;
+    color: #F0F0F0 ;
+    display: block ;
+    font-family: helvetica ;
+    left: 0px ;
+    padding: 10px 0px 10px 0px ;
+    position: fixed ;
+    text-align: center ;
+    width: 100% ;
+    height: 100% ;
+    }
+
+#appModeNote em a {
+    display: block ;
+    font-size: 20px ;
+    font-weight: bold ;
+    line-height: 26px ;
+    padding-top: 200px;
+    }
+
+#appModeNote span {
+    display: block ;
+    font-size: 14px ;
+    line-height: 20px ;
+    }
+/* end web app mode note*/

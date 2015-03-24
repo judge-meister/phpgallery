@@ -1,7 +1,7 @@
 <?php
 
 define('PROGRAM',    '/phpgallery/');
-define('CSS',        '/css/femjoy.css');
+define('CSS',        PROGRAM.'css/style.css');
 define('IMAGE_ROOT', '/images/');
 define('TOP',        '/secret');
 

@@ -99,7 +99,7 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 	{
 		$this->span->setText(comment('SpanLogoMovie'));
 		
-		$this->anchor->set('href',$this->joinUrl(array($this->cell['dir'])));
+		$this->anchor->set('href',PROGRAM."?media=".$this->mkUrl(array($this->cell['dir'])));
 		if(strpos($this->cell['thumb'], "/")===0) { 
 			//echo "\nUse MovieClip\n";
 			$this->img->set('src',$this->mkRawUrl(array($this->cell['thumb']))); 
@@ -225,7 +225,8 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 		
 		$div1 = HtmlTag::createElement('div')
 			->set('style',createCSS(120,120)->set('margin','0 8px')
-					->set('background-image','url(\''.$this->img_url.'\')')->set('background-size','120px'));
+					->set('background-image','url(\''.$this->img_url.'\')')->set('background-size','120px')
+						->set('white-space','nowrap'));
 		
 		$div2 = HtmlTag::createElement('div')
 			->set('style',CssStyle::createStyle()->set('width','90px')->set('padding','35px 8px')

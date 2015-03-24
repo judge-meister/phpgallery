@@ -14,10 +14,22 @@ function param($key)
 	else if(isset($_GET[$key])) { return $_GET[$key]; }
 	return NULL;
 }
+function joinUrl($paths)
+{
+	return preg_replace('#/+#','/', join("/",$paths));
+}
+function mkRawUrl($paths)
+{
+	return str_replace('%2F','/', rawurlencode(joinUrl($paths)));
+}
+function mkUrl($paths)
+{
+	return str_replace('%2F','/', urlencode(joinUrl($paths)));
+}
 
 define('THUMBSIZE', 120);
 define('MAXITEMS', 100);
-define('STARTURL', PROGRAM.'?path='.param('path'));
+define('STARTURL', PROGRAM.'?'.$_SERVER['QUERY_STRING']);
 
 
 require_once('HtmlTag.class.php');
@@ -33,7 +45,7 @@ $stdIgnores = array(".","..",'reiserfs_priv','.pics','.picasaoriginals','.AppleD
 
 global $mediaTypes;
 $mediaTypes = array(
-	     "movie" => array('ext'=>array('.avi','.divx','.mpg','.wmv','.mov','.mpeg','.rm','.rmvb','.rmm','.asf','.mkv','.swf','.mp4','.m4v','.mpe','.mpa','.qt','.3pg'),
+	     "movie" => array('ext'=>array('.avi','.divx','.mpg','.wmv','.mov','.mpeg','.rm','.rmvb','.rmm','.asf','.mkv','.swf','.mp4','.m4v','.mpe','.mpa','.qt','.3pg','.flv'),
 	     		      'thm'=>array(IMAGE_ROOT.'MovieClip.png',102,120)),
 	     "image" => array('ext'=>array('.jpg','.jpeg','.jpe','.gif','.png','.bmp'/*,'.pcx','.tif','.tiff','.pbm','.pgm','.ppm','.tga'*/,'.tbn'/*,'.xbm','.xpm','.xcf'*/), 
 	     		      'thm'=>array('',0,0)),
@@ -125,7 +137,7 @@ function displayName($s)
 	//$s = cleanStr($s);
 	$size = 0.0;
 	$base = 100;
-	$width = 97;
+	$width = 88;
 	$j = 0;
 	for($i = 0; $i < strlen($s) && (int)$size < $width; $i++)
 	{
@@ -136,6 +148,7 @@ function displayName($s)
 		$j = $i;
 	}
 	$s = wordwrap($s, $j+1, "<br />\n", true);
+    $s = implode("<br />\n", array_slice(explode("<br />\n", $s), 0, 4));
 	return $s;
 }
 function removeExt($s)
