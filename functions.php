@@ -39,9 +39,10 @@ define('FILE_FOLDER', IMAGE_ROOT.'file_folder.png');
 define('FILE_BLANK',  IMAGE_ROOT.'file_blank.png');
 define('PLAY_BUTTON', IMAGE_ROOT.'play_button_overlay_50x50.png');
 define('FAV_FOLDER',  IMAGE_ROOT.'file_folder_red.png');
+define('BORDER_ONLY', IMAGE_ROOT.'border.png');
 
 global $stdIgnores;
-$stdIgnores = array(".","..",'reiserfs_priv','.pics','.picasaoriginals','.AppleDB','.AppleDesktop','.AppleDouble','Network Trash Folder','Temporary Items','Thumbs.db',':2e*');
+$stdIgnores = array(".","..",'reiserfs_priv','.pics','.picasaoriginals','.AppleDB','.AppleDesktop','.AppleDouble','Network Trash Folder','.TemporaryItems','Temporary Items','Thumbs.db',':2e*');
 
 global $mediaTypes;
 $mediaTypes = array(
@@ -148,7 +149,7 @@ function displayName($s)
 		$j = $i;
 	}
 	$s = wordwrap($s, $j+1, "<br />\n", true);
-    $s = implode("<br />\n", array_slice(explode("<br />\n", $s), 0, 4));
+	$s = implode("<br />\n", array_slice(explode("<br />\n", $s), 0, 4));
 	return $s;
 }
 function removeExt($s)
@@ -206,6 +207,7 @@ function hasComments($d)	{ return  dotFileExists($d,'comments.php'); }
 function hasFavourites($d)	{ return  dotFileExists($d,'.favourites'); }
 function hasBookmarks($d)	{ return  dotFileExists($d,'.bookmarks'); }
 function hasRollovers($d)	{ return  dotFileExists($d,'.rollovers'); }
+function hasReverse($d)	{ return  dotFileExists($d,'.reverse'); }
 
 function mkOverlay($s,$o=-90) { return '<div style="margin-top:'.$o.'px;">'.$s.'</div>'; }
 

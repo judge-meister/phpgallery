@@ -224,14 +224,19 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 		$this->anchor->set('href',PROGRAM.'?opt='.$this->cell['opt'].'&path='.$this->url);
 		
 		$div1 = HtmlTag::createElement('div')
-			->set('style',createCSS(120,120)->set('margin','0 8px')
+			->set('style',createCSS(120,120)->set('margin','0 4px'/*8*/)
 					->set('background-image','url(\''.$this->img_url.'\')')->set('background-size','120px')
 						->set('white-space','nowrap'));
 		
+		//$div2 = HtmlTag::createElement('div')
+		//	->set('style',CssStyle::createStyle()/*->set('width','90px')*/->set('padding','35px 0px'/*35 8*/)
+		//			->set('color','#ddd')->set('font','175% arial'/*bold 150% */)->set('text-align','center'/*left*/))
+		//	->setText(displayName(cleanStr($this->cell['title'])));
 		$div2 = HtmlTag::createElement('div')
-			->set('style',CssStyle::createStyle()->set('width','90px')->set('padding','35px 8px')
-					->set('color','#ddd')->set('font','bold 150% arial')->set('text-align','left'))
-			->setText(displayName($this->cell['dir']));
+			->set('style',CssStyle::createStyle()->set('width','120px')->set('height','120px')->set('padding','0px 0px')
+				->set('display','table-cell')->set('vertical-align','middle')
+					->set('color','#ddd')->set('font','175% arial')->set('text-align','center'))
+			->setText(displayName(cleanStr($this->cell['title'])));
 		
 		$div1->addElement($div2);
 		$this->anchor->addElement($div1);

@@ -139,7 +139,7 @@ class Gallery
 		$this->celldata = array('path'=>$this->celldata['path'],
 					'dir'=>null,'width'=>0,'height'=>0,'img_ht'=>0,'opt'=>null,
 					'caption'=>null,'thumb'=>null,'image'=>null,'overlay'=>null,
-					'movieLen'=>0);
+					'movieLen'=>0, 'title'=>null );
 	}
 	public function pagebreakcomment()
 	{
@@ -195,8 +195,8 @@ class Gallery
 
 	public function span_dir() //dir name no thumbs
 	{
-		$this->celldata['width'] = 132;
-		$img_url = FILE_FOLDER;
+		$this->celldata['width'] = 120;//132;
+		$img_url = BORDER_ONLY;//FILE_FOLDER;
 		if (in_array($this->celldata['dir'], $this->favourites))
 		{
 			$img_url = FAV_FOLDER;
@@ -455,11 +455,23 @@ class Gallery
 		$files = scandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']);
 		if($files != false)
 		{
+			if(hasReverse($this->celldata['path']))
+			{
+				$files = array_reverse($files);
+			}
 			foreach($files as $file)//for($i = 0; $i < count($files); $i++)
 			{
 				$this->resetCellData();
 				if(!$this->inExcludes($file) && ($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end))
 				{
+					if(hasTitle($this->celldata['path'].'/'.$file))
+					{
+						$this->celldata['title']=title($this->celldata['path'].'/'.$file);
+					}
+					else
+					{
+						$this->celldata['title']=$file;
+					}
 					//echo "<p>".$files[$i];
 					if(is_dir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$file)) // dir no thumb
 					{

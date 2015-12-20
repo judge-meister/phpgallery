@@ -2,7 +2,7 @@
 
 define('PROGRAM',    '/phpgallery/');
 define('CSS',        PROGRAM.'css/style.css');
-define('IMAGE_ROOT', '/images/');
+define('IMAGE_ROOT', PROGRAM.'images/');
 define('TOP',        '/secret');
 
 // logon
