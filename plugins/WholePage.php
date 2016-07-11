@@ -54,8 +54,8 @@ class WholePage implements iPlugin
 				}
 				if(strpos(strtolower($line),'src="') !== false) //line.lower().find('src="')>-1: # or line.find('SRC="')>-1 :
 				{	
-					$line=str_replace('src="', 'src="/'.$path.'/', $line);
-					$line=str_replace('SRC="', 'SRC="/'.$path.'/', $line);
+					$line=str_replace('src="', 'src="../'.$path.'/', $line);
+					$line=str_replace('SRC="', 'SRC="../'.$path.'/', $line);
 				}
 				if(strpos(strtolower($line),'bgcolor="') !== false) //line.lower().find('bgcolor="')>-1:
 				{	

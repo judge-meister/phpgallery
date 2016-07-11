@@ -13,11 +13,11 @@ class AlsScansDB
 	private $db_pass		= 'r0adster';
 	private $db_database		= 'alsgallery'; 
 
-        private $webbase     = 'secret/sdc1';
-        private $webroot     = '../html';
-        private $website     = 'www2.alsscan.com';
-        private $photosdir   = 'members';
-        private $modelthumbs = 'members';
+	private $webbase     = 'secret/sdc1/ALSScans';
+	private $webroot     = '../html';
+	private $website     = 'www2.alsscan.com';
+	private $photosdir   = 'members';
+	private $modelthumbs = 'members';
 	private $span_height = 138;
 	
 	/* returned by plugin interface methods */ 
@@ -67,11 +67,11 @@ class AlsScansDB
 				$html .= '     <table style="width:200; border:0px solid #555;margin:0px;padding:0px;">';
 				$html .= '      <tr style:"border:0px;margin:0px;padding:0px;">';
 				$html .= '       <td valign="top" style="width:200px;border: 0px;margin:0px;padding:0px;">';
-				$html .= '        <span style="margin:0px 1px 0px 0px;"><img style="width:200px; height:290px;" ';
+				$html .= '	<span style="margin:0px 1px 0px 0px;"><img style="width:200px; height:290px;" ';
 				$html .= 'src="/'.$this->webbase.'/'.$this->website.'/'.$this->modelthumbs.'/'.$details['thumbnail'].'">';
 
-				$html .= '        <p style="font-size:16px;font-weight:bold;text-align:left">'.$details['modelname'];
-				$html .= '        <p style="text-align:left">';
+				$html .= '	<p style="font-size:16px;font-weight:bold;text-align:left">'.$details['modelname'];
+				$html .= '	<p style="text-align:left">';
 				if ($details['age'] != "") { $html .= '      <b>Age</b>: '.$details['age'].'<br>';}
 				if ($details['height'] != "") { $html .= '<b>Height</b>: '.$details['height'].'<br>';}
 				if ($details['weight'] != "") { $html .= '<b>Weight</b>: '.$details['weight'].'<br>';}
@@ -82,17 +82,19 @@ class AlsScansDB
 				if ($details['fantasy'] != "") { $html .= '<b>Favourite Fantasy</b>: '.$details['fantasy'].'<br>';}
 				$html .= '';
 
-				$html .= '        <br>';
+				$html .= '	<br>';
 				if ($details['hasVideos'] == 1)
 				{
-					$html .= '        <a href="/cgi-bin/alsmpegs.py?m='.$details['videoid'].'&f=scan" style="font-size:10pt;">';
-					$html .= '        <img src="/secret/sdc1/www.alsvideo.com/scanimg/'.$details['videothumb'].'" style="width:120px; height:90px;float:left;margin-right:5px;"><!--br>Videos--></a>';
+					$html .= '	<a href="/cgi-bin/alsmpegs.py?m='.$details['videoid'].'&f=scan" style="font-size:10pt;">';
+					$html .= '	<img src="/'.$this->webbase.'/www.alsvideo.com/scanimg/'.$details['videothumb'].'" style="width:120px; height:90px;float:left;margin-right:5px;"><!--br>Videos--></a>';
 				}
 
-				$html .= '        <p style="text-align:left">'.$details['blurb'];
+				$html .= '	<p style="text-align:left">'.$details['blurb'];
 				$html .= '       </td>';
 				$html .= '       <td valign="top" style="border: 0px solid #505; margin:0px; padding:0px;">';
 				$html .= '     <div style="width:990px">';
+
+				$html .= '<!-- psets='.count($psets).' -->';
 
 				foreach($psets as $row)
 				{
@@ -114,7 +116,8 @@ class AlsScansDB
 				}
 				$html .= '<div id="thumbnails">';
 
-				foreach(glob($_SERVER['DOCUMENT_ROOT'].'/secret/sdc1/www2.alsscan.com/members/models/'.$model.'/*.jpg') as $pic)
+				$html .= "<!-- ".$_SERVER['DOCUMENT_ROOT']."/".$this->webbase."/www2.alsscan.com/members/models/".$model."/*.jpg -->";
+				foreach(glob($_SERVER['DOCUMENT_ROOT']."/".$this->webbase.'/www2.alsscan.com/members/models/'.$model.'/*.jpg') as $pic)
 				{
 					$w=90;
 					$h=125;
@@ -149,7 +152,7 @@ class AlsScansDB
 		}
 	}
 	public function isWhole()       { return $this->whole; }
-	public function html()          { return $this->html; }
+	public function html()	  { return $this->html; }
 	public function isActive($path) 
 	{ 
 		return (hasModelDB($path) && strpos($path, 'www2.alsscan.com/members/models')!== false && gethostname() == "skynet" ); 

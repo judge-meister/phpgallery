@@ -220,7 +220,7 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 		$this->span->setText('<!-- span_dir -->');
 		$this->span->showTextBeforeContent(True);
 		
-		$this->anchor->setText(captionName($this->cell['dir'], $this->cell['width']));
+		//$this->anchor->setText(captionName($this->cell['dir'], $this->cell['width']));
 		$this->anchor->set('href',PROGRAM.'?opt='.$this->cell['opt'].'&path='.$this->url);
 		
 		$div1 = HtmlTag::createElement('div')

@@ -13,11 +13,11 @@ class AlsAngelsDB implements iPlugin
 	private $db_pass		= 'r0adster';
 	private $db_database		= 'alsgallery'; 
 
-        private $webbase     = 'secret/sdc1';
-        private $webroot     = '../html';
-        private $website     = 'www.alsangels.com';
-        private $photosdir   = 'members';
-        private $modelthumbs = 'freepics';
+	private $webbase     = 'secret/sdc1/ALSScans';
+	private $webroot     = '../html';
+	private $website     = 'www.alsangels.com';
+	private $photosdir   = 'members';
+	private $modelthumbs = 'freepics';
 	
 	/* returned by plugin interface methods */ 
 	private $html = "";
@@ -86,11 +86,10 @@ class AlsAngelsDB implements iPlugin
 				if( $details['hasVideos'] == "1")
 				{
 					$ihtml=  '       <a href="/cgi-bin/alsmpegs.py?m='.$details['videoid'].'&f=angel" style="font-size:10pt;">';
-					$ihtml.= '       <img src="/secret/sdc1/www.alsvideo.com/angelimg/'.$details['videothumb'].'" style="width:120px; height:90px;float:left;margin-right:5px;"></a>';
+					$ihtml.= '       <img src="/'.$this->webbase.'/www.alsvideo.com/angelimg/'.$details['videothumb'].'" style="width:120px; height:90px;float:left;margin-right:5px;"></a>';
 				}
 				$thtml = '<p style="text-align:left;padding-left:0px">'.$details['blurb'].'</p>';
-				$html .= '<span style="width: 805px;">'.$ihtml.' '.$thtml.'</a></span>';
-
+				$html .= '<span style="width: 805px;padding-bottom:5px;">'.$ihtml.' '.$thtml.'</a></span>';
     
 				foreach($psets as $row)
 				{
@@ -105,7 +104,7 @@ class AlsAngelsDB implements iPlugin
 					$thtml = '<p style="text-align:left;">'.$description.'<br><br>('.$piccount.' pics)</p>';
 					$h=94;
 					$w=396;
-					$html .= '      <span style="height: '.$h.'px;width: '.$w.'px;">'.$ihtml.'</a> '.$thtml.'</span>';
+					$html .= '      <span style="height: '.$h.'px;width: '.$w.'px;padding-bottom:5px">'.$ihtml.'</a> '.$thtml.'</span>';
 				}
 			}
 		}
@@ -122,7 +121,7 @@ class AlsAngelsDB implements iPlugin
 		}
 	}
 	public function isWhole()       { return $this->whole; }
-	public function html()          { return $this->html; }
+	public function html()	  { return $this->html; }
 	public function isActive($path) 
 	{ 
 		return (hasModelDB($path) && strpos($path, 'www.alsangels.com/members') !== false && gethostname() == "skynet" ); 

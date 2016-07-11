@@ -288,6 +288,7 @@ class Gallery
 				if($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end)
 				{
 					//echo "<p>".$lines[$i];
+					// .logo [(0 => path), (1 => image), (2 => ?), (3 => dimensions)]
 					$pieces = explode(",", $line);
 					if(!in_array($pieces[0], $this->m_ignores))
 					{
@@ -307,9 +308,27 @@ class Gallery
 							$this->celldata['dir'] = $pieces[0];
 							if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$pieces[0]))
 							{
-								$this->celldata['caption'] = str_replace("_"," ",$pieces[0]);
-								$this->m_html .= $this->span_logo()."\n";
-								$this->m_item_count++;
+								if(0 !== strcmp($pieces[1],""))
+								{
+									$this->celldata['caption'] = str_replace("_"," ",$pieces[0]);
+									$this->m_html .= $this->span_logo()."\n";
+									$this->m_item_count++;
+								}
+								else
+								{
+									if(hasTitle($this->celldata['path'].'/'.$pieces[0]))
+									{
+										$this->celldata['title']=title($this->celldata['path'].'/'.$pieces[0]);
+									}
+									else
+									{
+										$this->celldata['title']=$pieces[0];
+									}
+									$this->celldata['dir'] = $pieces[0];
+									$this->m_html .= $this->span_dir()."\n";
+									$this->m_item_count++;
+									$this->celldata['dir'] = "";
+								}
 							}
 							else if(file_exists($_SERVER['DOCUMENT_ROOT'].$pieces[0]))
 							{
@@ -536,8 +555,8 @@ class Gallery
 			{
 				$listofdirs = getFilesFromLogo(dirname($this->celldata['path']));
 			}
-			if(count($listofdirs) == 0)
-			{
+			//if(count($listofdirs) == 0)
+			//{
 				$dirlist = scandir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']) );
 				for($i=0; $i<count($dirlist); $i++)
 				{
@@ -547,7 +566,7 @@ class Gallery
 						$listofdirs[] = $dirlist[$i];
 					}
 				}
-			}
+			//}
 			// previous - next dir
 			$pos = array_search(basename($this->celldata['path']),$listofdirs);
 			$before = ""; 
@@ -555,7 +574,7 @@ class Gallery
 			if($pos > 0) 
 			{
 				$before = $listofdirs[$pos-1];
-				$beforestr = "[".$before."]";
+				$beforestr = "[".title2(dirname($this->celldata['path']).'/'.$before)."]";
 			} 
 			if(param('up') != NULL)
 			{
@@ -571,7 +590,7 @@ class Gallery
 			if($pos < (count($listofdirs) - 1)) 
 			{ 
 				$after = $listofdirs[$pos + 1]; 
-				$afterstr = "[".$after."]";
+				$afterstr = "[".title2(dirname($this->celldata['path']).'/'.$after)."]";
 			} 
 			// previous next page
 			$prevnum = $nextnum = 0;
@@ -623,8 +642,16 @@ class Gallery
 if(param('PHPUNIT') != True) 
 {
 	if(param('media') != NULL)
-	{ 
-		header("Location: http://".$_SERVER['SERVER_NAME']."/".param('media'));
+	{
+		$SITE_PORT = $_SERVER['SERVER_NAME'];
+		// check if we are being accessed via ssh tunnel and localhost:8080/
+		if($_SERVER['SERVER_NAME'] == 'localhost' && $_SERVER['SERVER_PORT'] != 80)
+		{
+			$SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
+		}
+		header("Location: http://".$SITE_PORT."/".param('media'));
+		//print($SITE_PORT."\n");
+		//var_dump($_SERVER);
 		die();
 	}
 	$Config['screenWidth'] = getBrowserWidth();

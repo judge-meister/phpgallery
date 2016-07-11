@@ -8,13 +8,19 @@ if((!isset($_SESSION['id'])) || (!$_SESSION['id']))
 {
     if(isset($_SERVER['SERVER_NAME']))
     {
+		$SITE_PORT = $_SERVER['SERVER_NAME'];
+		// check if we are being accessed via ssh tunnel and localhost:8080
+		if($_SERVER['SERVER_NAME'] == 'localhost' && $_SERVER['SERVER_PORT'] != 80)
+		{
+			$SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
+		}
 	    if(defined('STARTURL'))
 	    {
-	    	header("Location: http://".$_SERVER['SERVER_NAME']."/?activepage=".STARTURL);
+	    	header("Location: http://".$SITE_PORT."/?activepage=".STARTURL);
 	    }
 	    else
 	    {
-    		header("Location: http://".$_SERVER['SERVER_NAME']);
+    		header("Location: http://".$SITE_PORT);
 	    }
 	    die();
     }

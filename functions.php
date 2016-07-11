@@ -129,7 +129,7 @@ function displayName($s)
 {
 	$letters=array( 'A'=>11,'B'=>11,'C'=>11,'D'=>11,'E'=>12,'F'=>12,'G'=>10,'H'=>11,'I'=>26,
 					'J'=>13,'K'=>11,'L'=>12,'M'=>9,'N'=>11,'O'=>10,'P'=>12,'Q'=>10,'R'=>11,
-					'S'=>12,'T'=>12,'U'=>11,'V'=>12,'W'=>8,'X'=>12,'Y'=>12,'Z'=>12,
+					'S'=>12,'T'=>12,'U'=>11,'V'=>12,'W'=>12,'X'=>12,'Y'=>12,'Z'=>12,
 					' '=>13,'+'=>13,'-'=>13,'.'=>25,'_'=>9,
 					'a'=>13,'b'=>12,'c'=>13,'d'=>12,'e'=>13,'f'=>21,'g'=>12,'h'=>12,'i'=>25,
 					'j'=>25,'k'=>13,'l'=>25,'m'=>9,'n'=>12,'o'=>12,'p'=>12,'q'=>12,'r'=>21,
@@ -138,7 +138,8 @@ function displayName($s)
 	//$s = cleanStr($s);
 	$size = 0.0;
 	$base = 100;
-	$width = 88;
+	//$width = 88; //for font 150%
+	$width = 78; //for font 180%
 	$j = 0;
 	for($i = 0; $i < strlen($s) && (int)$size < $width; $i++)
 	{
@@ -255,7 +256,7 @@ function getImgSize($path)
 {
 	//getimagesize
 	//list($this->m_width, $this->m_height, $type, $attr) = getimagesize($_SERVER['DOCUMENT_ROOT'].'/'.$this->m_path.'/'.$this->m_thumb);
-	if(file_exists($path))
+	if(file_exists($path) && is_file($path))
 	{
 		return getimagesize($path);
 	}
@@ -286,6 +287,19 @@ function title($d)
 	else
 	{
 		return basename(dirname($d))."/".basename($d);
+	}
+}
+
+function title2($d)
+{
+	if(hasTitle($d))
+	{
+		$t = file($_SERVER['DOCUMENT_ROOT'].$d.'/.title', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		return $t[0];
+	}
+	else
+	{
+		return basename($d);
 	}
 }
 
