@@ -5,7 +5,8 @@ require_once('include_check.php');
 $Config = array('wplus'=>6,
 		'full_ht'=>145,
 		'pagesize'=>100,
-		'phpThumbs'=>False);
+		'phpThumbs'=>False,
+		'debug'=>False);
 
 
 function param($key)
@@ -25,6 +26,20 @@ function mkRawUrl($paths)
 function mkUrl($paths)
 {
 	return str_replace('%2F','/', urlencode(joinUrl($paths)));
+}
+class DebugLogger
+{
+	public function __construct($Config)
+	{
+		$this->Config = $Config;
+	}
+	public function display($line)
+	{
+		if($this->Config['debug']==True)
+		{
+			echo $line;
+		}
+	}
 }
 
 define('THUMBSIZE', 120);
@@ -93,6 +108,7 @@ function mediatype($path, $type)
 {
 	global $mediaTypes;
 	$e = substr($path, strrpos($path, '.'));
+	//printDebug("[".$e."] ");
 	return (in_array($e, $mediaTypes[$type]['ext']) && !is_dir($path));
 }
 function isNonMedia($path)
@@ -102,7 +118,8 @@ function isNonMedia($path)
 	return (in_array($e, $nonMediaTypes) && !is_dir($path));
 }
 function isimage($path) { return mediatype(strtolower($path), 'image'); }
-function ismovie($path) { return mediatype(strtolower($path), 'movie'); }
+function ismovie($path) { //printDebug("ismovie() "); 
+	return mediatype(strtolower($path), 'movie'); }
 function ismedia($path) { return isimage($path) || ismovie($path); }
 /*
 function iscss($path)   { return mediatype(strtolower($path), 'css'); }
@@ -192,6 +209,7 @@ function dotFileExists($d,$f)
 		return false; 
 	}
 }
+function hasDebug($d)		{ return  dotFileExists($d,'.debug'); } // used to display debugging statements
 function hasModelDB($d)		{ return  dotFileExists($d,'.modeldb'); } // used to call modeldetails for specific directories
 function hasThumbs($d)		{ return  dotFileExists($d,'.thumbs'); } // used in www2.alsscan.com for model pages
 function hasGalleryIgnore($d)	{ return  dotFileExists($d,'.gallery_ignore'); } // not sure this is actually required

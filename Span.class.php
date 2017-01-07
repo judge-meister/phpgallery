@@ -12,6 +12,8 @@ class Span
 		$this->url = $this->mkUrl(array($cell['path'], $cell['dir']));
 		$this->wp = (int)$cell['width']+$Config['wplus'];
 		$this->h = (int)$cell['height'];
+		$this->dflt_ht = 120;
+		$this->dflt_wt = 120;
 		$this->imgurl = $this->mkImgUrl($cell['path'], $cell['thumb']);
 		$this->id = null;
 		$this->class = null;
@@ -78,7 +80,7 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 		$this->span->setText(comment('SpanLogo '.$this->id));
 
 		$this->anchor->set('href',PROGRAM."?opt=".$this->cell['opt']."&path=".$this->url)
-			->set('style',CssStyle::createStyle()->set('height','120px')->set('overflow','hidden'));
+			->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px')->set('overflow','hidden'));
 		$div = HtmlTag::createElement('div')->id($this->id);
 		$this->img->set('style',$this->imgStyle);
 
@@ -105,7 +107,7 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 			$this->img->set('src',$this->mkRawUrl(array($this->cell['thumb']))); 
 		}
 		
-		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height','120px'));
+		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px'));
 
 		$overlayBtn = Overlay::create()->mkBtn(PLAY_BUTTON,'-90')->html();
 		
@@ -150,7 +152,7 @@ class SpanPhoto extends SpanLogo // SpanLogo + image
 		$this->span->setText(comment('SpanPhoto ARSE'));
 
 		$this->anchor->set('href',$this->url)->set('rel','doSlideshow:true')->set('title',$this->cell['image']);
-		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height','120px'));
+		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px'));
 			//->setText($overlay); // **
 		$img = HtmlTag::createElement('img')->addClass('thumb')
 			->set('style',$this->imgStyle)
@@ -180,8 +182,8 @@ class SpanIcon extends SpanLogo // SpanLogo + image
 		
 		// these styles need to be classes and put in css file
 		$div1 = HtmlTag::createElement('div')
-			->set('style',CssStyle::createStyle()->set('width','120px')->set('height','120px')
-			->set('background-image',"url('".FILE_BLANK."')")->set('background-size','120px'));
+			->set('style',CssStyle::createStyle()->set('width',$this->dflt_ht.'px')->set('height',$this->dflt_ht.'px')
+			->set('background-image',"url('".FILE_BLANK."')")->set('background-size',$this->dflt_ht.'px'));
 		$div2 = HtmlTag::createElement('div')
 			->set('style',CssStyle::createStyle()->set('padding','90px 20px')->set('color','#ddd')
 			->set('font','bold 200% arial')->set('text-align','left'));
@@ -224,8 +226,8 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 		$this->anchor->set('href',PROGRAM.'?opt='.$this->cell['opt'].'&path='.$this->url);
 		
 		$div1 = HtmlTag::createElement('div')
-			->set('style',createCSS(120,120)->set('margin','0 4px'/*8*/)
-					->set('background-image','url(\''.$this->img_url.'\')')->set('background-size','120px')
+			->set('style',createCSS($this->dflt_wt,$this->dflt_ht)->set('margin','0 4px'/*8*/)
+					->set('background-image','url(\''.$this->img_url.'\')')->set('background-size',$this->dflt_ht.'px')
 						->set('white-space','nowrap'));
 		
 		//$div2 = HtmlTag::createElement('div')
@@ -233,7 +235,7 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 		//			->set('color','#ddd')->set('font','175% arial'/*bold 150% */)->set('text-align','center'/*left*/))
 		//	->setText(displayName(cleanStr($this->cell['title'])));
 		$div2 = HtmlTag::createElement('div')
-			->set('style',CssStyle::createStyle()->set('width','120px')->set('height','120px')->set('padding','0px 0px')
+			->set('style',CssStyle::createStyle()->set('width',$this->dflt_wt.'px')->set('height',$this->dflt_ht.'px')->set('padding','0px 0px')
 				->set('display','table-cell')->set('vertical-align','middle')
 					->set('color','#ddd')->set('font','175% arial')->set('text-align','center'))
 			->setText(displayName(cleanStr($this->cell['title'])));

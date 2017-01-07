@@ -45,12 +45,12 @@ require_once( 'pluginLoader.php' );
 
 
 $Config['logon']=False;
-if(LOGIN_ENABLED == True && param('PHPUNIT') != True)
-{
-	require $_SERVER['DOCUMENT_ROOT'].LOGIN_PATH.'/user_check.php';
-	require $_SERVER['DOCUMENT_ROOT'].LOGIN_PATH.'/logoff.php';
-	$Config['logon']=True;
-}
+//if(LOGIN_ENABLED == True && param('PHPUNIT') != True)
+//{
+//	require $_SERVER['DOCUMENT_ROOT'].LOGIN_PATH.'/user_check.php';
+//	require $_SERVER['DOCUMENT_ROOT'].LOGIN_PATH.'/logoff.php';
+//	$Config['logon']=True;
+//}
 function getBrowserWidth()
 {
 	if(isset($_COOKIE['currBrowserWidth']))
@@ -118,6 +118,11 @@ class Gallery
 		$this->bookmarks = array();
 		$this->rowWidth = 0;
 		$this->prevRowWidth = 0;
+		if(hasDebug($this->celldata['path']))
+		{
+			$this->Config['debug']=True;
+		}
+		$this->debug = new DebugLogger($this->Config);
 	}
 	public function findPageWidth($w)
 	{
@@ -412,8 +417,10 @@ class Gallery
 	function movieLength($file)
 	{
 		$min = $secs = '';
+		$this->debug->display("[".$file."]");
 		if (in_array($file, array_keys($this->m_comments)))
 		{
+			$this->debug->display($file);
 			$length = $this->m_comments[$file];
 			$min = sprintf("%d",(int)($length/60.0));
 			$secs = sprintf("%02d",(int)($length-($min*60)));
@@ -480,9 +487,11 @@ class Gallery
 			}
 			foreach($files as $file)//for($i = 0; $i < count($files); $i++)
 			{
+				$this->debug->display("<br>buildthumbs [".$file."] ");
 				$this->resetCellData();
 				if(!$this->inExcludes($file) && ($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end))
 				{
+					#printDebug("not excluded ", $this->Config['debug']);
 					if(hasTitle($this->celldata['path'].'/'.$file))
 					{
 						$this->celldata['title']=title($this->celldata['path'].'/'.$file);
@@ -532,6 +541,10 @@ class Gallery
 				{
 					$this->m_item_count++;
 					//comment($file." ".$this->m_item_count);
+				}
+				else
+				{
+					$this->debug->display("excluded ");
 				}
 			}
 		}

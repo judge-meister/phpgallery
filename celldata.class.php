@@ -7,6 +7,9 @@ require_once('Overlay.class.php');
 abstract class Config2
 {
 	const full_ht=145;
+	const cell_ht=120;
+	const cell_wt=120;
+	const max_page_width = 1200;
 	const wplus = 6;
 	const pagesize = 100;
 	const phpThumbs = False;
@@ -45,9 +48,9 @@ class FolderItem implements iFolderItem
 		$this->opt = "1_100"; //
 	
 		$this->base = null;
-		$this->width = 120;
-		$this->height = 120;
-		$this->img_ht = 120;
+		$this->width = Config2::cell_wt;
+		$this->height = Config2::cell_ht;
+		$this->img_ht = Config2::cell_ht;
 		$this->file = $f;
 		$this->base = $base;
 		$this->caption = $f;
@@ -95,15 +98,15 @@ class FolderItem implements iFolderItem
 			list($this->width, $this->height, $type, $attr) = getImgSize($_SERVER['DOCUMENT_ROOT'].'/'.$this->base.'/'.$this->thumb);
 			$this->img_ht = $this->height;
 		}
-		if((int)$this->height > 120)
+		if((int)$this->height > Config2::cell_ht)
 		{ 
-			$this->width = (int)((float)$this->width / ((float)$this->height / 120.0)); 
-			$this->height = 120; 
+			$this->width = (int)((float)$this->width / ((float)$this->height / float(Config2::cell_ht))); 
+			$this->height = Config2::cell_ht; 
 		}
-		if((int)$this->width > 1200)
+		if((int)$this->width > Config2::max_page_width)
 		{
-			$this->width = 1200; 
-			$this->height = (int)((float)$this->height / ((float)$this->width / 1200.0)); 
+			$this->width = Config2::max_page_width; 
+			$this->height = (int)((float)$this->height / ((float)$this->width / (Config2::max_page_width))); 
 		}
 	}
 }
@@ -192,7 +195,7 @@ class MovieCell extends FolderItem
 			$this->img->set('src',$this->mkRawUrl(array($this->thumb))); 
 		}
 		
-		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height','120px'));
+		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',Config2::cell_ht.'px'));
 
 		$overlayBtn = Overlay::create()->mkBtn(PLAY_BUTTON,'-90')->html();
 		
@@ -254,7 +257,7 @@ class ImageCell extends FolderItem
 
 		$this->anchor = HtmlTag::createElement('a')->setText(captionName($this->caption,$this->width));
 		$this->anchor->set('href',$this->url)->set('rel','doSlideshow:true')->set('title',$this->caption);
-		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height','120px'));
+		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',Config2::cell_ht.'px'));
 			//->setText($overlay); // **
 		$this->imgStyle = createCSS($this->width,$this->height);
 		$img = HtmlTag::createElement('img')->addClass('thumb')
@@ -285,8 +288,8 @@ class DirCell extends FolderItem
 		$this->anchor->setText(captionName($this->file, $this->width));
 	
 		$div1 = HtmlTag::createElement('div')
-			->set('style',createCSS(120,120)->set('margin','0 8px')
-				->set('background-image','url(\''.$this->imgurl.'\')')->set('background-size','120px'));
+			->set('style',createCSS(Config2::cell_ht,Config2::cell_wt)->set('margin','0 8px')
+				->set('background-image','url(\''.$this->imgurl.'\')')->set('background-size',Config2::cell_ht.'px'));
 	
 		$div2 = HtmlTag::createElement('div')
 			->set('style',CssStyle::createStyle()->set('width','90px')->set('padding','35px 8px')
@@ -315,7 +318,7 @@ class NonMediaCell extends FolderItem
 		$this->span->setText(comment('SpanPhoto NonMedia'));
 
 		$this->anchor->set('href',$this->url)->set('rel','doSlideshow:true')->set('title',$this->file);
-		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height','120px'));
+		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',Config2::cell_ht.'px'));
 			//->setText($overlay); // **
 		$img = HtmlTag::createElement('img')->addClass('thumb')
 			->set('style',$this->imgStyle)
@@ -343,8 +346,8 @@ class MiscCell extends FolderItem
 		
 		// these styles need to be classes and put in css file
 		$div1 = HtmlTag::createElement('div')
-			->set('style',CssStyle::createStyle()->set('width','120px')->set('height','120px')
-			->set('background-image',"url('".FILE_BLANK."')")->set('background-size','120px'));
+			->set('style',CssStyle::createStyle()->set('width',Config2::cell_wt.'px')->set('height',Config2::cell_ht.'px')
+			->set('background-image',"url('".FILE_BLANK."')")->set('background-size',Config2::cell_ht.'px'));
 		$div2 = HtmlTag::createElement('div')
 			->set('style',CssStyle::createStyle()->set('padding','90px 20px')->set('color','#ddd')
 			->set('font','bold 200% arial')->set('text-align','left'));
