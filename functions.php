@@ -2,12 +2,96 @@
 
 require_once('include_check.php');
 
-$Config = array('wplus'=>6,
-		'full_ht'=>145,
-		'pagesize'=>100,
-		'phpThumbs'=>False,
-		'debug'=>False);
+/*$Config = array(
+*		'wplus'=>6,
+*		'full_ht'=>145,
+*		'cell_ht'=>120,
+*		'cell_wt'=>120,
+*		'pagesize'=>100,
+*		'maxPageWt'=>1200,
+*		'phpThumbs'=>False,
+*		'debug'=>False
+*	);
+*/
+		/*
+*class Config
+*{
+*	const full_ht=145;
+*	const cell_ht=120;
+*	const cell_wt=120;
+*	const maxPageWt = 1200;
+*	const wplus = 6;
+*	//public pagesize = 100;
+*	const phpThumbs = False;
+*	//debug = False;
+*	//screenWidth = 0;
+*}*/
 
+class Config 
+{
+	private static $inst = null;
+
+	//Array to hold global settings
+	private static $config = array(
+		'wplus'     => 6,
+		'full_ht'   => 145,
+		'cell_ht'   => 120,
+		'cell_wt'   => 120,
+		'pagesize'  => 1000,
+		'maxPageWt' => 1200,
+		'phpThumbs' => False,
+		'debug'     => False
+	);
+
+	public static function getInstance() 
+	{
+		if (static::$inst === null) 
+		{
+			static::$inst = new Config();
+		}
+		return static::$inst;
+	}
+
+	public function get($path=NULL) 
+	{
+		$setting =& static::$config;
+		if($path) {
+			//parse path to return config
+			$path = explode('/', $path);
+
+			foreach($path as $element) {
+				if(isset($setting[$element])) {
+					$setting =& $setting[$element]; 
+				} else {
+					//echo "If specified path not exist\n";
+					$setting = false;
+				}
+			}
+		}
+		return $setting;
+	}
+
+	public function set($path=NULL,$value=NULL) 
+	{
+		if($path) {
+			//parse path to return config
+			$path = explode('/', $path);
+			//Modify global settings
+			$setting =& static::$config;
+
+			$element = $path;
+			foreach($path as $element) {
+				$setting =& $setting[$element];
+			}
+			$setting = $value;
+		}
+	}
+
+	//Override to prevent duplicate instance
+	private function __construct() {}
+	private function __clone() {}
+	private function __wakeup() {}
+}
 
 function param($key)
 {
@@ -29,17 +113,55 @@ function mkUrl($paths)
 }
 class DebugLogger
 {
-	public function __construct($Config)
-	{
-		$this->Config = $Config;
-	}
+	public function __construct(){}
 	public function display($line)
 	{
-		if($this->Config['debug']==True)
+		$cfg = Config::getInstance();
+		if($cfg->get('debug') == True)
+		//if(Config::debug == True)
 		{
 			echo $line;
 		}
 	}
+}
+class Path
+{
+	public function __construct($path)
+	{
+		$this->m_path = $path;
+		if($this->m_path == "")
+		{
+			$this->m_path = TOP;
+		}
+		else if(substr($this->m_path, 1) != "/")
+		{
+			$this->m_path = "/".$this->m_path;
+		}
+	}
+	public function str()				{ return  $this->m_path; }
+	public function hasDebug()			{ return  dotFileExists($this->m_path, '.debug'); } // used to display debugging statements
+	public function hasModelDB()		{ return  dotFileExists($this->m_path, '.modeldb'); } // used to call modeldetails for specific directories
+	public function hasThumbs()			{ return  dotFileExists($this->m_path, '.thumbs'); } // used in www2.alsscan.com for model pages
+	public function hasGalleryIgnore()	{ return  dotFileExists($this->m_path, '.gallery_ignore'); } // not sure this is actually required
+	public function hasTitle()			{ return  dotFileExists($this->m_path, '.title'); } // optional page title
+	public function hasIgnore()			{ return  dotFileExists($this->m_path, '.ignore'); } // list of files/dirs to ignore
+	public function hasImgsize()		{ return  dotFileExists($this->m_path, '.imgsize'); } // list of image dimensions
+	public function hasPics()			{ return  dotFileExists($this->m_path, '.pics'); } // hidden dir full of thumbnails
+	public function hasLogo()			{ return  dotFileExists($this->m_path, '.logo'); } // list of dir to thumbs associations
+	public function hasAlpha()			{ return  dotFileExists($this->m_path, '.alpha'); }
+	public function hasAlphabet()		{ return  dotFileExists($this->m_path, '.alphabet'); }
+	public function hasCalendar()		{ return  dotFileExists($this->m_path, '.calendar'); } // use calendar links
+	public function hasIndex()			{ return (dotFileExists($this->m_path, 'igallery.html') || dotFileExists($this->m_path, 'igallery.php')); }
+	public function hasComments()		{ return  dotFileExists($this->m_path, 'comments.php'); }
+	public function hasFavourites()		{ return  dotFileExists($this->m_path, '.favourites'); }
+	public function hasBookmarks()		{ return  dotFileExists($this->m_path, '.bookmarks'); }
+	public function hasRollovers()		{ return  dotFileExists($this->m_path, '.rollovers'); }
+	public function hasReverse()		{ return  dotFileExists($this->m_path, '.reverse'); }
+	
+	public function getImgSize($image) { return getImgSize($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$image); }
+	public function openLogo() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.logo', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
+	public function openFavourites() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.favourites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
+	public function fileExists($file) { return file_exists($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$file) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file); }
 }
 
 define('THUMBSIZE', 120);
@@ -121,20 +243,7 @@ function isimage($path) { return mediatype(strtolower($path), 'image'); }
 function ismovie($path) { //printDebug("ismovie() "); 
 	return mediatype(strtolower($path), 'movie'); }
 function ismedia($path) { return isimage($path) || ismovie($path); }
-/*
-function iscss($path)   { return mediatype(strtolower($path), 'css'); }
-function isdmg($path)   { return mediatype(strtolower($path), 'dmg'); }
-function isdoc($path)   { return mediatype(strtolower($path), 'doc'); }
-function isexe($path)   { return mediatype(strtolower($path), 'exe'); }
-function ishtm($path)   { return mediatype(strtolower($path), 'htm'); }
-function isini($path)   { return mediatype(strtolower($path), 'ini'); }
-function ispdf($path)   { return mediatype(strtolower($path), 'pdf'); }
-function isphp($path)   { return mediatype(strtolower($path), 'php'); }
-function istxt($path)   { return mediatype(strtolower($path), 'txt'); }
-function isthm($path)   { return mediatype(strtolower($path), 'thm'); }
-function isxml($path)   { return mediatype(strtolower($path), 'xml'); }
-function iszip($path)   { return mediatype(strtolower($path), 'zip'); }
-*/
+
 function cleanStr($s)
 {
 	$s = str_replace('_',' ',$s);
@@ -144,30 +253,58 @@ function cleanStr($s)
 }
 function displayName($s)
 {
-	$letters=array( 'A'=>11,'B'=>11,'C'=>11,'D'=>11,'E'=>12,'F'=>12,'G'=>10,'H'=>11,'I'=>26,
-					'J'=>13,'K'=>11,'L'=>12,'M'=>9,'N'=>11,'O'=>10,'P'=>12,'Q'=>10,'R'=>11,
-					'S'=>12,'T'=>12,'U'=>11,'V'=>12,'W'=>12,'X'=>12,'Y'=>12,'Z'=>12,
-					' '=>13,'+'=>13,'-'=>13,'.'=>25,'_'=>9,
-					'a'=>13,'b'=>12,'c'=>13,'d'=>12,'e'=>13,'f'=>21,'g'=>12,'h'=>12,'i'=>25,
-					'j'=>25,'k'=>13,'l'=>25,'m'=>9,'n'=>12,'o'=>12,'p'=>12,'q'=>12,'r'=>21,
-					's'=>13,'t'=>21,'u'=>12,'v'=>13,'w'=>10,'x'=>13,'y'=>13,'z'=>15,
-					'0'=>13,'1'=>13,'2'=>13,'3'=>13,'4'=>13,'5'=>13,'6'=>13,'7'=>13,'8'=>13,'9'=>13);
+	// how many of each letter fit across the cell box
+	$letters=array( 'A'=>9, 'B'=>9, 'C'=>8, 'D'=>8, 'E'=>9, 'F'=>10,'G'=>8, 'H'=>8, 'I'=>22,
+					'J'=>13,'K'=>9, 'L'=>11,'M'=>6, 'N'=>8, 'O'=>8, 'P'=>9, 'Q'=>8, 'R'=>8,
+					'S'=>9, 'T'=>10,'U'=>8, 'V'=>9, 'W'=>5, 'X'=>9, 'Y'=>9, 'Z'=>10,
+					
+					'a'=>11,'b'=>11,'c'=>12,'d'=>11,'e'=>11,'f'=>22,'g'=>11,'h'=>11,'i'=>26,
+					'j'=>27,'k'=>12,'l'=>27,'m'=>6, 'n'=>11,'o'=>11,'p'=>11,'q'=>11,'r'=>17,
+					's'=>12,'t'=>21,'u'=>11,'v'=>12,'w'=>8, 'x'=>11,'y'=>12,'z'=>12,
+					
+					' '=>15,'+'=>11,'-'=>13,'.'=>25,'_'=>9, '('=>9, ')'=>9, '['=>9, ']'=>9,
+					'0'=>11,'1'=>13,'2'=>11,'3'=>11,'4'=>11,'5'=>11,'6'=>11,'7'=>11,'8'=>11,'9'=>11);
 	//$s = cleanStr($s);
 	$size = 0.0;
-	$base = 100;
+	$base = 110;
 	//$width = 88; //for font 150%
-	$width = 78; //for font 180%
+	//$width = 78; //for font 180%
+	$width = 109;
 	$j = 0;
-	for($i = 0; $i < strlen($s) && (int)$size < $width; $i++)
+	$linecount = 1;
+	$breaks = array();
+	for($i = 0; $i < strlen($s) && (int)$size < $width && $linecount < 5; $i++)
 	{
 		//echo $s[$i].'=>'.$letters[$s[$i]].' '.$size."\n";
 		if(array_key_exists($s[$i], $letters)) {
-			$size = $size + ((float)$base / (float)$letters[$s[$i]]);
+			$newsize = $size + ((float)$base / (float)$letters[$s[$i]]);
+			//printf("%d %f %s\n", $i, $newsize, $s[$i]);
+			if ($newsize < $width) {
+				$size = $newsize;
+			} else {
+				$j = $i;
+				$linecount = $linecount + 1;
+				array_push($breaks, $i-1);
+				//var_dump($breaks);
+				$size = 0.0;
+			}
 		} else { echo "<!-- displayName: [".$s[$i]."] is missing -->"; }
 		$j = $i;
 	}
-	$s = wordwrap($s, $j+1, "<br />\n", true);
+	$rbreaks = array_reverse($breaks);
+	foreach($rbreaks as $p)
+	{
+		//printf("\nbreak %d\n",$p);
+		$s = substr($s,0,$p)."\n".substr($s,$p);
+		//printf("\n%s\n",$s);
+	}
+	//$s = wordwrap($s, $j+1, "<br />\n", true);
+	//printf("REPLACE\n");
+	$s = str_replace("\n", "<br />\n", $s);
+	//printf("IMPLODE\n");
 	$s = implode("<br />\n", array_slice(explode("<br />\n", $s), 0, 4));
+	//printf("\nCONVERTED TO HTML\n");
+
 	return $s;
 }
 function removeExt($s)
@@ -209,24 +346,25 @@ function dotFileExists($d,$f)
 		return false; 
 	}
 }
-function hasDebug($d)		{ return  dotFileExists($d,'.debug'); } // used to display debugging statements
-function hasModelDB($d)		{ return  dotFileExists($d,'.modeldb'); } // used to call modeldetails for specific directories
-function hasThumbs($d)		{ return  dotFileExists($d,'.thumbs'); } // used in www2.alsscan.com for model pages
-function hasGalleryIgnore($d)	{ return  dotFileExists($d,'.gallery_ignore'); } // not sure this is actually required
-function hasTitle($d)		{ return  dotFileExists($d,'.title'); } // optional page title
-function hasIgnore($d)		{ return  dotFileExists($d,'.ignore'); } // list of files/dirs to ignore
-function hasImgsize($d)		{ return  dotFileExists($d,'.imgsize'); } // list of image dimensions
-function hasPics($d)		{ return  dotFileExists($d,'.pics'); } // hidden dir full of thumbnails
-function hasLogo($d)		{ return  dotFileExists($d,'.logo'); } // list of dir to thumbs associations
-function hasAlpha($d)		{ return  dotFileExists($d,'.alpha'); }
-function hasAlphabet($d)	{ return  dotFileExists($d,'.alphabet'); }
-function hasCalendar($d)	{ return  dotFileExists($d,'.calendar'); } // use calendar links
-function hasIndex($d)		{ return (dotFileExists($d,'igallery.html') || dotFileExists($d,'igallery.php')); }
-function hasComments($d)	{ return  dotFileExists($d,'comments.php'); }
-function hasFavourites($d)	{ return  dotFileExists($d,'.favourites'); }
-function hasBookmarks($d)	{ return  dotFileExists($d,'.bookmarks'); }
-function hasRollovers($d)	{ return  dotFileExists($d,'.rollovers'); }
-function hasReverse($d)	{ return  dotFileExists($d,'.reverse'); }
+function hasModelDB($d)			{ return  dotFileExists($d, '.modeldb'); } // used to call modeldetails for specific directories
+function hasTitle($d)			{ return  dotFileExists($d, '.title'); } // optional page title
+function hasIgnore($d)			{ return  dotFileExists($d, '.ignore'); } // list of files/dirs to ignore
+function hasLogo($d)			{ return  dotFileExists($d, '.logo'); } // list of dir to thumbs associations
+function hasIndex($d)			{ return (dotFileExists($d, 'igallery.html') || dotFileExists($d, 'igallery.php')); }
+
+#function hasDebug($d)			{ return  dotFileExists($d, '.debug'); } // used to display debugging statements
+#function hasThumbs($d)			{ return  dotFileExists($d, '.thumbs'); } // used in www2.alsscan.com for model pages
+#function hasGalleryIgnore($d)	{ return  dotFileExists($d, '.gallery_ignore'); } // not sure this is actually required
+#function hasImgsize($d)			{ return  dotFileExists($d, '.imgsize'); } // list of image dimensions
+#function hasPics($d)			{ return  dotFileExists($d, '.pics'); } // hidden dir full of thumbnails
+#function hasAlpha($d)			{ return  dotFileExists($d, '.alpha'); }
+#function hasAlphabet($d)		{ return  dotFileExists($d, '.alphabet'); }
+#function hasCalendar($d)		{ return  dotFileExists($d, '.calendar'); } // use calendar links
+function hasComments($d)		{ return  dotFileExists($d, 'comments.php'); }
+#function hasFavourites($d)		{ return  dotFileExists($d, '.favourites'); }
+#function hasBookmarks($d)		{ return  dotFileExists($d, '.bookmarks'); }
+#function hasRollovers($d)		{ return  dotFileExists($d, '.rollovers'); }
+#function hasReverse($d)			{ return  dotFileExists($d, '.reverse'); }
 
 function mkOverlay($s,$o=-90) { return '<div style="margin-top:'.$o.'px;">'.$s.'</div>'; }
 

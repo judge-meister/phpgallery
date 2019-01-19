@@ -101,15 +101,15 @@ a {font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
 #thumbnails      {/*border: 1px solid #00a;*/
                   padding: 0px;
                   margin: 0px;
-                  text-align: center;}
+                  /*text-align: center;*/}
 		  
 #thumbnails	  .nothumb_outer {padding:10px 5px;margin:0px 0px;height:100px;background-color:#000;border: 0px solid #555;}
 #thumbnails	  .nothumb_middle {padding:10px 5px;background-color:#222;}
 #thumbnails	  .nothumb_inner {font-size:16pt;margin:0px 0px;border: 0px solid #333;vertical-align:center;height:80px;}
 
-#thumbnails span {margin: 0px;
+#thumbnails span {/*margin: 0px;*/
                   padding: 0px;
-                  border: 0px solid #333;/*1*/
+                  /*border: 0px solid #333;/*1*/
                   text-align: center;
                   color: #fff;
                   float: left;
@@ -122,18 +122,29 @@ a {font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
                     text-decoration: none;
                     color: #fff;}
 
+/*#thumbnails div span {border: 1px solid #f47c0e;}*/
+
 #thumbnails img {margin-bottom: .25em;}
 #thumbnails a:link        {color: #fff;}
-#thumbnails a:link    img {border: 0px solid #fff;}
+/*#thumbnails a:link    img {border: 0px solid #bdf;}*/
 #thumbnails a:visited     {color: #fff;}
-#thumbnails a:visited img {border: 0px solid #fff;}
+/*#thumbnails a:visited img {border: 0px solid #777;}*/
 #thumbnails a:hover       {color: #f47c0e;}
-#thumbnails a:hover   img {border: 0px solid #f47c0e;}
+/*#thumbnails a:hover   img {border: 0px solid #f47c0e;}*/
+
+/*.playbutton {border: 0px;} 
+a:link    .playbutton {border: 0px;}
+a:visited .playbutton {border: 0px;}
+a:hover   .playbutton {border: 0px;}*/
 
 #thumbnailstable {/*width:1180px;*/
                   margin-left: 0px;
                   margin-right: 0px;
                   border: 0px solid #555;}
+
+/*#thumbnailstable div {border: 1px solid #eee;}
+table#thumbnailstable div {border: 1px solid #eee;}
+#thumbnailstable tbody tr td span a div {border: 1px solid #eee;}*/
 
 #thumbnails a:link img.missing  {color:#ccc;border:0px solid red;}
 #thumbnails a:link img.normal   {color:#ccc;border:0px solid white; margin: 0px;}
@@ -147,6 +158,17 @@ a {font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
 
 #pagenavigation a.yearmonth {color: #aaa;}
 
+.spanBase {border: 0px solid #fff;}
+.spanDirDiv {border: 1px solid #f77;margin-left:0px;margin-right:0px;}
+.spanDirDivNoBorder {border: 0px solid #fff;margin-left:0px;margin-right:0px;}
+.spanLogoMovieDiv {margin-right: 2px;}
+.spanLogoMovieImage {border: 1px solid #f77;}
+
+a:link    .spanDirDivDiv {background-color: #000;} 
+a:visited .spanDirDivDiv {background-color: #400;} 
+a:hover   .spanDirDivDiv {background-color: #522;} 
+
+.center-div { margin: 0 auto; /*width: 100px;*/ }
 
 .alphabet9  {font-family:DeJaVuSans;font-size:9pt;white-space:nowrap; word-spacing:em;}
 .alphabet10 {font-family:DeJaVuSans;font-size:10pt;white-space:nowrap; word-spacing:em;}
@@ -166,7 +188,7 @@ a {font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
 .wplink {text-transform: uppercase;
          cursor: pointer;
          color: #ff0000;
- 	 margin: 3px;}
+         margin: 3px;}
 
 .wplink a:link    {color: #f00;}
 .wplink a:visited {color: #f00;}

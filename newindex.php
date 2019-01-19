@@ -25,7 +25,7 @@ if(gethostname() == "skynet")
 	$_SERVER['DOCUMENT_ROOT'] = "/home/www/html";
 	$root = "/home/www/html";
 	$path = "/testing/testpage/"; 
-	$path = "/secret/sdc1/inthecrack.com/videos/";
+	$path = "/secret/sdc1/kindgirls.com/videos/960x540";
 }
 else 
 {

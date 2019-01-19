@@ -141,6 +141,6 @@ fbPageOptions =
 };
 
  </script>
- <?php if($G->Config['logon']==True) { login_links(); } ?>
+ <?php $cfg = Config::getInstance(); if($cfg->get('logon')==True) { login_links(); } ?>
 
 </head>

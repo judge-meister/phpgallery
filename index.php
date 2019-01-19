@@ -43,13 +43,14 @@ require_once( 'functions.php' );
 require_once( 'Span.class.php' );
 require_once( 'pluginLoader.php' );
 
-
-$Config['logon']=False;
+$cfg = Config::getInstance();
+$cfg->set('logon',False);
 //if(LOGIN_ENABLED == True && param('PHPUNIT') != True)
 //{
 //	require $_SERVER['DOCUMENT_ROOT'].LOGIN_PATH.'/user_check.php';
 //	require $_SERVER['DOCUMENT_ROOT'].LOGIN_PATH.'/logoff.php';
-//	$Config['logon']=True;
+//	//$Config['logon']=True;
+//  $cfg->set('logon',True);
 //}
 function getBrowserWidth()
 {
@@ -75,8 +76,9 @@ class Gallery
 				  'caption'=>null,'thumb'=>null,'image'=>null,'overlay'=>null,'movieLen'=>0);
 	private $celldata_default;
 	private $m_html = "";
+	private $cfg = null;//Config::getInstance();
 	
-	public function getPath() { return $this->celldata['path']; }
+	public function getPath() { return $this->celldata['path']->str(); }
 	public function getHtml() { return $this->m_html; }
 	public function getThumbWidth() 
 	{ 
@@ -86,30 +88,26 @@ class Gallery
 		}
 		else
 		{ 
+			return "width:".($this->rowWidth + 5)."px";
 			return "";
 		} 
 	}
 	
-	public function __construct($stdIgnores, $Config, $path, $opt)
+	public function __construct($stdIgnores, $screenWidth, $path, $opt)
 	{
-		$this->Config = $Config;
-		$this->celldata['path'] = $path;
-		if($this->celldata['path'] == "")
-		{
-			$this->celldata['path'] = TOP;
-		}
-		else if(substr($this->celldata['path'], 1) != "/")
-		{
-			$this->celldata['path'] = "/".$this->celldata['path'];
-		}
+		$this->cfg = Config::getInstance();
+		$this->cfg->set('screenWidth', $screenWidth);
+		$this->celldata['path'] = new Path($path);
+
 		if($opt)
 		{
 			$o = explode('_',$opt);
-			$this->Config['pagesize'] = (int)$o[1];
+			$this->cfg->set('pagesize', (int)$o[1]);
+			//Config::pagesize = (int)$o[1];
 			$this->m_pagenum = (int)$o[0];
 		}
-		$this->m_start = ($this->m_pagenum-1) * $this->Config['pagesize'];
-		$this->m_end = ($this->m_pagenum) * $this->Config['pagesize'];
+		$this->m_start = ($this->m_pagenum-1) * $this->cfg->get('pagesize'); //$this->Config['pagesize'];
+		$this->m_end = ($this->m_pagenum) * $this->cfg->get('pagesize'); //$this->Config['pagesize'];
 		
 		$this->m_ignores = $stdIgnores;
 		$this->m_parent_ignores = $stdIgnores;
@@ -118,17 +116,20 @@ class Gallery
 		$this->bookmarks = array();
 		$this->rowWidth = 0;
 		$this->prevRowWidth = 0;
-		if(hasDebug($this->celldata['path']))
+		if($this->celldata['path']->hasDebug())
 		{
-			$this->Config['debug']=True;
+			//$this->Config['debug']=True;
+			$this->cfg->set('debug', True);
+			//Config::debug = True;
 		}
-		$this->debug = new DebugLogger($this->Config);
+		$this->debug = new DebugLogger(/*$this->Config*/);
 	}
-	public function findPageWidth($w)
+	public function setPageWidth($w)
 	{
-		if(($this->rowWidth + $w + 2) < ($this->Config['screenWidth'] - 50)) 
+		if(($this->rowWidth + $w + 4) < ($this->cfg->get('screenWidth') - 50)) 
+		//if(($this->rowWidth + $w + 2) < (Config::screenWidth - 50)) 
 		{ 
-			$this->rowWidth = $this->rowWidth + $w;
+			$this->rowWidth = $this->rowWidth + $w +4;
 		}
 		else //if($this->prevRowWidth == 0)
 		{
@@ -148,7 +149,7 @@ class Gallery
 	}
 	public function pagebreakcomment()
 	{
-		echo comment("pagesize=".$this->Config['pagesize'])."\n";
+		echo comment("pagesize=".$this->cfg->get('pagesize'))."\n";
 		echo comment("pagenum=".$this->m_pagenum)."\n";
 		echo comment("start=".$this->m_start)."\n";
 		echo comment("end=".$this->m_end)."\n";
@@ -165,49 +166,55 @@ class Gallery
 	{
 		if($num > 0)
 		{
-			return $num.'_'.$this->Config['pagesize'];
+			return $num.'_'.$this->cfg->get('pagesize');
+			//return $num.'_'.Config::pagesize;
 		}
 		else
 		{
-			return $this->m_pagenum.'_'.$this->Config['pagesize'];
+			return $this->m_pagenum.'_'.$this->cfg->get('pagesize');
+			//return $this->m_pagenum.'_'.Config::pagesize;
 		}
 	}
 	public function span_logo() //.logo thumb
 	{
 		$this->celldata['opt'] = $this->options(1);
-		$s = new SpanLogo($this->celldata, $this->Config);
-		if(hasRollovers($this->celldata['path']))
+		$s = new SpanLogo($this->celldata);
+		if($this->celldata['path']->hasRollovers())
 		{
 			$s->setRollover();
 		}
-		$this->findPageWidth($s->getWidth());
+		$this->setPageWidth($s->getWidth());
 		return $s->html();
 	}
 
 	public function span_logo_movie() // movie thumb
 	{
-		$s = new SpanLogoMovie($this->celldata, $this->Config);
-		$this->findPageWidth($s->getWidth());
+		$s = new SpanLogoMovie($this->celldata);
+		/*if($this->celldata['path']->hasRollovers())
+		{
+			$s->setRollover();
+		}*/
+		$this->setPageWidth($s->getWidth());
 		return $s->html();
 	}
 
 	public function span_photo() // photo thumbs
 	{
-		$s = new SpanPhoto($this->celldata, $this->Config);
-		$this->findPageWidth($s->getWidth());
+		$s = new SpanPhoto($this->celldata);
+		$this->setPageWidth($s->getWidth());
 		return $s->html();
 	}
 
 	public function span_dir() //dir name no thumbs
 	{
-		$this->celldata['width'] = 120;//132;
-		$img_url = BORDER_ONLY;//FILE_FOLDER;
+		$this->celldata['width'] = $this->cfg->get('cell_wt');//132;
+		$img_url = ""; //BORDER_ONLY;//FILE_FOLDER;
 		if (in_array($this->celldata['dir'], $this->favourites))
 		{
-			$img_url = FAV_FOLDER;
+			$img_url = "";//FAV_FOLDER;
 		}
-		$s = new SpanDir($this->celldata, $this->Config, $img_url);
-		$this->findPageWidth($s->getWidth());
+		$s = new SpanDir($this->celldata, $img_url);
+		$this->setPageWidth($s->getWidth());
 		return $s->html();
 	}
 	
@@ -216,8 +223,8 @@ class Gallery
 		$this->celldata['caption'] = $caption; // $file or $dir
 		$this->celldata['image'] = $image;
 		$this->celldata['opt'] = $this->options(1);
-		$s = new SpanIcon($this->celldata, $this->Config);
-		$this->findPageWidth($s->getWidth());
+		$s = new SpanIcon($this->celldata);
+		$this->setPageWidth($s->getWidth());
 		return $s->html();
 	}
 
@@ -225,25 +232,25 @@ class Gallery
 	{
 		if($getsizes == true) 
 		{ 
-			list($this->celldata['width'], $this->celldata['height'], $type, $attr) = getImgSize($_SERVER['DOCUMENT_ROOT'].'/'.$this->celldata['path'].'/'.$this->celldata['thumb']);
+			list($this->celldata['width'], $this->celldata['height'], $type, $attr) = $this->celldata['path']->getImgSize($this->celldata['thumb']);
 			$this->celldata['img_ht'] = $this->celldata['height'];
 		}
-		if((int)$this->celldata['height'] > 120) 
+		if((int)$this->celldata['height'] > $this->cfg->get('cell_ht')) 
 		{ 
-			$this->celldata['width'] = (int)((float)$this->celldata['width'] / ((float)$this->celldata['height'] / 120.0)); 
-			$this->celldata['height'] = 120; 
+			$this->celldata['width'] = (int)((float)$this->celldata['width'] / ((float)$this->celldata['height'] / (float)$this->cfg->get('cell_ht'))); 
+			$this->celldata['height'] = $this->cfg->get('cell_ht'); 
 			//$this->celldata['img_ht'] = $this->celldata['height'];
 		}
-		if((int)$this->celldata['width'] > 1200)
+		if((int)$this->celldata['width'] > $this->cfg->get('maxPageWt'))
 		{
-			$this->celldata['width'] = 1200; 
-			$this->celldata['height'] = (int)((float)$this->celldata['height'] / ((float)$this->celldata['width'] / 1200.0)); 
+			$this->celldata['width'] = $this->cfg->get('maxPageWt'); 
+			$this->celldata['height'] = (int)((float)$this->celldata['height'] / ((float)$this->celldata['width'] / (float)$this->cfg->get('maxPageWt'))); 
 			//$this->celldata['img_ht'] = $this->celldata['height'];
 		}
 	}
 	private function readBookmarks()
 	{
-		foreach(file($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/.logo', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line)
+		foreach($this->celldata['path']->openLogo() as $line)
 		{
 			if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
 			{
@@ -251,7 +258,7 @@ class Gallery
 				$pieces = explode(",", $line);
 				if(!in_array($pieces[0], $this->m_ignores))
 				{
-					if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$pieces[0]) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$pieces[0]))
+					if($this->celldata['path']->fileExists($pieces[0]))
 					{
 						// add to bookmark array stored in this->
 						$this->bookmarks[$pieces[0]]=$pieces[1];
@@ -262,8 +269,7 @@ class Gallery
 	}
 	private function readFavourites()
 	{
-		$lines = file($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/.favourites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-		foreach($lines as $line)//for($i=0;$i<count($lines);$i++)
+		foreach($this->celldata['path']->openFavourites() as $line)//for($i=0;$i<count($lines);$i++)
 		{
 			if(substr( $line, 0, 1 ) != "#") 
 			{
@@ -271,7 +277,7 @@ class Gallery
 				//$pieces = explode(",", $line);
 				if(!in_array($line, $this->m_ignores))
 				{
-					if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$line) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$line))
+					if($this->celldata['path']->fileExists($line))
 					{
 						// add to favourites array stored in this->
 						$this->favourites[] = $line;
@@ -284,8 +290,7 @@ class Gallery
 	private function doLogo()
 	{
 		//read .imgsize
-		$lines = file($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/.logo', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-		foreach($lines as $line)//for($i=0;$i<count($lines);$i++)
+		foreach($this->celldata['path']->openLogo() as $line)//for($i=0;$i<count($lines);$i++)
 		{
 			$this->resetCellData();
 			if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
@@ -297,7 +302,7 @@ class Gallery
 					$pieces = explode(",", $line);
 					if(!in_array($pieces[0], $this->m_ignores))
 					{
-						if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$pieces[0]) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$pieces[0]))
+						if($this->celldata['path']->fileExists($pieces[0]))
 						{
 							$this->celldata['thumb'] = $pieces[1];
 							if(count($pieces) == 4 && strpos($pieces[3],'x') !== false)
@@ -306,12 +311,12 @@ class Gallery
 							}
 							else
 							{
-								list($this->celldata['width'], $this->celldata['height'], $type, $attr) = getImgSize($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$this->celldata['thumb']);
+								list($this->celldata['width'], $this->celldata['height'], $type, $attr) = $this->celldata['path']->getImgSize($this->celldata['thumb']);
 							}
 							//$this->celldata['img_ht'] = $this->celldata['height'];
 							$this->normalizeThmSize(false);
 							$this->celldata['dir'] = $pieces[0];
-							if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$pieces[0]))
+							if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/'.$pieces[0]))
 							{
 								if(0 !== strcmp($pieces[1],""))
 								{
@@ -321,9 +326,9 @@ class Gallery
 								}
 								else
 								{
-									if(hasTitle($this->celldata['path'].'/'.$pieces[0]))
+									if(hasTitle($this->celldata['path']->str().'/'.$pieces[0]))
 									{
-										$this->celldata['title']=title($this->celldata['path'].'/'.$pieces[0]);
+										$this->celldata['title']=title($this->celldata['path']->str().'/'.$pieces[0]);
 									}
 									else
 									{
@@ -338,6 +343,7 @@ class Gallery
 							else if(file_exists($_SERVER['DOCUMENT_ROOT'].$pieces[0]))
 							{
 								$this->celldata['caption'] = str_replace("_"," ",basename($pieces[0]));
+								$this->celldata['movieLen'] = $this->movieLength(basename($pieces[0]));
 								$this->m_html .= $this->span_logo_movie()."\n";
 								$this->m_logofiles[] = $pieces[1];
 								$this->m_item_count++;
@@ -359,7 +365,7 @@ class Gallery
 	}
 	private function doImage($file)
 	{
-		if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/.pics/'.$file))
+		if($this->celldata['path']->fileExists('/.pics/'.$file))
 		{
 			$this->celldata['thumb'] = '.pics/'.$file;
 		}
@@ -369,7 +375,7 @@ class Gallery
 		}
 		$this->m_html .= "<!-- doImage -->";
 		$this->normalizeThmSize();
-		$this->celldata['thumb'] = $this->celldata['path'].'/'.$this->celldata['dir'].'/'.$this->celldata['thumb'];
+		$this->celldata['thumb'] = $this->celldata['path']->str().'/'.$this->celldata['dir'].'/'.$this->celldata['thumb'];
 		$this->celldata['dir'] = "";
 		$this->celldata['image'] = $file;
 		$this->celldata['caption'] = $file;
@@ -381,22 +387,22 @@ class Gallery
 		global $mediaTypes;
 		$thm = removeExt($file).'.thm';
 		$tbn = removeExt($file).'.tbn';
-		if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$thm))
+		if($this->celldata['path']->fileExists($thm))
 		{
 			$this->celldata['thumb'] = $thm;
 			$this->normalizeThmSize();
 		}
-		else if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/.pics/'.$thm))
+		else if($this->celldata['path']->fileExists('/.pics/'.$thm))
 		{
 			$this->celldata['thumb'] = '.pics/'.$thm;
 			$this->normalizeThmSize();
 		}
-		else if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$tbn))
+		else if($this->celldata['path']->fileExists($tbn))
 		{
 			$this->celldata['thumb'] = $tbn;
 			$this->normalizeThmSize();
 		}
-		else if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/.pics/'.$tbn))
+		else if($this->celldata['path']->fileExists('/.pics/'.$tbn))
 		{
 			$this->celldata['thumb'] = '.pics/'.$tbn;
 			$this->normalizeThmSize();
@@ -406,7 +412,7 @@ class Gallery
 			list($this->celldata['thumb'],$this->celldata['width'],$this->celldata['height']) = $mediaTypes['movie']['thm'];
 		}
 		$this->m_html .= "\n<!-- doMovie -->";
-		$this->celldata['dir'] = $this->celldata['path'].'/'.$file;
+		$this->celldata['dir'] = $this->celldata['path']->str().'/'.$file;
 
 		$this->celldata['image'] = $file;
 		$this->celldata['caption'] = $file;
@@ -429,10 +435,13 @@ class Gallery
 	}
 	function inExcludes($file)
 	{
+		//$this->debug->display("called inExcludes(".$file.")<br>");
+		//$this->debug->display(var_dump($this->m_ignores));
+		//$this->debug->display(var_dump($this->m_logofiles));
 		if(in_array(basename($file), $this->m_ignores) || in_array(basename($file), $this->m_logofiles))
 		{
 			$c = count($this->m_ignores) + count($this->m_logofiles);
-			//comment("true inExcludes ".$c);
+			//$this->debug->display("true inExcludes ".$c."<br>");
 			return true;
 		}
 		else
@@ -442,7 +451,7 @@ class Gallery
 			 if(getExt($file) == ".$$$") { return true; }
 		}
 		$c = count($this->m_ignores) + count($this->m_logofiles);
-		//comment("false inExcludes ".$c);
+		//$this->debug->display("false inExcludes ".$c."<br>");
 		return false;
 	}
 	
@@ -450,58 +459,57 @@ class Gallery
 	{
 		global $mediaTypes;
 		$this->celldata['dir'] = "";
-		if(hasIgnore($this->celldata['path']))
+		if($this->celldata['path']->hasIgnore())
 		{
-			$this->m_ignores = array_merge($this->m_ignores, getIgnores($this->celldata['path']));
+			$this->m_ignores = array_merge($this->m_ignores, getIgnores($this->celldata['path']->str()));
 		}
-		if(hasCalendar($this->celldata['path']) && file_exists('calendar.php'))
+		if($this->celldata['path']->hasCalendar() && file_exists('calendar.php'))
 		{
 			include('calendar.php');
-			list($yrs,$html) = allYears($_SERVER['DOCUMENT_ROOT'].'/'.$this->celldata['path']);
+			list($yrs,$html) = allYears($_SERVER['DOCUMENT_ROOT'].'/'.$this->celldata['path']->str());
 			$this->m_html .= $html;
 			$this->m_ignores = array_merge($this->m_ignores, $yrs);
 		}
-		if(hasComments($this->celldata['path']))
+		if($this->celldata['path']->hasComments())
 		{
-			include($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/comments.php');
+			include($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/comments.php');
 			$this->m_comments = getComments();
 		}
-		if(hasBookmarks($this->celldata['path']))
+		if($this->celldata['path']->hasBookmarks())
 		{
 			$this->readBookmarks();
 		}
-		if(hasFavourites($this->celldata['path']))
+		if($this->celldata['path']->hasFavourites())
 		{
 			$this->readFavourites();
 		}
-		if(hasLogo($this->celldata['path'])) // .logo
+		if($this->celldata['path']->hasLogo()) // .logo
 		{
 			$this->doLogo();
 		}
-		$files = scandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']);
+		$files = scandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str());
 		if($files != false)
 		{
-			if(hasReverse($this->celldata['path']))
+			if($this->celldata['path']->hasReverse())
 			{
 				$files = array_reverse($files);
 			}
 			foreach($files as $file)//for($i = 0; $i < count($files); $i++)
 			{
-				$this->debug->display("<br>buildthumbs [".$file."] ");
+				//$this->debug->display("[ Filename ".$file." ]");
+				//$this->debug->display("<br>buildthumbs [".$file."] ");
 				$this->resetCellData();
 				if(!$this->inExcludes($file) && ($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end))
 				{
-					#printDebug("not excluded ", $this->Config['debug']);
-					if(hasTitle($this->celldata['path'].'/'.$file))
+					if(hasTitle($this->celldata['path']->str().'/'.$file))
 					{
-						$this->celldata['title']=title($this->celldata['path'].'/'.$file);
+						$this->celldata['title']=title($this->celldata['path']->str().'/'.$file);
 					}
 					else
 					{
 						$this->celldata['title']=$file;
 					}
-					//echo "<p>".$files[$i];
-					if(is_dir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path'].'/'.$file)) // dir no thumb
+					if(is_dir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/'.$file)) // dir no thumb
 					{
 						$this->celldata['dir'] = $file;
 						$this->m_html .= $this->span_dir()."\n";
@@ -541,10 +549,12 @@ class Gallery
 				{
 					$this->m_item_count++;
 					//comment($file." ".$this->m_item_count);
+					//$this->debug->display($file." included but not displayed on this page.");
 				}
 				else
 				{
-					$this->debug->display("excluded ");
+					//printf(" Excluded ");
+					//$this->debug->display($file." Excluded <br>");
 				}
 			}
 		}
@@ -557,23 +567,23 @@ class Gallery
 	}	
 	public function pageNavigation()
 	{
-		if(isset($this->celldata['path']))
+		if(null !== $this->celldata['path']->str())
 		{
-			if(hasIgnore(dirname($this->celldata['path']))){
-				$this->m_parent_ignores = array_merge($this->m_parent_ignores, getIgnores(dirname($this->celldata['path'])));
+			if(hasIgnore(dirname($this->celldata['path']->str()))){
+				$this->m_parent_ignores = array_merge($this->m_parent_ignores, getIgnores(dirname($this->celldata['path']->str())));
 			}
 			// check if parent dir has .logo file
 			$listofdirs = array();
-			if(hasLogo(dirname($this->celldata['path'])))
+			if(hasLogo(dirname($this->celldata['path']->str())))
 			{
-				$listofdirs = getFilesFromLogo(dirname($this->celldata['path']));
+				$listofdirs = getFilesFromLogo(dirname($this->celldata['path']->str()));
 			}
 			//if(count($listofdirs) == 0)
 			//{
-				$dirlist = scandir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']) );
+				$dirlist = scandir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']->str()) );
 				for($i=0; $i<count($dirlist); $i++)
 				{
-					if(is_dir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']).'/'.$dirlist[$i] ) &&
+					if(is_dir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']->str()).'/'.$dirlist[$i] ) &&
 						!in_array($dirlist[$i], $this->m_parent_ignores) && !in_array($dirlist[$i], $listofdirs))
 					{
 						$listofdirs[] = $dirlist[$i];
@@ -581,13 +591,13 @@ class Gallery
 				}
 			//}
 			// previous - next dir
-			$pos = array_search(basename($this->celldata['path']),$listofdirs);
+			$pos = array_search(basename($this->celldata['path']->str()),$listofdirs);
 			$before = ""; 
 			$beforestr = "";
 			if($pos > 0) 
 			{
 				$before = $listofdirs[$pos-1];
-				$beforestr = "[".title2(dirname($this->celldata['path']).'/'.$before)."]";
+				$beforestr = "[".title2(dirname($this->celldata['path']->str()).'/'.$before)."]";
 			} 
 			if(param('up') != NULL)
 			{
@@ -603,11 +613,11 @@ class Gallery
 			if($pos < (count($listofdirs) - 1)) 
 			{ 
 				$after = $listofdirs[$pos + 1]; 
-				$afterstr = "[".title2(dirname($this->celldata['path']).'/'.$after)."]";
+				$afterstr = "[".title2(dirname($this->celldata['path']->str()).'/'.$after)."]";
 			} 
 			// previous next page
 			$prevnum = $nextnum = 0;
-			$last = (int)(($this->m_item_count-1) / $this->Config['pagesize']) + 1;
+			$last = (int)(($this->m_item_count-1) / $this->cfg->get('pagesize')) + 1;
 			if($this->m_pagenum > 1)      {$prevnum = $this->m_pagenum - 1;$prevnumstr = "[".$prevnum."]";} else {$prevnumstr = "";}
 			if($this->m_pagenum < $last) {$nextnum = $this->m_pagenum + 1;$nextnumstr = "[".$nextnum."]";} else {$nextnumstr = "";}
 
@@ -620,11 +630,11 @@ class Gallery
 	     <table><tr>
 	       <td class="spacel"   >       </td>
 	       <td class="prevdir"  ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options(1);        ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($parent.'/'.$before))); ?>"><?php echo $beforestr;  ?></a></td>
-	       <td class="firstpage"><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options(1);        ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path'])));       ?>"><?php echo $firststr;   ?></a></td>
-	       <td class="prevpage" ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options($prevnum); ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path'])));       ?>"><?php echo $prevnumstr; ?></a></td>
+	       <td class="firstpage"><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options(1);        ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str())));       ?>"><?php echo $firststr;   ?></a></td>
+	       <td class="prevpage" ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options($prevnum); ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str())));       ?>"><?php echo $prevnumstr; ?></a></td>
 	       <td class="up"       ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options(1);        ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($up)));                 ?>">[up]</a></td>
-	       <td class="nextpage" ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options($nextnum); ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path'])));       ?>"><?php echo $nextnumstr; ?></a></td>
-	       <td class="lastpage" ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options($last);    ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path'])));       ?>"><?php echo $laststr;    ?></a></td>
+	       <td class="nextpage" ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options($nextnum); ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str())));       ?>"><?php echo $nextnumstr; ?></a></td>
+	       <td class="lastpage" ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options($last);    ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str())));       ?>"><?php echo $laststr;    ?></a></td>
 	       <td class="nextdir"  ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options(1);        ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($parent.'/'.$after)));  ?>"><?php echo $afterstr;   ?></a></td>
 	       <td class="spacer"   >       </td>
 	     </tr></table>
@@ -639,7 +649,7 @@ class Gallery
 		//printf(" whole=%s",$whole?"True":"False");
 
 		$plgnLdr = new PluginLoader();
-		$plgnLdr->getPage($this->celldata['path']);
+		$plgnLdr->getPage($this->celldata['path']->str());
 		$this->m_html .= $plgnLdr->html();
 		//printf(" whole=%s",$whole?"True":"False");
 		$whole = $plgnLdr->isWhole();
@@ -667,15 +677,16 @@ if(param('PHPUNIT') != True)
 		//var_dump($_SERVER);
 		die();
 	}
-	$Config['screenWidth'] = getBrowserWidth();
-	$G = new Gallery($stdIgnores, $Config, param('path'), param('opt'));
+	//$Config['screenWidth'] = getBrowserWidth();
+	//Config::screenWidth = getBrowserWidth();
+	$G = new Gallery($stdIgnores, getBrowserWidth(), param('path'), param('opt'));
 	
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
 <html>
 <?php require('head.php'); ?>
 <body>
-<?php if($Config['logon'] == True) { login_panel(); } ?>
+<?php if($cfg->get('logon') == True) { login_panel(); } ?>
 
 	<form name="gallery" action="/<?php echo PROGRAM; ?>" method="get">
 	</form>
@@ -696,18 +707,32 @@ if(param('PHPUNIT') != True)
 
 ?>
 
-<div id="thumbnails" align="center">
- <table  border=0 width="100%"><tr><td align="">
-  <div class="gallery" align="center">
-   <table id="thumbnailstable" style="<?php echo $G->getThumbWidth(); ?>" cellspacing=0 cellpadding=0 ><tr><td align="center">
-
-<?php echo $G->getHtml(); ?>
-
-    </td></tr>
-   </table>
-  </div>
- </table>
+<div style="width:100%;height:200px;" id="thumbnails">
+ <div style="margin: 0 auto; <?php echo $G->getThumbWidth(); ?>">
+  <?php echo $G->getHtml(); ?>
+ </div>
 </div>
+
+<!-- div id="thumbnails" align="center" width="100%">
+ <table  border=0 width="100%">
+  <tr>
+   <td align="">
+    <div class="gallery" align="center">
+     <table id="thumbnailstable" style="<!-- ? php echo $G->getThumbWidth(); ?>" cellspacing=0 cellpadding=0 >
+      <tr>
+       <td align="center" -->
+
+<!-- ?php echo $G->getHtml(); ? -->
+
+       <!-- /td>
+      </tr>
+     </table>
+    </div>
+   </td>
+  </tr>
+ </table -->
+
+<script type="text/javascript" src="/js/lazy.js"></script>
 <div id="appModeNote" style="display:none;">
 	<em><a href="">Refresh!</a></em>
 </div>

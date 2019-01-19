@@ -51,6 +51,9 @@ class HtmlTag{
         $this->attributes[$name] = $value;
         return $this;
     }
+    public function getStyle(){
+        return $this->attributes["style"];
+    }
     
     public function id($value){
         return $this->set('id',$value);
@@ -128,39 +131,45 @@ class HtmlTag{
 
 class CssStyle
 {
-        private static $_instance = null;
-        private $styles = null;
+	private static $_instance = null;
+	private $styles = null;
 	
-	private function __construct()
-	{
+	private function __construct(){
 		return $this;
 	}
-        public static function createStyle(){
-            self::$_instance = new CssStyle();
-            return self::$_instance;
-        }
-	public function set($name, $value)
-	{
-	        if(is_null($this->styles)) $this->styles = array();
-	        $this->styles[$name] = $value;
-	        return $this;
+
+	public static function createStyle(){
+		self::$_instance = new CssStyle();
+		return self::$_instance;
 	}
-        public function __toString(){
-            return ($this->toString());
-        }
-	public function toString()
-	{
-	        $string = '';
+
+	public function set($name, $value){
+		if(is_null($this->styles)) $this->styles = array();
+		$this->styles[$name] = $value;
+		return $this;
+	}
+
+	public function get($name){
+		return $this->styles[$name];
+	}
+	
+	public function __toString(){
+		return ($this->toString());
+	}
+
+	public function toString(){
+		$string = '';
 		$strings = array();
-	        if(!is_null($this->styles)){
-	            foreach($this->styles as $key => $value){
-	                if(!empty($value))
-	                    $string .= $key . ':' . $value . ';';
-	            }
-	        }
-	        return $string;
+		if(!is_null($this->styles)){
+			foreach($this->styles as $key => $value){
+				if(!empty($value))
+					$string .= $key . ':' . $value . ';';
+			}
+		}
+		return $string;
 	}
 }
+
 function createCSS($w, $h)
 {
 	return CssStyle::createStyle()->set('width',$w.'px')->set('height',$h.'px');

@@ -5,27 +5,30 @@ require_once( 'Overlay.class.php' );
 // -------------- S P A N   C L A S S E S ---------------------------------------
 class Span
 {
-	function __construct($cell, $Config)
+	/* celldata - img_ht path dir width height thumb caption*/
+	/* config[wplus] */
+	function __construct($cell)
 	{
+		$cfg = Config::getInstance();
 		$this->cell = $cell;
 		$this->cell['img_ht'] = 0;
-		$this->url = $this->mkUrl(array($cell['path'], $cell['dir']));
-		$this->wp = (int)$cell['width']+$Config['wplus'];
+		$this->url = $this->mkUrl(array($cell['path']->str(), $cell['dir']));
+		$this->wp = (int)$cell['width']+$cfg->get('wplus');
 		$this->h = (int)$cell['height'];
-		$this->dflt_ht = 120;
+		$this->dflt_ht = 122;
 		$this->dflt_wt = 120;
-		$this->imgurl = $this->mkImgUrl($cell['path'], $cell['thumb']);
+		$this->imgurl = $this->mkImgUrl($cell['path']->str(), $cell['thumb']);
 		$this->id = null;
 		$this->class = null;
 
 		$this->span = HtmlTag::createElement('span')
-			->set('style',CssStyle::createStyle()->set('width',$this->wp.'px')->set('height',$Config['full_ht'].'px'));
+			->set('style',createCSS($this->wp,$cfg->get('full_ht')));
 		$this->span->showTextBeforeContent(True);
 		
 		$this->anchor = HtmlTag::createElement('a')->setText(captionName($this->cell['caption'],$this->cell['width']));
 		
 		$this->img = HtmlTag::createELement('img')->addClass($this->class)->set('src',$this->imgurl);
-		$this->imgStyle = CssStyle::createStyle()->set('width',$this->cell['width'].'px')->set('height',$this->cell['height'].'px');
+		$this->imgStyle = createCSS($this->cell['width']+4,$this->cell['height']);
 	}
 	function mkUrl($paths)
 	{
@@ -46,23 +49,26 @@ class Span
 }
 class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption, config[wplus], config[full_ht], opt
 {
-	function __construct($cell, $Config)
+	/* celldata - path, dir, thumb, width, height, img_ht, caption, opt */
+	/* config[wplus], config[full_ht] */
+	function __construct($cell)
 	{
-		parent::__construct($cell, $Config);
+		parent::__construct($cell);
+		$cfg = Config::getInstance();
 		$this->cell = $cell;
 		$this->cell['img_ht'] = 0;
-		$this->url = $this->mkUrl(array($cell['path'], $cell['dir']));
-		$this->wp = (int)$cell['width']+$Config['wplus'];
+		$this->url = $this->mkUrl(array($cell['path']->str(), $cell['dir']));
+		$this->wp = (int)$cell['width']+$cfg->get('wplus');
 		$this->h = (int)$cell['height'];
-		$this->imgurl = $this->mkImgUrl($cell['path'], $cell['thumb']);
+		$this->imgurl = $this->mkImgUrl($cell['path']->str(), $cell['thumb']);
 		$this->id = null;
 		//$this->class = null;  ->addClass($this->class)
 		
 		$this->html = HtmlTag::createElement('span')
-			->set('style',createCSS($this->wp, $Config['full_ht']));
+			->set('style',createCSS($this->wp, $cfg->get('full_ht')));
 		$this->html->showTextBeforeContent(True);
 		
-		$this->anchor = HtmlTag::createElement('a')->setText(captionName($this->cell['caption'],$this->cell['width']));
+		$this->anchor = HtmlTag::createElement('a')->setText(captionName($this->cell['caption'],$this->cell['width']-2));
 		
 		$this->img = HtmlTag::createELement('img')->set('src',$this->imgurl);
 		$this->imgStyle = createCSS($this->cell['width'],$this->cell['height']);
@@ -78,6 +84,7 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 	function html()
 	{
 		$this->span->setText(comment('SpanLogo '.$this->id));
+		$this->span->addClass('spanBase spanLogo');
 
 		$this->anchor->set('href',PROGRAM."?opt=".$this->cell['opt']."&path=".$this->url)
 			->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px')->set('overflow','hidden'));
@@ -92,14 +99,20 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 }
 class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 {
-	function __construct($cell, $Config)
+	/* celldata - dir thumb moveiLen */
+	/* SpanLogo */
+	function __construct($cell)
 	{
-		parent::__construct($cell, $Config);
+		parent::__construct($cell);
 		$this->cell = $cell;
+		$this->imgStyle = createCSS($this->cell['width']+4,$this->cell['height']);
 	}
 	function html()
 	{
 		$this->span->setText(comment('SpanLogoMovie'));
+		$this->span->addClass('spanBase spanLogoMovie');
+		$w = $this->span->getStyle()->get('width');
+		$this->span->getStyle()->set('width', ($w+4).'px');
 		
 		$this->anchor->set('href',PROGRAM."?media=".$this->mkUrl(array($this->cell['dir'])));
 		if(strpos($this->cell['thumb'], "/")===0) { 
@@ -107,18 +120,23 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 			$this->img->set('src',$this->mkRawUrl(array($this->cell['thumb']))); 
 		}
 		
-		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px'));
+		$div = HtmlTag::createElement('div')
+			->addClass('spanLogoMovieDiv')
+			->set('style',CssStyle::createStyle()
+				->set('height',$this->dflt_ht.'px')->set('overflow','hidden'));
 
-		$overlayBtn = Overlay::create()->mkBtn(PLAY_BUTTON,'-90')->html();
+		//$overlayBtn = Overlay::create()->mkBtn(PLAY_BUTTON,'-90')->html();
+		//$overlayBtn = Overlay::create()->mkBtn(PLAY_BUTTON,'-50')->html();
 		
 		$overlayTime = null;
 		list($min,$secs) = $this->cell['movieLen'];
 		if($min != "" || $secs != "") {
-			$overlayTime = Overlay::create()->mkLabel($min,$secs)->html();
+			//$overlayTime = Overlay::create()->mkLabel($min,$secs,5)->html();
+			$overlayTime = Overlay::create()->mkLabel($min,$secs,-30)->html();
 		}
-		$this->img->set('style',$this->imgStyle);
+		$this->img->set('style',$this->imgStyle)->addClass('spanLogoMovieImage');
 		$div->addElement($this->img);
-		$div->addElement($overlayBtn);
+		//$div->addElement($overlayBtn);
 		$div->addElement($overlayTime);
 		$this->anchor->addElement($div);
 		$this->span->addElement($this->anchor);
@@ -128,12 +146,14 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 
 class SpanPhoto extends SpanLogo // SpanLogo + image
 {
-	function __construct($cell, $Config)
+	/* celldata - path dir image thumb */
+	/* SpanLogo */
+	function __construct($cell)
 	{
-		parent::__construct($cell, $Config);
+		parent::__construct($cell);
 		
 		$this->cell = $cell;
-		$this->url = $this->mkRawUrl(array($this->cell['path'],$this->cell['dir'],$this->cell['image']));
+		$this->url = $this->mkRawUrl(array($this->cell['path']->str(),$this->cell['dir'],$this->cell['image']));
 		$this->picurl = $this->joinUrl(array($this->cell['thumb']));
 
 		$phpThumb = new iPhpThumb($this);
@@ -150,6 +170,7 @@ class SpanPhoto extends SpanLogo // SpanLogo + image
 	function html()
 	{
 		$this->span->setText(comment('SpanPhoto ARSE'));
+		$this->span->addClass('spanBase spanPhoto');
 
 		$this->anchor->set('href',$this->url)->set('rel','doSlideshow:true')->set('title',$this->cell['image']);
 		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px'));
@@ -166,17 +187,20 @@ class SpanPhoto extends SpanLogo // SpanLogo + image
 
 class SpanIcon extends SpanLogo // SpanLogo + image
 {
-	function __construct($cell, $Config)
+	/* celldata - path dir image */
+	/* SpanLogo */
+	function __construct($cell)
 	{
-		parent::__construct($cell, $Config);
+		parent::__construct($cell);
 		
 		$this->cell = $cell;
 		$this->ext = getExt($this->cell['image']);
-		$this->url = $this->mkUrl(array($this->cell['path'],$this->cell['dir'],$this->cell['image']));
+		$this->url = $this->mkUrl(array($this->cell['path']->str(),$this->cell['dir'],$this->cell['image']));
 	}
 	function html() // photo thumbs
 	{
-		$this->span->setText('<!-- span_icon -->');
+		$this->span->setText(comment('span_icon'));
+		$this->span->addClass('spanBase spanIcon');
 		$this->span->showTextBeforeContent(True);
 		$this->anchor->set('href',$this->url);
 		
@@ -209,33 +233,47 @@ class SpanIcon extends SpanLogo // SpanLogo + image
 }
 class SpanDir extends SpanLogo // SpanLogo + img_url
 {
-	function __construct($cell, $Config, $img_url)
+	/* celldata - path dir width opt title */
+	/* SpanLogo */
+	function __construct($cell, $img_url)
 	{
-		parent::__construct($cell, $Config);
-		global $Config;
+		parent::__construct($cell);
+		//global $Config;
 		$this->cell = $cell;
 		$this->img_url = $img_url;
-		$this->url = $this->mkUrl(array($this->cell['path'],$this->cell['dir']));
+		$this->url = $this->mkUrl(array($this->cell['path']->str(),$this->cell['dir']));
 	}
 	function html()
 	{
-		$this->span->setText('<!-- span_dir -->');
+		$this->span->setText(comment('span_dir'));
+		$this->span->addClass('spanBase spanDir');
+
 		$this->span->showTextBeforeContent(True);
+		$w = $this->span->getStyle()->get('width');
+		$this->span->getStyle()->set('width', ($w+2).'px');
 		
 		//$this->anchor->setText(captionName($this->cell['dir'], $this->cell['width']));
 		$this->anchor->set('href',PROGRAM.'?opt='.$this->cell['opt'].'&path='.$this->url);
 		
 		$div1 = HtmlTag::createElement('div')
-			->set('style',createCSS($this->dflt_wt,$this->dflt_ht)->set('margin','0 4px'/*8*/)
-					->set('background-image','url(\''.$this->img_url.'\')')->set('background-size',$this->dflt_ht.'px')
+			->set('style',createCSS($this->dflt_wt+2,$this->dflt_ht-2) /*->set('margin','0 4px'/*8*//*)*/
+				->set('background-image','url(\''.$this->img_url.'\')')
+					->set('background-size',$this->dflt_ht.'px')
+						/*->set('border','1px solid #bdf')*/
 						->set('white-space','nowrap'));
-		
+		if($this->img_url == ""){
+			$div1->addClass('spanDirDiv');
+		}else{
+			$div1->addClass('spanDirDivNoBorder');
+		}
+		$div1->addClass('spanDirDivDiv');
+
 		//$div2 = HtmlTag::createElement('div')
 		//	->set('style',CssStyle::createStyle()/*->set('width','90px')*/->set('padding','35px 0px'/*35 8*/)
 		//			->set('color','#ddd')->set('font','175% arial'/*bold 150% */)->set('text-align','center'/*left*/))
 		//	->setText(displayName(cleanStr($this->cell['title'])));
 		$div2 = HtmlTag::createElement('div')
-			->set('style',CssStyle::createStyle()->set('width',$this->dflt_wt.'px')->set('height',$this->dflt_ht.'px')->set('padding','0px 0px')
+			->set('style',createCSS($this->dflt_wt+2,$this->dflt_ht)->set('padding','0px 0px')
 				->set('display','table-cell')->set('vertical-align','middle')
 					->set('color','#ddd')->set('font','175% arial')->set('text-align','center'))
 			->setText(displayName(cleanStr($this->cell['title'])));

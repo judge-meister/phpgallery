@@ -14,22 +14,22 @@ class Overlay
 	}
 	public function mkBtn($img,$offset)
 	{
-		$this->ovly = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('margin-top',$offset.'px'));
-		$this->ovly->addElement('img')->set('src',$img);
+		self::$ovly = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('margin-top',$offset.'px'));
+		self::$ovly->addElement('img')->set('class','playbutton');//->set('src',$img)
 		return $this;
 	}
-	public function mkLabel($min, $secs)
+	public function mkLabel($min, $secs, $offset)
 	{
-		$this->ovly = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('margin-top','5px'));
+		self::$ovly = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('margin-top',$offset.'px'));
 		$o = HtmlTag::createElement('div')->addClass('caption_format')
 			->set('style',CssStyle::createStyle()->set('font-size','160%'))
 				->setText($min.':'.$secs.' mins');
-		$this->ovly->addElement($o);
+		self::$ovly->addElement($o);
 		return $this;
 	}
 	public function html()
 	{
-		return $this->ovly;
+		return self::$ovly;
 	}
 }
 

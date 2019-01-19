@@ -31,7 +31,7 @@ class iPhpThumb
 		if((int)$cell['img_ht']>160 && $this->isActive()==True)
 		{
 			$query = 'src='.urlencode($pic).'&h='.$this->thmHeight.'&q='.$this->quality;
-			$picurl = htmlspecialchars(phpThumbURL($query));//, 'phpThumb.php'));
+			$picurl = '/phpthumb/'.htmlspecialchars(phpThumbURL($query));//, 'phpThumb.php'));
 			//echo "<!-- iPhpThumb:picurl2: ".$picurl." -->";
 			return str_replace($_SERVER['DOCUMENT_ROOT'],"",$picurl);
 		}
@@ -50,7 +50,7 @@ class iPhpThumb
 		if((int)$cell['img_ht']>160 && $this->isActive()==True)
 		{
 			$query = 'src='.urlencode($pic).'&h='.$this->thmHeight.'&q='.$this->quality;
-			$picurl = htmlspecialchars(phpThumbURL($query));//, 'phpThumb.php'));
+			$picurl = '/phpthumb/'.htmlspecialchars(phpThumbURL($query));//, 'phpThumb.php'));
 			//echo "<!-- iPhpThumb: ".$picurl." -->";
 			return str_replace($_SERVER['DOCUMENT_ROOT'],"",$picurl);
 		}
