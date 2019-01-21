@@ -1,13 +1,24 @@
 <?php
+//
+// for phpunit 5.1.3
+//
+// phpunit -c phpunit.xml --coverage-html report/  test/test.php
+//
+
+$_SERVER['SERVER_PORT'] = 80;
+$_SERVER['SERVER_NAME'] = 'localhost';
+$_SERVER['QUERY_STRING'] = '';
 
 //--------------------------------------------------------
 // TEST - full page with specific 'path' value - testpage
 define('INCLUDE_CHECK',true);
 require_once( gethostname().'/config.php' );
+include('index.php');
 
 class TestPageTest extends PHPUnit_Framework_TestCase
 {
-	// ...
+	protected static $G;	// ...
+	
 	public static function setUpBeforeClass()
 	{
 		if( !defined( "PROGRAM" ))    { define( "PROGRAM",   '/phpgallery/' ); }
@@ -40,12 +51,15 @@ class TestPageTest extends PHPUnit_Framework_TestCase
 			$_SERVER['DOCUMENT_ROOT']='/Users/judge/Sites';
 			//$this->base = '';
 		}
-		include('index.php');
+		//include('index.php');
+		
+        self::$G = null;
 	}
 	public function setUp()
 	{
 		$this->stdIgnores=array('.','..');
 		$this->Config = array('wplus'=>6,'full_ht'=>145,'pagesize'=>100,'phpThumbs'=>False,'logon'=>False);
+		$this->screenWidth = 1440;
 		if (gethostname() == 'skynet')
 		{ 
 			//$_SERVER['DOCUMENT_ROOT']='/home/www/html';
@@ -57,70 +71,146 @@ class TestPageTest extends PHPUnit_Framework_TestCase
 			$this->base = '';
 		}
 	}
+    public static function tearDownAfterClass()
+    {
+        self::$G = null;
+    }
 	public function testPageOne()
 	{
 		$_POST['path']=$this->base.'testpage';
 		$_POST['opt']='1_100';
 		
-		$G = new Gallery($this->stdIgnores, $this->Config, $_POST['path'], $_POST['opt']);
-		$G->buildThumbs();
-		$G->pagebreakcomment();
-		$G->pageNavigation(); 
-		include('head.php');
-		$html = $G->getHtml();
+		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
+		self::$G->buildThumbs();
+		self::$G->pagebreakcomment();
+		self::$G->pageNavigation(); 
+		//include('head.php');
+		//$html = $G->getHtml();
 	}
 	public function testOpenHtml()
 	{
 		$_POST['path']=$this->base.'testpage/dir1';
 		$_POST['opt']='1_100';
 		
-		$G = new Gallery($this->stdIgnores, $this->Config, $_POST['path'], $_POST['opt']);
-		$G->wholePages();
+		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
+		self::$G->wholePages();
 	}
 	public function testPageTwo()
 	{
 		$_POST['path']=$this->base.'testpage/dir2';
 		$_POST['opt']='2_100';
 		
-		$G = new Gallery($this->stdIgnores, $this->Config, $_POST['path'], $_POST['opt']);
-		$G->buildThumbs();
-		$G->pagebreakcomment();
-		$G->pageNavigation(); 
+		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
+		self::$G->buildThumbs();
+		self::$G->pagebreakcomment();
+		self::$G->pageNavigation(); 
 	}
 	public function testAlsAngels()
 	{
 		$_POST['path']=$this->base.'testpage/dir3/www.alsangels.com/members';
 		$_POST['opt']='1_100';
 		
-		$G = new Gallery($this->stdIgnores, $this->Config, $_POST['path'], $_POST['opt']);
-		$G->wholePages();
-		//$G->buildThumbs();
-		//$G->pagebreakcomment();
-		//$G->pageNavigation(); 
+		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
+		self::$G->wholePages();
+		self::$G->buildThumbs();
+		self::$G->pagebreakcomment();
+		self::$G->pageNavigation(); 
 	}
 	public function testAlsScan()
 	{
 		$_POST['path']=$this->base.'testpage/dir3/www2.alsscan.com/members/models';
 		$_POST['opt']='1_100';
 		
-		$G = new Gallery($this->stdIgnores, $this->Config, $_POST['path'], $_POST['opt']);
-		$G->wholePages();
-		//$G->buildThumbs();
-		//$G->pagebreakcomment();
-		//$G->pageNavigation(); 
+		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
+		self::$G->wholePages();
+		self::$G->buildThumbs();
+		self::$G->pagebreakcomment();
+		self::$G->pageNavigation(); 
 	}
-	public function testWiredPussy()
+	/*public function testWiredPussy()
 	{
 		$_POST['path']=$this->base.'testpage/dir3/www.wiredpussy.com';
 		$_POST['opt']='1_100';
 		
-		$G = new Gallery($this->stdIgnores, $this->Config, $_POST['path'], $_POST['opt']);
+		$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
 		$G->wholePages();
 		//$G->buildThumbs();
 		//$G->pagebreakcomment();
 		//$G->pageNavigation(); 
 		echo gethostname();
-	}
+	}*/
+	/*public function testAllPages()
+	{
+		$PAGES = array(
+			//'',
+			//'testpage/',
+			'testpage/dir3',
+			'testpage/dir3/www.alsangels.com',
+			'testpage/dir3/www.alsangels.com/members',
+			'testpage/dir3/www2.alsscan.com',
+			'testpage/dir3/www2.alsscan.com/members',
+			'testpage/dir3/www2.alsscan.com/members/models',
+			'testpage/dir4_100',
+			'testpage/favorite',
+			'testpage/dir4_101',
+			'testpage/2014',
+			'testpage/2014/03',
+			'testpage/2014/MAY',
+			'testpage/2014/01',
+			'testpage/2014/sep',
+			'testpage/dir4_99',
+			//'testpage/dir2',
+			'testpage/ignorethis',
+			//'testpage/dir1'
+		);
+			
+		printf("\n");	
+		foreach($PAGES as $page) {
+			printf("testAllPages | ".$page."\n");
+			$_POST['path']=$this->base.$page;
+			$_POST['opt']='1_100';
+		
+			self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
+			self::$G->buildThumbs();
+			self::$G->pagebreakcomment();
+			self::$G->pageNavigation(); 
+		}
+	}*/
+	/*public function testCutePage()
+	{
+		$page = 'zvideos/stuff.backup/Cute.Models/';
+		printf("testCutePages | ".$page."\n");
+		$_POST['path']=$page;
+		$_POST['opt']='1_100';
+	
+		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
+		self::$G->buildThumbs();
+		self::$G->pagebreakcomment();
+		self::$G->pageNavigation(); 
+	}*/
+	/*public function testZvideosPages()
+	{
+		$PAGES = array(
+			//'zvideos/stuff.backup/Cute.Models/',
+			'zvideos/stuff.backup/IntheCrack.com',
+			'zvideos/stuff.backup/3.Image.Sets/ALSScan.com/ALSScan.com_18.09.22.Zazie.Skymm.Deep.Tissue.XXX.IMAGESET-FuGLi[rarbg]/',
+			'zvideos/stuff.backup/Hard.Core.BDSM',
+			'zvideos/stuff.backup/ALSScan',
+			'zdata/sdc1',
+			);
+			
+		printf("\n");
+		foreach($PAGES as $page) {
+			printf("testZvideosPages | ".$page."\n");
+			$_POST['path']=$page;
+			$_POST['opt']='1_100';
+		
+			self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
+			self::$G->buildThumbs();
+			self::$G->pagebreakcomment();
+			self::$G->pageNavigation(); 
+		}
+	}*/
 }
 
 //--------------------------------------------------------

@@ -52,7 +52,7 @@ class Config
 		return static::$inst;
 	}
 
-	public function get($path=NULL) 
+	public function getConfig($path=NULL) 
 	{
 		$setting =& static::$config;
 		if($path) {
@@ -70,7 +70,7 @@ class Config
 		}
 		return $setting;
 	}
-
+	
 	public function set($path=NULL,$value=NULL) 
 	{
 		if($path) {
@@ -85,6 +85,11 @@ class Config
 			}
 			$setting = $value;
 		}
+	}
+
+	public function get($elem)
+	{
+		return static::$config[$elem];
 	}
 
 	//Override to prevent duplicate instance
