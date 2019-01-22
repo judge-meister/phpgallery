@@ -87,7 +87,7 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 		$this->span->addClass('spanBase spanLogo');
 
 		$this->anchor->set('href',PROGRAM."?opt=".$this->cell['opt']."&path=".$this->url)
-			->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px')->set('overflow','hidden'));
+			->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px'));
 		$div = HtmlTag::createElement('div')->id($this->id);
 		$this->img->set('style',$this->imgStyle);
 
@@ -123,7 +123,7 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 		$div = HtmlTag::createElement('div')
 			->addClass('spanLogoMovieDiv')
 			->set('style',CssStyle::createStyle()
-				->set('height',$this->dflt_ht.'px')->set('overflow','hidden'));
+				->set('height',$this->dflt_ht.'px'));
 
 		//$overlayBtn = Overlay::create()->mkBtn(PLAY_BUTTON,'-90')->html();
 		//$overlayBtn = Overlay::create()->mkBtn(PLAY_BUTTON,'-50')->html();
@@ -255,12 +255,20 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 		//$this->anchor->setText(captionName($this->cell['dir'], $this->cell['width']));
 		$this->anchor->set('href',PROGRAM.'?opt='.$this->cell['opt'].'&path='.$this->url);
 		
+		/* no bg image */
 		$div1 = HtmlTag::createElement('div')
-			->set('style',createCSS($this->dflt_wt+2,$this->dflt_ht-2) /*->set('margin','0 4px'/*8*//*)*/
-				->set('background-image','url(\''.$this->img_url.'\')')
-					->set('background-size',$this->dflt_ht.'px')
-						/*->set('border','1px solid #bdf')*/
-						->set('white-space','nowrap'));
+			->set('style',createCSS($this->dflt_wt+2,$this->dflt_ht-2));
+
+		/* with bg image (needs updating though) */
+		//$div1 = HtmlTag::createElement('div')
+		//		->set('style',createCSS($this->dflt_wt+2,$this->dflt_ht-2)
+				/*->set('margin','0 4px'/*8*//*)*/
+				//->set('background-image','url(\''.$this->img_url.'\')')
+				//->set('background-size',$this->dflt_ht.'px')
+				/*->set('border','1px solid #bdf')*/
+				//->set('white-space','nowrap')
+				//);
+
 		if($this->img_url == ""){
 			$div1->addClass('spanDirDiv');
 		}else{
@@ -268,14 +276,15 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 		}
 		$div1->addClass('spanDirDivDiv');
 
+		/* with play button */
 		//$div2 = HtmlTag::createElement('div')
 		//	->set('style',CssStyle::createStyle()/*->set('width','90px')*/->set('padding','35px 0px'/*35 8*/)
 		//			->set('color','#ddd')->set('font','175% arial'/*bold 150% */)->set('text-align','center'/*left*/))
 		//	->setText(displayName(cleanStr($this->cell['title'])));
-		$div2 = HtmlTag::createElement('div')
-			->set('style',createCSS($this->dflt_wt+2,$this->dflt_ht)->set('padding','0px 0px')
-				->set('display','table-cell')->set('vertical-align','middle')
-					->set('color','#ddd')->set('font','175% arial')->set('text-align','center'))
+		
+		/* without play button */
+		$div2 = HtmlTag::createElement('div')->addClass('spanDirFormat')
+			->set('style',createCSS($this->dflt_wt+2,$this->dflt_ht))
 			->setText(displayName(cleanStr($this->cell['title'])));
 		
 		$div1->addElement($div2);

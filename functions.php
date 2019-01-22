@@ -283,17 +283,20 @@ function displayName($s)
 		//echo $s[$i].'=>'.$letters[$s[$i]].' '.$size."\n";
 		if(array_key_exists($s[$i], $letters)) {
 			$newsize = $size + ((float)$base / (float)$letters[$s[$i]]);
-			//printf("%d %f %s\n", $i, $newsize, $s[$i]);
-			if ($newsize < $width) {
-				$size = $newsize;
-			} else {
-				$j = $i;
-				$linecount = $linecount + 1;
-				array_push($breaks, $i-1);
-				//var_dump($breaks);
-				$size = 0.0;
-			}
-		} else { echo "<!-- displayName: [".$s[$i]."] is missing -->"; }
+		} else { 
+			printf( "<!-- displayName: [".$s[$i]."] is missing -->"); 
+			$newsize = $size + ((float)$base / 10.0);
+		}
+		//printf("%d %f %s\n", $i, $newsize, $s[$i]);
+		if ($newsize < $width) {
+			$size = $newsize;
+		} else {
+			$j = $i;
+			$linecount = $linecount + 1;
+			array_push($breaks, $i-1);
+			//var_dump($breaks);
+			$size = 0.0;
+		}
 		$j = $i;
 	}
 	$rbreaks = array_reverse($breaks);

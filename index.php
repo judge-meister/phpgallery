@@ -149,11 +149,11 @@ class Gallery
 	}
 	public function pagebreakcomment()
 	{
-		echo comment("pagesize=".$this->cfg->get('pagesize'))."\n";
-		echo comment("pagenum=".$this->m_pagenum)."\n";
-		echo comment("start=".$this->m_start)."\n";
-		echo comment("end=".$this->m_end)."\n";
-		echo comment("item_count=".$this->m_item_count)."\n";
+		//echo comment("pagesize=".$this->cfg->get('pagesize'))."\n";
+		//echo comment("pagenum=".$this->m_pagenum)."\n";
+		//echo comment("start=".$this->m_start)."\n";
+		//echo comment("end=".$this->m_end)."\n";
+		//echo comment("item_count=".$this->m_item_count)."\n";
 		if(count($this->m_logofiles) > 0)
 		{
 			echo "<!-- m_logofiles ".count($this->m_logofiles)." ";
@@ -687,10 +687,10 @@ if(param('PHPUNIT') != True)
 <?php require('head.php'); ?>
 <body>
 <?php if($cfg->get('logon') == True) { login_panel(); } ?>
-
-	<form name="gallery" action="/<?php echo PROGRAM; ?>" method="get">
-	</form>
-	
+<?php
+//	<form name="gallery" action="< ? php echo PROGRAM; ? >" method="get">
+//	</form>
+?>	
 	<div id="title">
 
 	    <?php echo title($G->getPath()); ?>
@@ -707,12 +707,14 @@ if(param('PHPUNIT') != True)
 
 ?>
 
-<div style="width:100%;height:200px;" id="thumbnails">
- <div style="margin: 0 auto; <?php echo $G->getThumbWidth(); ?>">
+<div class="thumbnails" id="thumbnails">
+ <div style="<?php echo $G->getThumbWidth(); ?>" class="centredthumbs">
   <?php echo $G->getHtml(); ?>
  </div>
 </div>
 
+<?php
+/*
 <!-- div id="thumbnails" align="center" width="100%">
  <table  border=0 width="100%">
   <tr>
@@ -731,6 +733,8 @@ if(param('PHPUNIT') != True)
    </td>
   </tr>
  </table -->
+*/
+?>
 
 <script type="text/javascript" src="/js/lazy.js"></script>
 <div id="appModeNote" style="display:none;">

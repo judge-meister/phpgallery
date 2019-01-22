@@ -20,9 +20,9 @@ class Overlay
 	}
 	public function mkLabel($min, $secs, $offset)
 	{
-		self::$ovly = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('margin-top',$offset.'px'));
+		self::$ovly = HtmlTag::createElement('div')->addClass('caption_offset');
+		//	set('style',CssStyle::createStyle()->set('margin-top',$offset.'px'));
 		$o = HtmlTag::createElement('div')->addClass('caption_format')
-			->set('style',CssStyle::createStyle()->set('font-size','160%'))
 				->setText($min.':'.$secs.' mins');
 		self::$ovly->addElement($o);
 		return $this;
