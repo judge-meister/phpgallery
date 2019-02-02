@@ -93,7 +93,17 @@ class Gallery
 		} 
 	}
 	
-	public function __construct($stdIgnores, $screenWidth, $path, $opt)
+	public function __construct($stdIgnores, $screenWidth, $path, $opt, $server=null)
+	{
+		if ($server != null)
+		{ 
+			global $_SERVER;
+			$_SERVER = $server;
+		}
+		//printf($screenWidth." ".$path." ".$opt." ".$_SERVER['DOCUMENT_ROOT']."\n");
+		$this->init($stdIgnores, $screenWidth, $path, $opt);
+	}
+	public function init($stdIgnores, $screenWidth, $path, $opt)
 	{
 		$this->cfg = Config::getInstance();
 		$this->cfg->set('screenWidth', $screenWidth);
@@ -423,10 +433,10 @@ class Gallery
 	function movieLength($file)
 	{
 		$min = $secs = '';
-		$this->debug->display("[".$file."]");
+		//$this->debug->display("[".$file."]");
 		if (in_array($file, array_keys($this->m_comments)))
 		{
-			$this->debug->display($file);
+			//$this->debug->display($file);
 			$length = $this->m_comments[$file];
 			$min = sprintf("%d",(int)($length/60.0));
 			$secs = sprintf("%02d",(int)($length-($min*60)));
@@ -551,11 +561,6 @@ class Gallery
 					//comment($file." ".$this->m_item_count);
 					//$this->debug->display($file." included but not displayed on this page.");
 				}
-				else
-				{
-					//printf(" Excluded ");
-					//$this->debug->display($file." Excluded <br>");
-				}
 			}
 		}
 		else
@@ -662,6 +667,7 @@ class Gallery
 // ------- S T A R T   H E R E ------- //
 // ----------------------------------- //
 
+//echo "PHPUNIT = ".param('PHPUNIT')."\n";
 if(param('PHPUNIT') != True) 
 {
 	if(param('media') != NULL)

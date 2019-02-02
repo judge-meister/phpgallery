@@ -163,7 +163,7 @@ class SpanPhoto extends SpanLogo // SpanLogo + image
 		}
 		else
 		{
-			echo "<!-- SpanPhoto: ".$this->cell['thumb']." -->";
+			//echo "<!-- SpanPhoto: ".$this->cell['thumb']." -->";
 			$this->picurl = $this->mkRawUrl(array($this->cell['thumb']));
 		}
 	}

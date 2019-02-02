@@ -246,7 +246,8 @@ function isNonMedia($path)
 }
 function isimage($path) { return mediatype(strtolower($path), 'image'); }
 function ismovie($path) { //printDebug("ismovie() "); 
-	return mediatype(strtolower($path), 'movie'); }
+	return mediatype(strtolower($path), 'movie'); 
+}
 function ismedia($path) { return isimage($path) || ismovie($path); }
 
 function cleanStr($s)
