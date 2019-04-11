@@ -66,6 +66,7 @@ class Gallery
 	private $m_ignores = array();
 	private $m_parent_ignores = array();
 	private $m_logofiles = array();
+	private $m_du = array();
 	
 	private $m_start = 0;
 	private $m_end = 0;
@@ -223,6 +224,10 @@ class Gallery
 		{
 			$img_url = "";//FAV_FOLDER;
 		}
+		if (in_array($this->celldata['dir'], array_keys($this->m_du)))
+		{
+			$this->celldata['du'] = $this->m_du[$this->celldata['dir']];
+		}
 		$s = new SpanDir($this->celldata, $img_url);
 		$this->setPageWidth($s->getWidth());
 		return $s->html();
@@ -295,6 +300,14 @@ class Gallery
 					}
 				}
 			}
+		}
+	}
+	private function readDu()
+	{
+		foreach($this->celldata['path']->openDu() as $line)
+		{
+			$pieces = explode("	", $line);
+			$this->m_du[$pieces[1]] = $pieces[0];
 		}
 	}
 	private function doLogo()
@@ -492,6 +505,10 @@ class Gallery
 		if($this->celldata['path']->hasFavourites())
 		{
 			$this->readFavourites();
+		}
+		if($this->celldata['path']->hasDu())
+		{
+			$this->readDu();
 		}
 		if($this->celldata['path']->hasLogo()) // .logo
 		{

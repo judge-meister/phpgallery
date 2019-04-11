@@ -162,10 +162,12 @@ class Path
 	public function hasBookmarks()		{ return  dotFileExists($this->m_path, '.bookmarks'); }
 	public function hasRollovers()		{ return  dotFileExists($this->m_path, '.rollovers'); }
 	public function hasReverse()		{ return  dotFileExists($this->m_path, '.reverse'); }
+	public function hasDu()				{ return  dotFileExists($this->m_path, '.du'); }
 	
 	public function getImgSize($image) { return getImgSize($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$image); }
 	public function openLogo() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.logo', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
 	public function openFavourites() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.favourites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
+	public function openDu() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.du', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
 	public function fileExists($file) { return file_exists($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$file) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file); }
 }
 
@@ -369,7 +371,7 @@ function hasIndex($d)			{ return (dotFileExists($d, 'igallery.html') || dotFileE
 #function hasAlpha($d)			{ return  dotFileExists($d, '.alpha'); }
 #function hasAlphabet($d)		{ return  dotFileExists($d, '.alphabet'); }
 #function hasCalendar($d)		{ return  dotFileExists($d, '.calendar'); } // use calendar links
-function hasComments($d)		{ return  dotFileExists($d, 'comments.php'); }
+#function hasComments($d)		{ return  dotFileExists($d, 'comments.php'); }
 #function hasFavourites($d)		{ return  dotFileExists($d, '.favourites'); }
 #function hasBookmarks($d)		{ return  dotFileExists($d, '.bookmarks'); }
 #function hasRollovers($d)		{ return  dotFileExists($d, '.rollovers'); }

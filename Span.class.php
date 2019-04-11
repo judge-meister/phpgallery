@@ -131,8 +131,8 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 		$overlayTime = null;
 		list($min,$secs) = $this->cell['movieLen'];
 		if($min != "" || $secs != "") {
-			//$overlayTime = Overlay::create()->mkLabel($min,$secs,5)->html();
-			$overlayTime = Overlay::create()->mkLabel($min,$secs,-30)->html();
+			//$overlayTime = Overlay::create()->mkTimeLabel($min,$secs,5)->html();
+			$overlayTime = Overlay::create()->mkTimeLabel($min,$secs,-30)->html();
 		}
 		$this->img->set('style',$this->imgStyle)->addClass('spanLogoMovieImage');
 		$div->addElement($this->img);
@@ -245,7 +245,7 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 	}
 	function html()
 	{
-		$this->span->setText(comment('span_dir'));
+		$this->span->setText(comment('span_dir : '.$this->cell['du']));
 		$this->span->addClass('spanBase spanDir');
 
 		$this->span->showTextBeforeContent(True);
@@ -282,12 +282,19 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 		//			->set('color','#ddd')->set('font','175% arial'/*bold 150% */)->set('text-align','center'/*left*/))
 		//	->setText(displayName(cleanStr($this->cell['title'])));
 		
+		$overlay = null;
+		if($this->cell['du'] != null)
+		{
+			$overlay = Overlay::create()->mkLabel('( '.$this->cell['du'].' )',-30, "caption_format_sm")->html();
+		}
+		
 		/* without play button */
 		$div2 = HtmlTag::createElement('div')->addClass('spanDirFormat')
 			->set('style',createCSS($this->dflt_wt+2,$this->dflt_ht))
 			->setText(displayName(cleanStr($this->cell['title'])));
 		
 		$div1->addElement($div2);
+		$div1->addElement($overlay);
 		$this->anchor->addElement($div1);
 		$this->span->addElement($this->anchor);
 		return "\n".$this->span;

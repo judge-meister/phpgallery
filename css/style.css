@@ -211,6 +211,8 @@ img.rollover:hover {margin-top:-120px; overflow:hidden;}
 .caption_offset { margin-top: -30px;}
 .caption_format { text-shadow: 1px 1px 2px #333, -1px 1px 2px #333, 1px -1px 2px #333, -1px -1px 2px #333; 
                   color: #ddd; font-size: 160%;}
+.caption_format_sm { text-shadow: 1px 1px 2px #333, -1px 1px 2px #333, 1px -1px 2px #333, -1px -1px 2px #333; 
+                  color: #ddd; font-size: 120%;}
 
 #configuration {text-align: center;
                 margin: 0px 0px 0px 0px;

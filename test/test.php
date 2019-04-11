@@ -5,6 +5,10 @@
 // phpunit -c phpunit.xml --coverage-html report/  test/test.php
 //
 
+global $_SERVER;
+global $_POST;
+$_SERVER=array();
+$_POST=array();
 $_SERVER['SERVER_PORT'] = 80;
 $_SERVER['SERVER_NAME'] = 'localhost';
 $_SERVER['QUERY_STRING'] = '';
@@ -12,12 +16,12 @@ $_SERVER['QUERY_STRING'] = '';
 //--------------------------------------------------------
 // TEST - full page with specific 'path' value - testpage
 define('INCLUDE_CHECK',true);
-require_once( gethostname().'/config.php' );
 include('index.php');
 
 class TestPageTest extends PHPUnit_Framework_TestCase
 {
-	protected static $G;	// ...
+	protected $G;
+	//protected $_SERVER = array();
 	
 	public static function setUpBeforeClass()
 	{
@@ -27,106 +31,114 @@ class TestPageTest extends PHPUnit_Framework_TestCase
 		if( !defined( "TOP" ))        { define('TOP',        '/secret'); }
 		// logon
 		if( !defined( "LOGIN_ENABLED" )){ define('LOGIN_ENABLED', False); }
-		//define('LOGIN_PATH',    '/php/');
 		
 		// additional pages
 		if( !defined( "ALS" ))        { define('ALS', True); }
-		//define('WIREDPUSSY', True);
-		
-		// database password
-		//define('PASSWD_DB', True);
-		
-		// search tool
-		//define('SEARCH_ENABLED', True);
 		
 		$_POST['PHPUNIT'] = True;
 		$_SERVER['SERVER_NAME']=gethostname(); //'skynet';
-		if (gethostname() == 'skynet')
-		{ 
-			$_SERVER['DOCUMENT_ROOT']='/home/www/html';
-			//$this->base = 'testing/';
-		}
-		else
-		{
-			$_SERVER['DOCUMENT_ROOT']='/Users/judge/Sites';
-			//$this->base = '';
-		}
-		//include('index.php');
-		
-        self::$G = null;
+
+		printf("\n1. DOC_ROOT = ".$_SERVER['DOCUMENT_ROOT']."\n");
+		$G = null;
 	}
 	public function setUp()
 	{
+		$_SERVER['SERVER_PORT'] = 80;
+		$_SERVER['SERVER_NAME'] = 'localhost';
+		$_SERVER['QUERY_STRING'] = '';
+		
 		$this->stdIgnores=array('.','..');
 		$this->Config = array('wplus'=>6,'full_ht'=>145,'pagesize'=>100,'phpThumbs'=>False,'logon'=>False);
 		$this->screenWidth = 1440;
 		if (gethostname() == 'skynet')
 		{ 
-			//$_SERVER['DOCUMENT_ROOT']='/home/www/html';
+			$_SERVER['DOCUMENT_ROOT']='/home/www/html';
 			$this->base = 'testing/';
 		}
 		else
 		{
-			//$_SERVER['DOCUMENT_ROOT']='/Users/judge/Sites';
+			$_SERVER['DOCUMENT_ROOT']='/Users/judge/Sites';
 			$this->base = '';
 		}
+		printf("\n2. DOC_ROOT = ".$_SERVER['DOCUMENT_ROOT']."\n");
 	}
     public static function tearDownAfterClass()
     {
-        self::$G = null;
+        unset($G);
+        $G = null;
     }
 	public function testPageOne()
 	{
+		printf("[ testPageOne ]\n");
 		$_POST['path']=$this->base.'testpage';
 		$_POST['opt']='1_100';
+		echo $_POST['path']."\n";
+		var_dump($_SERVER);
+		var_dump($_POST);
 		
-		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
-		self::$G->buildThumbs();
-		self::$G->pagebreakcomment();
-		self::$G->pageNavigation(); 
+		//$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt'], $_SERVER);
+		//$G->buildThumbs();
+		//$G->pagebreakcomment();
+		//$G->pageNavigation(); 
 		//include('head.php');
 		//$html = $G->getHtml();
 	}
-	public function testOpenHtml()
+	/*public function testOpenHtml()
 	{
+		printf("[ testOpenHtml ]\n");
 		$_POST['path']=$this->base.'testpage/dir1';
 		$_POST['opt']='1_100';
+		echo $_POST['path']."\n";
+		var_dump($_SERVER);
+		var_dump($_POST);
 		
-		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
-		self::$G->wholePages();
+		$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt'], $_SERVER);
+		$G->wholePages();
+		$G->pagebreakcomment();
+		$G->pageNavigation(); 
 	}
 	public function testPageTwo()
 	{
+		printf("[ testPageTwo ]\n");
 		$_POST['path']=$this->base.'testpage/dir2';
 		$_POST['opt']='2_100';
+		echo $_POST['path']."\n";
+		var_dump($_SERVER);
+		var_dump($_POST);
 		
-		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
-		self::$G->buildThumbs();
-		self::$G->pagebreakcomment();
-		self::$G->pageNavigation(); 
+		$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt'], $_SERVER);
+		$G->buildThumbs();
+		$G->pagebreakcomment();
+		$G->pageNavigation(); 
 	}
 	public function testAlsAngels()
 	{
+		printf("[ testAlsAngels ]\n");
 		$_POST['path']=$this->base.'testpage/dir3/www.alsangels.com/members';
 		$_POST['opt']='1_100';
+		echo $_POST['path']."\n";
+		var_dump($_SERVER);
+		var_dump($_POST);
 		
-		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
-		self::$G->wholePages();
-		self::$G->buildThumbs();
-		self::$G->pagebreakcomment();
-		self::$G->pageNavigation(); 
-	}
-	public function testAlsScan()
+		$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt'], $_SERVER);
+		$G->wholePages();
+		$G->buildThumbs();
+		$G->pagebreakcomment();
+		$G->pageNavigation(); 
+	}*/
+	/*public function testAlsScan()
 	{
+		printf("[ testAlsScan ]\n");
 		$_POST['path']=$this->base.'testpage/dir3/www2.alsscan.com/members/models';
 		$_POST['opt']='1_100';
+		echo $_POST['path']."\n";
 		
-		self::$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
-		self::$G->wholePages();
-		self::$G->buildThumbs();
-		self::$G->pagebreakcomment();
-		self::$G->pageNavigation(); 
-	}
+		$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
+		$G->wholePages();
+		$G->buildThumbs();
+		$G->pagebreakcomment();
+		$G->pageNavigation(); 
+	}*/
 	/*public function testWiredPussy()
 	{
 		$_POST['path']=$this->base.'testpage/dir3/www.wiredpussy.com';
@@ -135,8 +147,8 @@ class TestPageTest extends PHPUnit_Framework_TestCase
 		$G = new Gallery($this->stdIgnores, $this->screenWidth, $_POST['path'], $_POST['opt']);
 		$G->wholePages();
 		//$G->buildThumbs();
-		//$G->pagebreakcomment();
-		//$G->pageNavigation(); 
+		$G->pagebreakcomment();
+		$G->pageNavigation(); 
 		echo gethostname();
 	}*/
 	/*public function testAllPages()
