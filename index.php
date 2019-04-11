@@ -228,6 +228,10 @@ class Gallery
 		{
 			$this->celldata['du'] = $this->m_du[$this->celldata['dir']];
 		}
+		else
+		{
+			$this->celldata['du'] = null;
+		}
 		$s = new SpanDir($this->celldata, $img_url);
 		$this->setPageWidth($s->getWidth());
 		return $s->html();
