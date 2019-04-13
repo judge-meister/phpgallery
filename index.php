@@ -482,6 +482,21 @@ class Gallery
 		return false;
 	}
 	
+	public function kindgirls()
+	{
+		$kd = False;
+		if($this->celldata['path']->hasPages())
+		{
+			$kd = True;
+			$this->m_html .= "<div style=\"text-align:center\">";
+			foreach($this->celldata['path']->openPages() as $line)
+			{
+				$this->m_html .= "<img src=\"http://localhost".$this->celldata['path']->str()."/".$line."\" style=\"width:960px;margin:3px;\"><br>";
+			}
+			$this->m_html .= "</div>";
+		}
+		return $kd;
+	}
 	public function buildThumbs()
 	{
 		global $mediaTypes;
@@ -724,22 +739,39 @@ if(param('PHPUNIT') != True)
 
 	</div>
 
+
 <?php 
-	if(!$G->wholePages())
+	$using_kindgirls = $G->kindgirls();
+	if(!$G->wholePages() && !$using_kindgirls)
 	{
 		$G->buildThumbs();
-	}
+    }
 	$G->pagebreakcomment();
 	$G->pageNavigation(); 
 
 ?>
 
 <div class="thumbnails" id="thumbnails">
+<?php
+	if($using_kindgirls) 
+	{ ?>
+  <div style="<?php echo 'width:'.getBrowserWidth(); ?>" class="centredthumbs">
+	<?php }
+	else
+	{ ?>
  <div style="<?php echo $G->getThumbWidth(); ?>" class="centredthumbs">
+    <?php
+	} ?>
   <?php echo $G->getHtml(); ?>
  </div>
 </div>
 
+<?php
+if($using_kindgirls)
+{
+	$G->pageNavigation();
+}
+?>
 <?php
 /*
 <!-- div id="thumbnails" align="center" width="100%">

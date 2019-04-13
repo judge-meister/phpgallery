@@ -163,11 +163,13 @@ class Path
 	public function hasRollovers()		{ return  dotFileExists($this->m_path, '.rollovers'); }
 	public function hasReverse()		{ return  dotFileExists($this->m_path, '.reverse'); }
 	public function hasDu()				{ return  dotFileExists($this->m_path, '.du'); }
+	public function hasPages()			{ return  dotFileExists($this->m_path, '.pages'); }
 	
 	public function getImgSize($image) { return getImgSize($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$image); }
 	public function openLogo() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.logo', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
 	public function openFavourites() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.favourites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
 	public function openDu() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.du', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
+	public function openPages() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.pages', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
 	public function fileExists($file) { return file_exists($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$file) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file); }
 }
 
