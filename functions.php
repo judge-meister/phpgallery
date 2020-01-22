@@ -186,7 +186,7 @@ define('FAV_FOLDER',  IMAGE_ROOT.'file_folder_red.png');
 define('BORDER_ONLY', IMAGE_ROOT.'border.png');
 
 global $stdIgnores;
-$stdIgnores = array(".","..",'reiserfs_priv','.pics','.picasaoriginals','.AppleDB','.AppleDesktop','.AppleDouble','Network Trash Folder','.TemporaryItems','Temporary Items','Thumbs.db',':2e*');
+$stdIgnores = array(".","..",'reiserfs_priv','.pics','.picasaoriginals','.AppleDB','.AppleDesktop','.AppleDouble','Network Trash Folder','.TemporaryItems','Temporary Items','Thumbs.db',':2e*','comments.php','comments');
 
 global $mediaTypes;
 $mediaTypes = array(

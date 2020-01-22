@@ -111,7 +111,9 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 	{
 		$this->span->setText(comment('SpanLogoMovie'));
 		$this->span->addClass('spanBase spanLogoMovie');
+
 		$w = $this->span->getStyle()->get('width');
+		$w = str_replace('px', '', $w);
 		$this->span->getStyle()->set('width', ($w+4).'px');
 		
 		$this->anchor->set('href',PROGRAM."?media=".$this->mkUrl(array($this->cell['dir'])));
@@ -250,6 +252,7 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 
 		$this->span->showTextBeforeContent(True);
 		$w = $this->span->getStyle()->get('width');
+		$w = str_replace('px', '', $w);
 		$this->span->getStyle()->set('width', ($w+2).'px');
 		
 		//$this->anchor->setText(captionName($this->cell['dir'], $this->cell['width']));

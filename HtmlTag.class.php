@@ -152,6 +152,10 @@ class CssStyle
 	public function get($name){
 		return $this->styles[$name];
 	}
+
+    public function style_has_attr($name){
+        return in_array($name, $this->styles);
+    }
 	
 	public function __toString(){
 		return ($this->toString());

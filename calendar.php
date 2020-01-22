@@ -53,11 +53,11 @@ function makeCalendar($base, $path, $yr)
 	{
 		if(in_array($x,$months_u)) // x in months_u:
 		{
-			$mon = array_search($x+1,$months_u);
+			$mon = array_search($x,$months_u);
 		}
 		elseif(in_array($x,$months_l)) // x in months_l:
 		{
-			$mon = array_search($x+1,$months_l);
+			$mon = array_search($x,$months_l);
 		}
 		else if(in_array((int)$x,$months_i)) //int($x) in months_i:
 		{
