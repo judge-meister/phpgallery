@@ -26,7 +26,7 @@ a {font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
    font-size: 8pt;
    text-decoration: none;}
 
-#title {font-size: 24pt;
+#title {font-size: 20pt;
         text-align: center;
         margin: 3px 0px 4px 0px;}
 
@@ -105,7 +105,14 @@ a {font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
                   height: 200px;
                   /*text-align: center;*/}
 
-.centredthumbs {margin: 0 auto;}
+.centredthumbs {
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+}
+
 
 #thumbnails	  .nothumb_outer {padding:10px 5px;margin:0px 0px;height:100px;background-color:#000;border: 0px solid #555;}
 #thumbnails	  .nothumb_middle {padding:10px 5px;background-color:#222;}
@@ -116,7 +123,7 @@ a {font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
                   /*border: 0px solid #333;/*1*/
                   text-align: center;
                   color: #fff;
-                  float: left;
+                  /*float: left;*/
                   font-size: 8pt;
                   /*background-image: url(../images/shadow.png);*/
                   /*height:120px;*/}

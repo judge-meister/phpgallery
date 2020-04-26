@@ -165,10 +165,11 @@ class Path
 	public function hasDu()				{ return  dotFileExists($this->m_path, '.du'); }
 	
 	public function getImgSize($image) { return getImgSize($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$image); }
-	public function openLogo() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.logo', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
-	public function openFavourites() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.favourites', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
-	public function openDu() { return file($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.du', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
-	public function fileExists($file) { return file_exists($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$file) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file); }
+	public function fileExists($file)  { return file_exists($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$file) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file); }
+	private function openFile($path) { return file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
+	public function openLogo()       { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.logo'      ); }
+	public function openFavourites() { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.favourites'); }
+	public function openDu()         { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.du'        ); }
 }
 
 define('THUMBSIZE', 120);
@@ -192,7 +193,7 @@ global $mediaTypes;
 $mediaTypes = array(
 	     "movie" => array('ext'=>array('.avi','.divx','.mpg','.wmv','.mov','.mpeg','.rm','.rmvb','.rmm','.asf','.mkv','.swf','.mp4','.m4v','.mpe','.mpa','.qt','.3pg','.flv'),
 	     		      'thm'=>array(IMAGE_ROOT.'MovieClip.png',102,120)),
-	     "image" => array('ext'=>array('.jpg','.jpeg','.jpe','.gif','.png','.bmp'/*,'.pcx','.tif','.tiff','.pbm','.pgm','.ppm','.tga'*/,'.tbn'/*,'.xbm','.xpm','.xcf'*/), 
+	     "image" => array('ext'=>array('.jpg','.jpeg','.jpe','.gif','.png','.bmp','.tbn'), /*,'.pcx','.tif','.tiff','.pbm','.pgm','.ppm','.tga','.xbm','.xpm','.xcf'*/ 
 	     		      'thm'=>array('',0,0)),
 
 	     "css"   => array('ext'=>array('.css'), 'thm'=>array(IMAGE_ROOT.'file_css.png',120,120)),
@@ -214,9 +215,10 @@ global $nonMediaTypes;
 $nonMediaTypes = array();
 global $nonMediaThumbs;
 $nonMediaThumbs = array();
+$mediaCategories = array("movie", "image", "misc");
 foreach($mediaTypes as $key => $val)
 {
-	if($key != "movie" && $key != "image" && $key != "misc")
+	if(in_array($key, $mediaCategories)) /* != "movie" && $key != "image" && $key != "misc")*/
 	{
 		//echo $key."\n";
 		$nonMediaTypes = array_merge($nonMediaTypes, $mediaTypes[$key]['ext']);
@@ -232,6 +234,17 @@ foreach($mediaTypes as $key => $val)
 //var_dump($nonMediaTypes);
 //var_dump($nonMediaThumbs);
 
+global $stdIncludes;
+$stdIncludes = array();
+$includeCategories = array("movie", "image", "css", "htm", "pdf", "txt", "xml");
+foreach($mediaTypes as $key => $val)
+{
+    if(in_array($key, $includeCategories)) /* == "movie" || $key == "image")*/
+    {
+        $stdIncludes = array_merge($stdIncludes, $mediaTypes[$key]['ext']);
+    }
+}
+//var_dump($stdIncludes);
 		
 function mediatype($path, $type)
 {
@@ -388,7 +401,12 @@ function getIgnores($path)
 
 function inExcludes($file, $ignores)
 {
-	if(in_array(basename($file), $ignores))
+    var_dump(getExt($file));
+    if(!in_array(getExt($file), $stdIncludes))
+    {
+        return true;
+    }
+	else if(in_array(basename($file), $ignores))
 	{
 		return true;
 	}
