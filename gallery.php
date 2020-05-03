@@ -590,7 +590,7 @@ class Gallery
 			foreach($this->celldata['path']->openPages() as $line)
 			{
 				$this->m_html .= "<a href=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\">";
-				$this->m_html .= "<img src=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\" style=\"width:960px;margin:3px;\">";
+				$this->m_html .= "<img src=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\" style=\"width:100%;margin:3px;\">";
 				$this->m_html .= "</a><br>";
 			}
 			$this->m_html .= "</div>";
