@@ -164,6 +164,7 @@ class Path
 	public function hasReverse()		{ return  dotFileExists($this->m_path, '.reverse'); }
 	public function hasDu()				{ return  dotFileExists($this->m_path, '.du'); }
 	public function hasPages()			{ return  dotFileExists($this->m_path, '.pages'); }
+	public function hasLatest()			{ return  dotFileExists($this->m_path, '.latest'); }
 	
 	public function getImgSize($image) { return getImgSize($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$image); }
 	public function fileExists($file)  { return file_exists($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$file) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file); }
@@ -520,5 +521,26 @@ function comment($s)
 	return "<!-- ".$s." -->";
 }
 
+function myscandir($dir, $exp, $how='name', $desc=0)
+{
+	$r = array();
+	$dh = @opendir($dir);
+	if ($dh) {
+		while (($fname = readdir($dh)) !== false) {
+			if (preg_match($exp, $fname)) {
+				$stat = stat("$dir/$fname");
+				$r[$fname] = ($how == 'name')? $fname: $stat[$how];
+			}
+		}
+		closedir($dh);
+		if ($desc) {
+			arsort($r);
+		}
+		else {
+			asort($r);
+		}
+	}
+	return(array_keys($r));
+}
 
 ?>
