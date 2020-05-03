@@ -85,13 +85,13 @@ a {font-family: Arial, Verdana, Geneva, Helvetica, sans-serif;
 #pagenavigation td.spacel span.alphabet9 {font-size: 9pt;}
 #pagenavigation td.spacel a:hover {color: #f47c0e;
                                    font-size: 7pt;}
-#pagenavigation td.prevdir   {width: 41%;text-align: right;}  /* directory */
+#pagenavigation td.prevdir   {width: 42%;text-align: right;}  /* directory */
 #pagenavigation td.firstpage {width: 4%; text-align: right;}  /* first page */
 #pagenavigation td.prevpage  {width: 2%; text-align: right;}  /* page */
-#pagenavigation td.up        {width: 4%; text-align: center;} /* up */
+#pagenavigation td.up        {width: 2%; text-align: center;} /* up */
 #pagenavigation td.nextpage  {width: 2%; text-align: left;}   /* page */
 #pagenavigation td.lastpage  {width: 4%; text-align: left;}   /* last page */
-#pagenavigation td.nextdir   {width: 41%;text-align: left;}   /* directory */
+#pagenavigation td.nextdir   {width: 42%;text-align: left;}   /* directory */
 #pagenavigation td.spacer    {width: 1%;                     /* spacer */
                               text-align: right;
                               font-size: 7pt;
