@@ -624,7 +624,16 @@ class Gallery
 		$this->doLogo();
 
 		// scan the directory for all the files
-		$files = scandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str());
+		if($this->celldata['path']->hasLatest())
+		{
+			// get files folders in descending modification date/time order
+			$files = myscandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str(), '/.*/', 'mtime', 1);
+		}
+		else
+		{
+			// get files/folders in ascending alphabetic name order 
+			$files = myscandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str(), '/.*/', 'name', 0);
+		}
 
 		if($files != false)
 		{
