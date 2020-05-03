@@ -163,6 +163,7 @@ class Path
 	public function hasRollovers()		{ return  dotFileExists($this->m_path, '.rollovers'); }
 	public function hasReverse()		{ return  dotFileExists($this->m_path, '.reverse'); }
 	public function hasDu()				{ return  dotFileExists($this->m_path, '.du'); }
+	public function hasPages()			{ return  dotFileExists($this->m_path, '.pages'); }
 	
 	public function getImgSize($image) { return getImgSize($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$image); }
 	public function fileExists($file)  { return file_exists($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$file) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file); }
@@ -170,6 +171,7 @@ class Path
 	public function openLogo()       { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.logo'      ); }
 	public function openFavourites() { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.favourites'); }
 	public function openDu()         { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.du'        ); }
+	public function openPages()      { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.pages'     ); }
 }
 
 define('THUMBSIZE', 120);

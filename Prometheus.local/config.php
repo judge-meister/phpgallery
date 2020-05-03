@@ -16,7 +16,7 @@ define('LOGIN_PATH',    PROGRAM.'logon/');
 // database password
 define('PASSWD_DB', False);
 
-define('PHPTHUMB', '/phpthumb/');
+define('PHPTHUMB', '/');
 define('PLUGINS_DIR', 'plugins/');
 
 require_once($_SERVER['DOCUMENT_ROOT'].PROGRAM.'include_check.php');

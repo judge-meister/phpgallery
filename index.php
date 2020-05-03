@@ -138,15 +138,17 @@ if(param('PHPUNIT') != True)
 
 	</div>
 
+
 <?php 
-    try {
-	    $wholePage = $G->wholePages();
-	    if(!$wholePage)
-	    {
-		    $G->buildThumbs();
-	    }
-	    $G->pagebreakcomment();
-	    $G->pageNavigation(); 
+	try {
+		$wholePage = $G->wholePages();
+		$using_kindgirls = $G->kindgirls();
+		if(!$wholePage && !$using_kindgirls)
+		{
+			$G->buildThumbs();
+		}
+		$G->pagebreakcomment();
+		$G->pageNavigation(); 
     }
     catch (Exception $e) {
         echo '<pre>';
@@ -174,26 +176,10 @@ if(param('PHPUNIT') != True)
  <!-- /div -->
 
 <?php
-/*
-<!-- div id="thumbnails" align="center" width="100%">
- <table  border=0 width="100%">
-  <tr>
-   <td align="">
-    <div class="gallery" align="center">
-     <table id="thumbnailstable" style="<!-- ? php echo $G->getThumbWidth(); ?>" cellspacing=0 cellpadding=0 >
-      <tr>
-       <td align="center" -->
-
-<!-- ?php echo $G->getHtml(); ? -->
-
-       <!-- /td>
-      </tr>
-     </table>
-    </div>
-   </td>
-  </tr>
- </table -->
-*/
+if($using_kindgirls)
+{
+	$G->pageNavigation();
+}
 ?>
 
 <script type="text/javascript" src="/js/lazy.js"></script>
