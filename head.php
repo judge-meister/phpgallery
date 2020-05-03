@@ -118,9 +118,10 @@ window.onresize = function(event) {
 fbPageOptions =
 {
   theme: 'auto',
-  preloadAll: true,
+  preloadAll: false,
   enableWrap: false,
   autoGallery: true,
+  activateMedia: true,
   doAnimations: false,
   resizeDuration: 0.7,
   imageFadeDuration: 0.0,
@@ -131,13 +132,28 @@ fbPageOptions =
   indexLinksPanel: 'control',
   showIndexThumbs: false,
   outsideClickCloses: true,
-  //slideInterval: 1.8,
+  slideInterval: 5,
   startPaused: true,
   showPlayPause: false,
   outerBorder: 0,
   innerBorder: 0,
   padding: 0,
-  shadowType: 'none'
+  shadowType: 'none',
+  showCaption: false,
+  showItemNumber: false,
+  showClose: false,
+  showControlsText: false,
+  navType: 'none',
+  outerBorderRadius: 0,
+  addPlayButton: false,
+  //autoPlayVideo: true,
+  //autoEndVideo: true,
+  titleAsCaption: false,
+  enableKeyboardNav: true,
+  inFrameResize: false,
+  keepCentered: false,
+  boxScroll: true,
+  pageScroll: true,
 };
 
  </script>

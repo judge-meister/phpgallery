@@ -117,6 +117,7 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 		$this->span->getStyle()->set('width', ($w+4).'px');
 		
 		$this->anchor->set('href',PROGRAM."?media=".$this->mkUrl(array($this->cell['dir'])));
+		$this->anchor->set('title',$this->cell['image']);
 		if(strpos($this->cell['thumb'], "/")===0) { 
 			//echo "\nUse MovieClip\n";
 			$this->img->set('src',$this->mkRawUrl(array($this->cell['thumb']))); 
@@ -174,7 +175,7 @@ class SpanPhoto extends SpanLogo // SpanLogo + image
 		$this->span->setText(comment('SpanPhoto ARSE'));
 		$this->span->addClass('spanBase spanPhoto');
 
-		$this->anchor->set('href',$this->url)->set('rel','doSlideshow:true')->set('title',$this->cell['image']);
+		$this->anchor->set('href',$this->url); //->set('rel','doSlideshow:true')->set('title',$this->cell['image']);
 		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px'));
 			//->setText($overlay); // **
 		$img = HtmlTag::createElement('img')->addClass('thumb')

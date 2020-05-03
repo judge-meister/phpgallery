@@ -16,7 +16,7 @@ define('WIREDPUSSY', True);
 // database password
 define('PASSWD_DB', True);
 
-define('PHPTHUMB', '/phpthumb/');
+//define('PHPTHUMB', '/phpthumb/');
 define('PLUGINS_DIR', 'plugins/');
 
 // search tool

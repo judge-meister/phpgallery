@@ -1,7 +1,10 @@
 <?php
 
 require_once( gethostname().'/config.php' );
-define('PHPTHUMB_CFG', $_SERVER['DOCUMENT_ROOT'].PHPTHUMB.'phpThumb.config.php');
+if(defined('PHPTHUMB')) {
+    define('PHPTHUMB_CFG', $_SERVER['DOCUMENT_ROOT'].PHPTHUMB.'phpThumb.config.php');
+}
+
 
 class iPhpThumb
 {

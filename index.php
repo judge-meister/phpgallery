@@ -34,6 +34,21 @@
 // cell types
 // - ignored, calendar, favourite, logo(dir/movie), image, movie, non-media, misc
 // --------------------------------------------------------------------
+try {
+function myErrorHandler($errno, $errstr, $errfile, $errline) { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
+<html><body>
+<?php
+    echo "<b>Custom error:</b> [$errno] $errstr<br>";
+    echo " Error on line $errline in $errfile<br>";
+    echo "</body></html>";
+    echo "\n";
+    die();
+}
+
+// Set user-defined error handler function
+set_error_handler("myErrorHandler");
+
 if(!defined('INCLUDE_CHECK')) { define('INCLUDE_CHECK',true); }
 
 if(!isset($_POST['PHPUNIT']))      { include( gethostname().'/config.php' ); } 
@@ -46,6 +61,16 @@ require_once( 'gallery.php' );
 
 $cfg = Config::getInstance();
 $cfg->set('logon',False);
+
+}
+catch (Exception $e) { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
+<html><body><pre>
+<?php
+        echo 'Caught exception: ', $e->getMessage(), "\n";
+        echo $e->getTraceAsString();
+        die();
+}
 
 //if(LOGIN_ENABLED == True && param('PHPUNIT') != True)
 //{
@@ -85,10 +110,18 @@ if(param('PHPUNIT') != True)
 		//var_dump($_SERVER);
 		die();
 	}
-	//$Config['screenWidth'] = getBrowserWidth();
-	//Config::screenWidth = getBrowserWidth();
-	$G = new Gallery($stdIgnores, getBrowserWidth(), param('path'), param('opt'));
-	
+    try {
+	    //$Config['screenWidth'] = getBrowserWidth();
+	    //Config::screenWidth = getBrowserWidth();
+	    $G = new Gallery($stdIgnores, getBrowserWidth(), param('path'), param('opt'));
+	} catch (Exception $e) { ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
+<html><body><pre>
+<?php
+        echo 'Caught exception: ', $e->getMessage(), "\n";
+        echo $e->getTraceAsString();
+        die();
+    }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
 <html>
@@ -106,19 +139,37 @@ if(param('PHPUNIT') != True)
 	</div>
 
 <?php 
-	$wholePage = $G->wholePages();
-	if(!$wholePage)
-	{
-		$G->buildThumbs();
-	}
-	$G->pagebreakcomment();
-	$G->pageNavigation(); 
+    try {
+	    $wholePage = $G->wholePages();
+	    if(!$wholePage)
+	    {
+		    $G->buildThumbs();
+	    }
+	    $G->pagebreakcomment();
+	    $G->pageNavigation(); 
+    }
+    catch (Exception $e) {
+        echo '<pre>';
+        echo 'Caught exception: ', $e->getMessage(), "\n";
+        echo $e->getTraceAsString();
+        echo '<\pre>';
+        die();
+    }
 ?>
 
 <!-- div class="thumbnails" id="thumbnails" -->
  <!-- div style="< ? php echo $G->getThumbWidth($wholePage); ? >" id="thumbnails" class="centredthumbs" -->
  <div style="width: 98%" id="thumbnails" class="centredthumbs">
-  <?php echo $G->getHtml(); ?>
+  <?php
+  try {
+      echo $G->getHtml(); 
+  }
+  catch (Exception $e) {
+      echo "Caught exception: ", $e->getMessage(), "\n";
+      echo $e->getTraceAsString();
+      die();
+  }
+  ?>
  </div>
  <!-- /div -->
 

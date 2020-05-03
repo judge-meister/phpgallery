@@ -471,7 +471,13 @@ function title($d)
 	}
 	else
 	{
-		return basename(dirname($d))."/".basename($d);
+        $str = basename(dirname($d))."/".basename($d);
+        if (strlen($str) > 93)
+        {
+            $str = substr($str, 0 , 45)."...".substr($str, -45, -1);
+        }
+		//return basename(dirname($d))."/".basename($d);
+        return $str;
 	}
 }
 
@@ -484,7 +490,12 @@ function title2($d)
 	}
 	else
 	{
-		return basename($d);
+        $str = basename($d);
+        if (strlen($str) > 93)
+        {
+            $str = substr($str, 0 , 45)."...".substr($str, -45, -1);
+        }
+		return $str;
 	}
 }
 
