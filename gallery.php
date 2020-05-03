@@ -584,12 +584,13 @@ class Gallery
 		$kd = False;
 		if($this->celldata['path']->hasPages())
 		{
+			$SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
 			$kd = True;
 			$this->m_html .= "<div style=\"text-align:center\">";
 			foreach($this->celldata['path']->openPages() as $line)
 			{
-				$this->m_html .= "<a href=\"http://localhost".$this->celldata['path']->str()."/".$line."\">";
-				$this->m_html .= "<img src=\"http://localhost".$this->celldata['path']->str()."/".$line."\" style=\"width:960px;margin:3px;\">";
+				$this->m_html .= "<a href=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\">";
+				$this->m_html .= "<img src=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\" style=\"width:960px;margin:3px;\">";
 				$this->m_html .= "</a><br>";
 			}
 			$this->m_html .= "</div>";
