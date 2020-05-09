@@ -521,8 +521,10 @@ function comment($s)
 	return "<!-- ".$s." -->";
 }
 
+/* this function was ripped off the internet to read a directory list and custom sort it */
 function myscandir($dir, $exp, $how='name', $desc=0)
 {
+	//print $dir." : ".$how."\n";
 	$r = array();
 	$dh = @opendir($dir);
 	if ($dh) {

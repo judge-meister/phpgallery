@@ -114,6 +114,7 @@ if(param('PHPUNIT') != True)
 	    //$Config['screenWidth'] = getBrowserWidth();
 	    //Config::screenWidth = getBrowserWidth();
 	    $G = new Gallery($stdIgnores, getBrowserWidth(), param('path'), param('opt'));
+		$PG = new Gallery($stdIgnores, getBrowserWidth(), dirname(param('path')), param('opt'));
 	} catch (Exception $e) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
 <html><body><pre>
@@ -146,9 +147,10 @@ if(param('PHPUNIT') != True)
 		if(!$wholePage && !$using_kindgirls)
 		{
 			$G->buildThumbs();
+			$PG->buildThumbs();
 		}
 		$G->pagebreakcomment();
-		$G->pageNavigation(); 
+		$PG->pageNavigation(basename(param('path'))); 
     }
     catch (Exception $e) {
         echo '<pre>';
@@ -178,7 +180,7 @@ if(param('PHPUNIT') != True)
 <?php
 if($using_kindgirls)
 {
-	$G->pageNavigation();
+	$PG->pageNavigation(basename(param('path')));
 }
 ?>
 

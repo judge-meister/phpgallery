@@ -58,6 +58,7 @@ class Gallery
 	private $celldata = array('path'=>null,'dir'=>null,'width'=>0,'height'=>0,'img_ht'=>0,'opt'=>null,
 				  'caption'=>null,'thumb'=>null,'image'=>null,'overlay'=>null,'movieLen'=>0);
 	private $celldata_default;
+	private $ordered_file_list = array();
 	private $m_html = "";
 	private $cfg = null;//Config::getInstance();
 	
@@ -319,22 +320,30 @@ class Gallery
 			}
 		}
 	}
-	public function pageNavigation()
+	/* DEBUG function to display the current thumbs on the page in order */
+	public function display_ordered_file_list()
 	{
-		if(null !== $this->celldata['path']->str())
+		foreach($this->ordered_file_list as $file)
 		{
-			if(hasIgnore(dirname($this->celldata['path']->str()))){
+			print $file."\n";
+		}
+	}
+	public function pageNavigation($current="")
+	{
+		if(null !== $this->celldata['path']->str() && $current != "")
+		{
+			/*if(hasIgnore(dirname($this->celldata['path']->str()))){
 				$this->m_parent_ignores = array_merge($this->m_parent_ignores, getIgnores(dirname($this->celldata['path']->str())));
-			}
+			}*/
 			// check if parent dir has .logo file
-			$listofdirs = array();
+			/*$listofdirs = array();
 			if(hasLogo(dirname($this->celldata['path']->str())))
 			{
 				$listofdirs = getFilesFromLogo(dirname($this->celldata['path']->str()));
-			}
+			}*/
 			//if(count($listofdirs) == 0)
 			//{
-				$dirlist = scandir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']->str()) );
+				/*$dirlist = scandir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']->str()) );
 				for($i=0; $i<count($dirlist); $i++)
 				{
 					if(is_dir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']->str()).'/'.$dirlist[$i] ) &&
@@ -342,10 +351,20 @@ class Gallery
 					{
 						$listofdirs[] = $dirlist[$i];
 					}
-				}
+				}*/
 			//}
+			$listofdirs = array();
+			foreach($this->ordered_file_list as $file)
+			{
+				//print $_SERVER['DOCUMENT_ROOT'].'/'.$this->celldata['path']->str().'/'.$file ."\n";
+				if(is_dir( $_SERVER['DOCUMENT_ROOT'].'/'.$this->celldata['path']->str().'/'.$file ))// is a dir
+				{
+					//print $file."\n";
+					array_push($listofdirs, $file);
+				}
+			}
 			// previous - next dir
-			$pos = array_search(basename($this->celldata['path']->str()),$listofdirs);
+			$pos = array_search($current, $listofdirs);
 			$before = ""; 
 			$beforestr = "";
 			if($pos > 0) 
@@ -439,6 +458,7 @@ class Gallery
 									{
 										$this->celldata['caption'] = str_replace("_"," ",$pieces[0]);
 										$this->m_html .= $this->span_logo()."\n";
+										array_push($this->ordered_file_list, $pieces[0]);
 										$this->m_item_count++;
 									}
 									else
@@ -453,6 +473,7 @@ class Gallery
 										}
 										$this->celldata['dir'] = $pieces[0];
 										$this->m_html .= $this->span_dir()."\n";
+										array_push($this->ordered_file_list, $pieces[0]);
 										$this->m_item_count++;
 										$this->celldata['dir'] = "";
 									}
@@ -462,6 +483,7 @@ class Gallery
 									$this->celldata['caption'] = str_replace("_"," ",basename($pieces[0]));
 									$this->celldata['movieLen'] = $this->movieLength(basename($pieces[0]));
 									$this->m_html .= $this->span_logo_movie()."\n";
+									array_push($this->ordered_file_list, $pieces[0]);
 									$this->m_logofiles[] = $pieces[1];
 									$this->m_item_count++;
 									$this->celldata['dir'] = "";
@@ -498,6 +520,7 @@ class Gallery
 		$this->celldata['image'] = $file;
 		$this->celldata['caption'] = $file;
 		$this->m_html .= $this->span_photo()."\n";
+		array_push($this->ordered_file_list, $file);
 		$this->m_item_count++;
 	}
 	private function doMovie($file)
@@ -536,6 +559,7 @@ class Gallery
 		$this->celldata['caption'] = $file;
 		$this->celldata['movieLen'] = $this->movieLength($file);
 		$this->m_html .= $this->span_logo_movie();
+		array_push($this->ordered_file_list, $file);
 		$this->m_item_count++;
 	}
 	private function movieLength($file)
@@ -553,15 +577,15 @@ class Gallery
 	}
 	private function inExcludes($file)
 	{
-        global $stdIncludes;
+		global $stdIncludes;
 		//$this->debug->display("called inExcludes(".$this->celldata['path']->str().'/'.$file.")<br>");
 		//$this->debug->display(var_dump($this->m_ignores));
 		//$this->debug->display(var_dump($this->m_logofiles));
-        if(!is_dir($_SERVER['DOCUMENT_ROOT'].'/'.$this->celldata['path']->str().'/'.$file) && !in_array(getExt($file), $stdIncludes))
-        {
-            //$this->debug->display("true not in stdIncludesi<br>");
-            return true;
-        }
+		if(!is_dir($_SERVER['DOCUMENT_ROOT'].'/'.$this->celldata['path']->str().'/'.$file) && !in_array(getExt($file), $stdIncludes))
+		{
+			//$this->debug->display("true not in stdIncludesi<br>");
+			return true;
+		}
 		else if(in_array(basename($file), $this->m_ignores) || in_array(basename($file), $this->m_logofiles))
 		{
 			$c = count($this->m_ignores) + count($this->m_logofiles);
@@ -579,6 +603,7 @@ class Gallery
 		return false;
 	}
 	
+	/* if .pages file exists then read the images from the file and create full width images as anchors to floatbox gallery */
 	public function kindgirls()
 	{
 		$kd = False;
@@ -598,6 +623,10 @@ class Gallery
 		return $kd;
 	}
 
+	/* build the thumbnails
+	 * - remove ignored items
+	 * - look for calendars, comments, bookmarks, favourites, folder disk sizes, .logo files
+	*/
 	public function buildThumbs()
 	{
 		global $mediaTypes;
@@ -660,6 +689,7 @@ class Gallery
 					{
 						$this->celldata['dir'] = $file;
 						$this->m_html .= $this->span_dir()."\n";
+						array_push($this->ordered_file_list, $file);
 						$this->m_item_count++;
 						$this->celldata['dir'] = "";
 					}
@@ -682,6 +712,7 @@ class Gallery
 						$this->celldata['image'] = $file;
 						$this->celldata['caption'] = $file;
 						$this->m_html .= $this->span_photo()."\n";
+						array_push($this->ordered_file_list, $file);
 						$this->m_item_count++;
 					}
 					// --- unknown file types ---
@@ -689,6 +720,7 @@ class Gallery
 					{
 						list($this->celldata['thumb'],$this->celldata['width'],$this->celldata['height']) = $mediaTypes['misc']['thm'];
 						$this->m_html .= $this->span_icon($file,$file)."\n";
+						array_push($this->ordered_file_list, $file);
 						$this->m_item_count++;
 					}
 				}
