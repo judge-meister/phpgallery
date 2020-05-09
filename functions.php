@@ -494,7 +494,7 @@ function title2($d)
 	else
 	{
         $str = basename($d);
-        if (strlen($str) > 93)
+        if (strlen($str) > 92)
         {
             $str = substr($str, 0 , 45)."...".substr($str, -45, -1);
         }
