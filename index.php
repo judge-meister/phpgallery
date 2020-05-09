@@ -2,19 +2,9 @@
 // --------------------------------------------------------------------
 // Re-write of gallery.py cgi script into php to allow addition of 
 // login system.
-//
-// Basics done - .logo processing, dir_name buttons, photo set thumbs
-//               page navigation
-//
-// Still To Do
-//
-// - more values in ignore list
-// - handle .title .calendar files
-// - more media types - including movie thumbs
-// - special pages like wiredpussy, alsscan, alsangel, hegreart, femjoy
-// - pull down menu navigation - [low priority]
 // 
 // need to analyse original gallery.py code for more features
+// - can't find original python code, so further analysis is not an option
 // --------------------------------------------------------------------
 //
 // I M P R O V E M E N T S
@@ -31,9 +21,8 @@
 // http://www.php5dp.com/
 // http://www.fluffycat.com/PHP-Design-Patterns/
 //
-// cell types
-// - ignored, calendar, favourite, logo(dir/movie), image, movie, non-media, misc
 // --------------------------------------------------------------------
+
 try {
 function myErrorHandler($errno, $errstr, $errfile, $errline) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">

@@ -9,9 +9,14 @@
 // Still To Do
 //
 // - more values in ignore list
+//   - ignore now overridden with a whitelist
 // - handle .title .calendar files
+//   - .title done. .calendar works all except back/up function
 // - more media types - including movie thumbs
+//   - movie thumbs handled
 // - special pages like wiredpussy, alsscan, alsangel, hegreart, femjoy
+//   - special flat html pages are mostly working
+//   - still need to handle database pages
 // - pull down menu navigation - [low priority]
 // 
 // need to analyse original gallery.py code for more features
@@ -332,27 +337,6 @@ class Gallery
 	{
 		if(null !== $this->celldata['path']->str() && $current != "")
 		{
-			/*if(hasIgnore(dirname($this->celldata['path']->str()))){
-				$this->m_parent_ignores = array_merge($this->m_parent_ignores, getIgnores(dirname($this->celldata['path']->str())));
-			}*/
-			// check if parent dir has .logo file
-			/*$listofdirs = array();
-			if(hasLogo(dirname($this->celldata['path']->str())))
-			{
-				$listofdirs = getFilesFromLogo(dirname($this->celldata['path']->str()));
-			}*/
-			//if(count($listofdirs) == 0)
-			//{
-				/*$dirlist = scandir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']->str()) );
-				for($i=0; $i<count($dirlist); $i++)
-				{
-					if(is_dir( $_SERVER['DOCUMENT_ROOT'].'/'.dirname($this->celldata['path']->str()).'/'.$dirlist[$i] ) &&
-						!in_array($dirlist[$i], $this->m_parent_ignores) && !in_array($dirlist[$i], $listofdirs))
-					{
-						$listofdirs[] = $dirlist[$i];
-					}
-				}*/
-			//}
 			$listofdirs = array();
 			foreach($this->ordered_file_list as $file)
 			{
