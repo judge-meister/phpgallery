@@ -136,8 +136,8 @@ if(param('PHPUNIT') != True)
 		if(!$wholePage && !$using_kindgirls)
 		{
 			$G->buildThumbs();
-			$PG->buildThumbs();
 		}
+		$PG->buildThumbs();
 		$G->pagebreakcomment();
 		$PG->pageNavigation(basename(param('path'))); 
     }

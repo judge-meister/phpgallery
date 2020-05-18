@@ -401,6 +401,10 @@ class Gallery
 	</div>
 		<?php
 		}
+		else
+		{
+			print "ERROR: current is empty.\n";
+		}
 	}
 	// JUST PATH - END
 	//////////////////////////////////////////////////////////////////////////////

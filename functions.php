@@ -521,7 +521,11 @@ function comment($s)
 	return "<!-- ".$s." -->";
 }
 
-/* this function was ripped off the internet to read a directory list and custom sort it */
+/* 
+* this function was ripped off the php.net manual pages;
+* https://www.php.net/manual/en/function.scandir.php
+* It reads a directory list and adds a custom sort to it 
+*/
 function myscandir($dir, $exp, $how='name', $desc=0)
 {
 	//print $dir." : ".$how."\n";
