@@ -23,8 +23,8 @@
 //
 // --------------------------------------------------------------------
 
-try {
-function myErrorHandler($errno, $errstr, $errfile, $errline) { ?>
+//try {
+/*function myErrorHandler($errno, $errstr, $errfile, $errline) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
 <html><body>
 <?php
@@ -34,9 +34,9 @@ function myErrorHandler($errno, $errstr, $errfile, $errline) { ?>
     echo "\n";
     die();
 }
-
+*/
 // Set user-defined error handler function
-set_error_handler("myErrorHandler");
+//set_error_handler("myErrorHandler");
 
 if(!defined('INCLUDE_CHECK')) { define('INCLUDE_CHECK',true); }
 
@@ -51,7 +51,7 @@ require_once( 'gallery.php' );
 $cfg = Config::getInstance();
 $cfg->set('logon',False);
 
-}
+/*}
 catch (Exception $e) { ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
 <html><body><pre>
@@ -59,7 +59,7 @@ catch (Exception $e) { ?>
         echo 'Caught exception: ', $e->getMessage(), "\n";
         echo $e->getTraceAsString();
         die();
-}
+}*/
 
 //if(LOGIN_ENABLED == True && param('PHPUNIT') != True)
 //{

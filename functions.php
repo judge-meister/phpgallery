@@ -526,6 +526,7 @@ function myscandir($dir, $exp, $how='name', $desc=0)
 {
 	//print $dir." : ".$how."\n";
 	$r = array();
+	if(!file_exists($dir)) { print "File Does Not Exist: ".$dir."\n"; }
 	$dh = @opendir($dir);
 	if ($dh) {
 		while (($fname = readdir($dh)) !== false) {

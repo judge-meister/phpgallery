@@ -621,14 +621,14 @@ class Gallery
 		}
 		if($this->celldata['path']->hasCalendar() && file_exists('calendar.php'))
 		{
-			include('calendar.php');
+			include_once('calendar.php');
 			list($yrs,$html) = allYears($_SERVER['DOCUMENT_ROOT'].'/'.$this->celldata['path']->str());
 			$this->m_html .= $html;
 			$this->m_ignores = array_merge($this->m_ignores, $yrs);
 		}
-		if($this->celldata['path']->hasComments())
+		if($this->celldata['path']->hasComments() && !function_exists("getComments"))
 		{
-			include($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/comments.php');
+			include_once($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/comments.php');
 			$this->m_comments = getComments();
 		}
 		$this->readBookmarks();
