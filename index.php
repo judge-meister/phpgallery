@@ -140,6 +140,7 @@ if(param('PHPUNIT') != True)
 		$PG->buildThumbs();
 		$G->pagebreakcomment();
 		$PG->pageNavigation(basename(param('path'))); 
+		echo $PG->getPageNavHtml();
     }
     catch (Exception $e) {
         echo '<pre>';

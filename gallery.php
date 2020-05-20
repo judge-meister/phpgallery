@@ -59,6 +59,7 @@ class Gallery
 	private $m_end = 0;
 	private $m_item_count = 0;
 	private $m_pagenum = 1;
+	private $m_pageNavHtml = "";
 	
 	private $celldata = array('path'=>null,'dir'=>null,'width'=>0,'height'=>0,'img_ht'=>0,'opt'=>null,
 				  'caption'=>null,'thumb'=>null,'image'=>null,'overlay'=>null,'movieLen'=>0);
@@ -333,6 +334,10 @@ class Gallery
 			print $file."\n";
 		}
 	}
+	public function getPageNavHtml()
+	{
+		return $this->m_pageNavHtml;
+	}
 	public function pageNavigation($current="")
 	{
 		if(null !== $this->celldata['path']->str() && $current != "")
@@ -375,31 +380,51 @@ class Gallery
 			// previous next page
 			$prevnum = $nextnum = 0;
 			$last = (int)(($this->m_item_count-1) / $this->cfg->get('pagesize')) + 1;
-			if($this->m_pagenum > 1)      {$prevnum = $this->m_pagenum - 1;$prevnumstr = "[".$prevnum."]";} else {$prevnumstr = "";}
-			if($this->m_pagenum < $last) {$nextnum = $this->m_pagenum + 1;$nextnumstr = "[".$nextnum."]";} else {$nextnumstr = "";}
+			if($this->m_pagenum > 1)      {
+				$prevnum = $this->m_pagenum - 1;
+				$prevnumstr = "[".$prevnum."]";
+			} else {
+				$prevnumstr = "";
+			}
+			if($this->m_pagenum < $last) {
+				$nextnum = $this->m_pagenum + 1;
+				$nextnumstr = "[".$nextnum."]";
+			} else {
+				$nextnumstr = "";
+			}
 
-			if($last > 1) {$laststr='['.$last.']'; $firststr = "[1]";} else {$laststr = ""; $firststr = "";}
-			if($nextnum >= $last || $this->m_pagenum >= $last) {$laststr = "";}
-			if($prevnum <= 1) {$firststr = "";}
+			if($last > 1) {
+				$laststr='['.$last.']';
+				$firststr = "[1]";
+			} else {
+				$laststr = "";
+				$firststr = "";
+			}
+			if($nextnum >= $last || $this->m_pagenum >= $last) {
+				$laststr = "";
+			}
+			if($prevnum <= 1) {
+				$firststr = "";
+			}
 			
 			// should really use HtmlTag classes for this
-			?>
-	<div id="pagenavigation">
 
-	     <table><tr>
-	       <td class="spacel"   >       </td>
-	       <td class="prevdir"  ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options(1);        ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($parent.'/'.$before))); ?>"><?php echo $beforestr;  ?></a></td>
-	       <td class="firstpage"><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options(1);        ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str())));       ?>"><?php echo $firststr;   ?></a></td>
-	       <td class="prevpage" ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options($prevnum); ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str())));       ?>"><?php echo $prevnumstr; ?></a></td>
-	       <td class="up"       ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options(1);        ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($up)));                 ?>">[up]</a></td>
-	       <td class="nextpage" ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options($nextnum); ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str())));       ?>"><?php echo $nextnumstr; ?></a></td>
-	       <td class="lastpage" ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options($last);    ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str())));       ?>"><?php echo $laststr;    ?></a></td>
-	       <td class="nextdir"  ><a href="<?php echo PROGRAM; ?>?opt=<?php echo $this->options(1);        ?>&path=<?php echo preg_replace('#/+#','/',str_replace('%2F','/',urlencode($parent.'/'.$after)));  ?>"><?php echo $afterstr;   ?></a></td>
-	       <td class="spacer"   >       </td>
-	     </tr></table>
+			$html = ' <div id="pagenavigation">'."\n";
 
-	</div>
-		<?php
+		        $html .= '<table><tr>'."\n";
+		        $html .= '<td class="spacel"   >       </td>'."\n";
+		        $html .= '<td class="prevdir"  ><a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($parent.'/'.$before))).'">'.$beforestr.'</a></td>'."\n";
+		        $html .= '<td class="firstpage"><a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str()))).'">'.$firststr.'</a></td>'."\n";
+		        $html .= '<td class="prevpage" ><a href="'.PROGRAM.'?opt='.$this->options($prevnum).'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str()))).'">'.$prevnumstr.'</a></td>'."\n";
+		        $html .= '<td class="up"       ><a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($up))).'">[up]</a></td>'."\n";
+		        $html .= '<td class="nextpage" ><a href="'.PROGRAM.'?opt='.$this->options($nextnum).'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str()))).'">'.$nextnumstr.'</a></td>'."\n";
+		        $html .= '<td class="lastpage" ><a href="'.PROGRAM.'?opt='.$this->options($last)   .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str()))).'">'.$laststr.'</a></td>'."\n";
+		        $html .= '<td class="nextdir"  ><a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($parent.'/'.$after))).'">'.$afterstr.'</a></td>'."\n";
+		        $html .= '<td class="spacer"   >       </td>'."\n";
+		        $html .= '</tr></table>'."\n";
+
+		        $html .= '</div>'."\n";
+			$this->m_pageNavHtml = $html;
 		}
 		else
 		{
