@@ -19,10 +19,10 @@
 //   - still need to handle database pages
 // - pull down menu navigation - [low priority]
 // 
-// need to analyse original gallery.py code for more features
+// need to analyse original gallery.py code for more features - can't find it, so thats a problem.
 // --------------------------------------------------------------------
 //
-// I M P R O V E M E N T S
+// I M P R O V E M E N T S - not necessarily achieved
 //
 // - create a class object for a cell with derived classes for type of cell
 // - create a factory class to supply and register them
@@ -39,6 +39,14 @@
 // cell types
 // - ignored, calendar, favourite, logo(dir/movie), image, movie, non-media, misc
 // --------------------------------------------------------------------
+// N E W   I M P R O V E M E N T S
+//
+// - make pageNavigation a class. 
+// - collect info first before trying to create thumbnail html code 
+//   that way html can be mode abstracted from the gallery class
+//
+// --------------------------------------------------------------------
+
 if(!defined('INCLUDE_CHECK')) { define('INCLUDE_CHECK',true); }
 
 require_once( 'functions.php' );
@@ -68,11 +76,11 @@ class Gallery
 	private $m_html = "";
 	private $cfg = null;//Config::getInstance();
 	
-	public function getHtml() 
+	public function getHtml() // RETURNS HTML
 	{ 
 		return $this->m_html; 
 	}
-	public function getThumbWidth($wholePage) 
+	public function getThumbWidth($wholePage) // THIS IS HTML
 	{ 
 		$out = '';
 		if($this->prevRowWidth > 0)
@@ -100,7 +108,7 @@ class Gallery
 		//printf($screenWidth." ".$path." ".$opt." ".$_SERVER['DOCUMENT_ROOT']."\n");
 		$this->init($stdIgnores, $screenWidth, $path, $opt);
 	}
-	private function init($stdIgnores, $screenWidth, $path, $opt)
+	private function init($stdIgnores, $screenWidth, $path, $opt) // PART OF CONSTRUCTOR
 	{
 		$this->cfg = Config::getInstance();
 		$this->cfg->set('screenWidth', $screenWidth);
@@ -131,7 +139,7 @@ class Gallery
 		}
 		$this->debug = new DebugLogger(/*$this->Config*/);
 	}
-	private function setPageWidth($w)
+	private function setPageWidth($w) // RELATED TO HTML
 	{
 		if(($this->rowWidth + $w + 4) < ($this->cfg->get('screenWidth') - 50)) 
 		//if(($this->rowWidth + $w + 2) < (Config::screenWidth - 50)) 
@@ -147,14 +155,14 @@ class Gallery
 			$this->rowWidth = 0;
 		}
 	}
-	private function resetCellData()
+	private function resetCellData() // LOADING DATA
 	{
 		$this->celldata = array('path'=>$this->celldata['path'],
 					'dir'=>null,'width'=>0,'height'=>0,'img_ht'=>0,'opt'=>null,
 					'caption'=>null,'thumb'=>null,'image'=>null,'overlay'=>null,
 					'movieLen'=>0, 'title'=>null );
 	}
-	public function pagebreakcomment()
+	public function pagebreakcomment() // THIS IS HTML
 	{
 		//echo comment("pagesize=".$this->cfg->get('pagesize'))."\n";
 		//echo comment("pagenum=".$this->m_pagenum)."\n";
@@ -169,7 +177,7 @@ class Gallery
 		}
 	}
 	
-	private function options($num=0)
+	private function options($num=0) // COULD BE A CLASS
 	{
 		if($num > 0)
 		{
@@ -182,7 +190,7 @@ class Gallery
 			//return $this->m_pagenum.'_'.Config::pagesize;
 		}
 	}
-	private function span_logo() //.logo thumb
+	private function span_logo() //.logo thumb // RETURNING HTML // FACTORY
 	{
 		$this->celldata['opt'] = $this->options(1);
 		$s = new SpanLogo($this->celldata);
@@ -194,7 +202,7 @@ class Gallery
 		return $s->html();
 	}
 
-	private function span_logo_movie() // movie thumb
+	private function span_logo_movie() // movie thumb // RETURNING HTML // FACTORY
 	{
 		$s = new SpanLogoMovie($this->celldata);
 		/*if($this->celldata['path']->hasRollovers())
@@ -205,14 +213,14 @@ class Gallery
 		return $s->html();
 	}
 
-	private function span_photo() // photo thumbs
+	private function span_photo() // photo thumbs // RETURNING HTML // FACTORY
 	{
 		$s = new SpanPhoto($this->celldata);
 		$this->setPageWidth($s->getWidth());
 		return $s->html();
 	}
 
-	private function span_dir() //dir name no thumbs
+	private function span_dir() //dir name no thumbs // RETURNING HTML // FACTORY
 	{
 		$this->celldata['width'] = $this->cfg->get('cell_wt');//132;
 		$img_url = ""; //BORDER_ONLY;//FILE_FOLDER;
@@ -233,7 +241,7 @@ class Gallery
 		return $s->html();
 	}
 	
-	private function span_icon($image,$caption) // photo thumbs
+	private function span_icon($image,$caption) // photo thumbs // RETURNING HTML // FACTORY
 	{
 		$this->celldata['caption'] = $caption; // $file or $dir
 		$this->celldata['image'] = $image;
@@ -243,7 +251,7 @@ class Gallery
 		return $s->html();
 	}
 
-	private function normalizeThmSize($getsizes=true)
+	private function normalizeThmSize($getsizes=true) // HEIGHTS AND WIDTHS ARE HTML BUT COULD ALSO BE LOADING INFO
 	{
 		if($getsizes == true) 
 		{ 
@@ -266,79 +274,43 @@ class Gallery
 	
 	//////////////////////////////////////////////////////////////////////////////
 	// JUST PATH - START
-	public function getPath() 
+	public function getPath() // ACCESSOR
 	{ 
 		return $this->celldata['path']->str(); 
 	}
-	private function readBookmarks()
-	{
-		if($this->celldata['path']->hasBookmarks())
-		{
-			foreach($this->celldata['path']->openLogo() as $line)
-			{
-				if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
-				{
-					//echo "<p>".$lines[$i];
-					$pieces = explode(",", $line);
-					if(!in_array($pieces[0], $this->m_ignores))
-					{
-						if($this->celldata['path']->fileExists($pieces[0]))
-						{
-							// add to bookmark array stored in this->
-							$this->bookmarks[$pieces[0]]=$pieces[1];
-						}
-					}
-				}
-			}
-		}
-	}
-	private function readFavourites()
-	{
-		if($this->celldata['path']->hasFavourites())
-		{
-			foreach($this->celldata['path']->openFavourites() as $line)//for($i=0;$i<count($lines);$i++)
-			{
-				if(substr( $line, 0, 1 ) != "#") 
-				{
-					//echo "<p>".$lines[$i];
-					//$pieces = explode(",", $line);
-					if(!in_array($line, $this->m_ignores))
-					{
-						if($this->celldata['path']->fileExists($line))
-						{
-							// add to favourites array stored in this->
-							$this->favourites[] = $line;
-							//echo $line;
-						}
-					}
-				}
-			}
-		}
-	}
-	private function readDu()
-	{
-		if($this->celldata['path']->hasDu())
-		{
-			foreach($this->celldata['path']->openDu() as $line)
-			{
-				$pieces = explode("	", $line);
-				$this->m_du[$pieces[1]] = $pieces[0];
-			}
-		}
-	}
 	/* DEBUG function to display the current thumbs on the page in order */
-	public function display_ordered_file_list()
+	public function display_ordered_file_list() // DEBUG
 	{
 		foreach($this->ordered_file_list as $file)
 		{
 			print $file."\n";
 		}
 	}
-	public function getPageNavHtml()
+	public function getPageNavHtml() // PUBLISH HTML // ACCESSOR?
 	{
 		return $this->m_pageNavHtml;
 	}
-	public function pageNavigation($current="")
+	/*
+	* Displays a table containing links to previous and next directory and page and parent
+	*
+	* values displayed
+	* - prev and next dir (contained in correctly ordered list of the parent dir)
+	*   - parent path plus names
+	* - parent directory
+	*   - needs parent path
+	* - page numbers (prev, next) of current directory if more than 'n' items
+	*   - needs current path
+	*
+	* data requirements :
+	* - $this->celldata['path'] - current directory
+	* - $this->ordered_file_list - this needs to contain correctly ordered list of items for parent
+	* - $this->m_item_count - count of items in current directory
+	* - $this->m_pagenum - the current page num from the options
+	* - $this->option() - provides new options to add to new urls
+	* - PROGRAM
+	* - param('path')
+	*/
+	public function pageNavigation($current="") // THIS SHOULD BE A NEW CLASS
 	{
 		if(null !== $this->celldata['path']->str() && $current != "")
 		{
@@ -434,7 +406,7 @@ class Gallery
 	// JUST PATH - END
 	//////////////////////////////////////////////////////////////////////////////
 
-	private function doLogo()
+	private function doLogo() // LOADING INFO BUT ALSO CREATING HTML
 	{
 		if($this->celldata['path']->hasLogo()) // .logo
 		{
@@ -516,7 +488,7 @@ class Gallery
 			$this->celldata['dir'] = "";
 		}
 	}
-	private function doImage($file)
+	private function doImage($file) // RETURNS HTML
 	{
 		if($this->celldata['path']->fileExists('/.pics/'.$file))
 		{
@@ -536,7 +508,7 @@ class Gallery
 		array_push($this->ordered_file_list, $file);
 		$this->m_item_count++;
 	}
-	private function doMovie($file)
+	private function doMovie($file) // LOADING INFO BUT ALSO RETURNS HTML
 	{
 		global $mediaTypes;
 		$thm = removeExt($file).'.thm';
@@ -575,7 +547,7 @@ class Gallery
 		array_push($this->ordered_file_list, $file);
 		$this->m_item_count++;
 	}
-	private function movieLength($file)
+	private function movieLength($file) // LOADING INFO
 	{
 		$min = $secs = '';
 		//$this->debug->display("[".$file."]");
@@ -588,7 +560,7 @@ class Gallery
 		}
 		return array($min, $secs);
 	}
-	private function inExcludes($file)
+	private function inExcludes($file) // LOADING INFO - REALLY A UTILITY
 	{
 		global $stdIncludes;
 		//$this->debug->display("called inExcludes(".$this->celldata['path']->str().'/'.$file.")<br>");
@@ -617,7 +589,7 @@ class Gallery
 	}
 	
 	/* if .pages file exists then read the images from the file and create full width images as anchors to floatbox gallery */
-	public function kindgirls()
+	public function kindgirls() // RETURNS HTML - NEARLY
 	{
 		$kd = False;
 		if($this->celldata['path']->hasPages())
@@ -640,7 +612,7 @@ class Gallery
 	 * - remove ignored items
 	 * - look for calendars, comments, bookmarks, favourites, folder disk sizes, .logo files
 	*/
-	public function buildThumbs()
+	public function buildThumbs() // MAIN ENTRY POINT AND CREATES HTML
 	{
 		global $mediaTypes;
 		$this->celldata['dir'] = "";
@@ -660,12 +632,12 @@ class Gallery
 			include_once($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/comments.php');
 			$this->m_comments = getComments();
 		}
-		$this->readBookmarks();
-		$this->readFavourites();
-		$this->readDu();
+		$this->bookmarks = readBookmarks($this->celldata['path'], $this->m_ignores);
+		$this->favourites = readFavourites($this->celldata['path'], $this->m_ignores);
+		$this->m_du = readDu($this->celldata['path']);
 		$this->doLogo();
 
-		// scan the directory for all the files
+		// scan the directory for all the files using either descending modification time order or ascending alphanumeric order
 		if($this->celldata['path']->hasLatest())
 		{
 			// get files folders in descending modification date/time order
@@ -688,6 +660,7 @@ class Gallery
 				//$this->debug->display("[ Filename ".$file." ]");
 				//$this->debug->display("<br>buildthumbs [".$file."] ");
 				$this->resetCellData();
+				// exclude files already processed by the .logo and .ignore files as well as other standard excludes
 				if(!$this->inExcludes($file) && ($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end))
 				{
 					if(hasTitle($this->celldata['path']->str().'/'.$file))
@@ -752,7 +725,7 @@ class Gallery
 			<?php
 		}
 	}	
-	public function wholePages()
+	public function wholePages() // RETURNS HTML
 	{
 		$whole = false;
 		//printf(" whole=%s",$whole?"True":"False");
@@ -765,5 +738,71 @@ class Gallery
 		//printf(" whole=%s",$whole?"True":"False");
 		return $whole;
 	}
+}
+
+//
+// FUNCTIONS REMOVED FROM GALLERY CLASS
+//
+function readBookmarks($path, $ignores) // LOADING INFO
+{
+	$bookmarks = array();
+	if($path->hasBookmarks())
+	{
+		foreach($path->openLogo() as $line)
+		{
+			if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
+			{
+				//echo "<p>".$lines[$i];
+				$pieces = explode(",", $line);
+				if(!in_array($pieces[0], $ignores))
+				{
+					if($path->fileExists($pieces[0]))
+					{
+						// add to bookmark array stored in this->
+						$bookmarks[$pieces[0]]=$pieces[1];
+					}
+				}
+			}
+		}
+	}
+	return $bookmarks;
+}
+function readFavourites($path, $ignores) // LOADING INFO
+{
+	$favourites = array();
+	if($path->hasFavourites())
+	{
+		foreach($path->openFavourites() as $line)//for($i=0;$i<count($lines);$i++)
+		{
+			if(substr( $line, 0, 1 ) != "#") 
+			{
+				//echo "<p>".$lines[$i];
+				//$pieces = explode(",", $line);
+				if(!in_array($line, $ignores))
+				{
+					if($path->fileExists($line))
+					{
+						// add to favourites array stored in this->
+						$favourites[] = $line;
+						//echo $line;
+					}
+				}
+			}
+		}
+	}
+	return $favourites;
+}
+function readDu($path) // LOADING INFO
+{
+	$du = array();
+	if($path->hasDu())
+	{
+		foreach($path->openDu() as $line)
+		{
+			$pieces = explode("	", $line);
+			$du[$pieces[1]] = $pieces[0];
+		}
+	}
+	return $du;
 }
 
