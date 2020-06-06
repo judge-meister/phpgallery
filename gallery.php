@@ -190,6 +190,11 @@ class Gallery
 			//return $this->m_pagenum.'_'.Config::pagesize;
 		}
 	}
+	/*
+	* needs - $this->celldata
+	* returns a Span instance
+	* move setPageWidth afterwards
+	*/
 	private function span_logo() //.logo thumb // RETURNING HTML // FACTORY
 	{
 		$this->celldata['opt'] = $this->options(1);
@@ -202,6 +207,11 @@ class Gallery
 		return $s->html();
 	}
 
+	/*
+	* needs - $this->celldata
+	* returns a Span instance
+	* move setPageWidth afterwards
+	*/
 	private function span_logo_movie() // movie thumb // RETURNING HTML // FACTORY
 	{
 		$s = new SpanLogoMovie($this->celldata);
@@ -213,6 +223,11 @@ class Gallery
 		return $s->html();
 	}
 
+	/*
+	* needs - $this->celldata
+	* returns a Span instance
+	* move setPageWidth afterwards
+	*/
 	private function span_photo() // photo thumbs // RETURNING HTML // FACTORY
 	{
 		$s = new SpanPhoto($this->celldata);
@@ -220,6 +235,14 @@ class Gallery
 		return $s->html();
 	}
 
+	/*
+	* needs - $this->celldata
+	*       - $this->cfg
+	*       - $this->favourites
+	*       - $this->m_du
+	* returns a Span instance
+	* move setPageWidth afterwards
+	*/
 	private function span_dir() //dir name no thumbs // RETURNING HTML // FACTORY
 	{
 		$this->celldata['width'] = $this->cfg->get('cell_wt');//132;
@@ -241,6 +264,11 @@ class Gallery
 		return $s->html();
 	}
 	
+	/*
+	* needs - $this->celldata
+	* returns a Span instance
+	* move setPageWidth afterwards
+	*/
 	private function span_icon($image,$caption) // photo thumbs // RETURNING HTML // FACTORY
 	{
 		$this->celldata['caption'] = $caption; // $file or $dir
@@ -251,6 +279,10 @@ class Gallery
 		return $s->html();
 	}
 
+	/*
+	* - $this->celldata
+	* - $this->cfg
+	*/
 	private function normalizeThmSize($getsizes=true) // HEIGHTS AND WIDTHS ARE HTML BUT COULD ALSO BE LOADING INFO
 	{
 		if($getsizes == true) 
@@ -608,6 +640,15 @@ class Gallery
 		return $kd;
 	}
 
+	//public function collateInfo()
+	//{
+		// get ignores - yes
+		// get logo items
+		// get file list
+		// filter excluded items from file list
+		// categorize items as directory, image, movie, nonMedia
+	//}
+	
 	/* build the thumbnails
 	 * - remove ignored items
 	 * - look for calendars, comments, bookmarks, favourites, folder disk sizes, .logo files
