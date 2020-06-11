@@ -318,6 +318,10 @@ class Gallery
 			print $file."\n";
 		}
 	}
+	public function getNumItems()
+	{
+		return $this->m_item_count;
+	}
 	public function getPageNavHtml() // PUBLISH HTML // ACCESSOR?
 	{
 		return $this->m_pageNavHtml;
@@ -342,10 +346,11 @@ class Gallery
 	* - PROGRAM
 	* - param('path')
 	*/
-	public function pageNavigation($current="") // THIS SHOULD BE A NEW CLASS
+	public function pageNavigation($current="", $item_count) // THIS SHOULD BE A NEW CLASS
 	{
 		if(null !== $this->celldata['path']->str() && $current != "")
 		{
+			// create listofdirs from the full ordered_file_list
 			$listofdirs = array();
 			foreach($this->ordered_file_list as $file)
 			{
@@ -356,7 +361,7 @@ class Gallery
 					array_push($listofdirs, $file);
 				}
 			}
-			// previous - next dir
+			// previous dir - using listofdirs
 			$pos = array_search($current, $listofdirs);
 			$before = ""; 
 			$beforestr = "";
@@ -365,6 +370,7 @@ class Gallery
 				$before = $listofdirs[$pos-1];
 				$beforestr = "[".title2(dirname($this->celldata['path']->str()).'/'.$before)."]";
 			} 
+			// up - parent dir
 			if(param('up') != NULL)
 			{
 				$up = param('up');
@@ -374,6 +380,8 @@ class Gallery
 				$up = dirname(param('path'));
 			}
 			$parent = dirname(param('path'));
+
+			// next dir - using listof dirs
 			$after = ""; 
 			$afterstr = "";
 			if($pos < (count($listofdirs) - 1)) 
@@ -381,9 +389,9 @@ class Gallery
 				$after = $listofdirs[$pos + 1]; 
 				$afterstr = "[".title2(dirname($this->celldata['path']->str()).'/'.$after)."]";
 			} 
-			// previous next page
+			// previous next page [1][2] ... [3][5]
 			$prevnum = $nextnum = 0;
-			$last = (int)(($this->m_item_count-1) / $this->cfg->get('pagesize')) + 1;
+			$last = (int)(($item_count-1) / $this->cfg->get('pagesize')) + 1;
 			if($this->m_pagenum > 1)      {
 				$prevnum = $this->m_pagenum - 1;
 				$prevnumstr = "[".$prevnum."]";
@@ -396,7 +404,7 @@ class Gallery
 			} else {
 				$nextnumstr = "";
 			}
-
+			// first and last page if required [1][2] ... [3][5]
 			if($last > 1) {
 				$laststr='['.$last.']';
 				$firststr = "[1]";
@@ -415,25 +423,36 @@ class Gallery
 
 			$html = ' <div id="pagenavigation">'."\n";
 
-		        $html .= '<table><tr>'."\n";
-		        $html .= '<td class="spacel"   >       </td>'."\n";
-		        $html .= '<td class="prevdir"  ><a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($parent.'/'.$before))).'">'.$beforestr.'</a></td>'."\n";
-		        $html .= '<td class="firstpage"><a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str()))).'">'.$firststr.'</a></td>'."\n";
-		        $html .= '<td class="prevpage" ><a href="'.PROGRAM.'?opt='.$this->options($prevnum).'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str()))).'">'.$prevnumstr.'</a></td>'."\n";
-		        $html .= '<td class="up"       ><a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($up))).'">[up]</a></td>'."\n";
-		        $html .= '<td class="nextpage" ><a href="'.PROGRAM.'?opt='.$this->options($nextnum).'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str()))).'">'.$nextnumstr.'</a></td>'."\n";
-		        $html .= '<td class="lastpage" ><a href="'.PROGRAM.'?opt='.$this->options($last)   .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($this->celldata['path']->str()))).'">'.$laststr.'</a></td>'."\n";
-		        $html .= '<td class="nextdir"  ><a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.preg_replace('#/+#','/',str_replace('%2F','/',urlencode($parent.'/'.$after))).'">'.$afterstr.'</a></td>'."\n";
-		        $html .= '<td class="spacer"   >       </td>'."\n";
-		        $html .= '</tr></table>'."\n";
+			$html .= '<table><tr>'."\n";
+			$html .= '<td class="spacel"   >       </td>'."\n";
+			$html .= '<td class="prevdir"  >';
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.$this->myurlencode($parent.'/'.$before).'">'.$beforestr.'</a></td>'."\n";
+			$html .= '<td class="firstpage">';
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.$this->myurlencode($this->celldata['path']->str().'/'.$current).'">'.$firststr.'</a></td>'."\n";
+			$html .= '<td class="prevpage" >';
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($prevnum).'&path='.$this->myurlencode($this->celldata['path']->str().'/'.$current).'">'.$prevnumstr.'</a></td>'."\n";
+			$html .= '<td class="up"       >';
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.$this->myurlencode($up).'">[up]</a></td>'."\n";
+			$html .= '<td class="nextpage" >';
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($nextnum).'&path='.$this->myurlencode($this->celldata['path']->str().'/'.$current).'">'.$nextnumstr.'</a></td>'."\n";
+			$html .= '<td class="lastpage" >';
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($last)   .'&path='.$this->myurlencode($this->celldata['path']->str().'/'.$current).'">'.$laststr.'</a></td>'."\n";
+			$html .= '<td class="nextdir"  >';
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.$this->myurlencode($parent.'/'.$after).'">'.$afterstr.'</a></td>'."\n";
+			$html .= '<td class="spacer"   >       </td>'."\n";
+			$html .= '</tr></table>'."\n";
 
-		        $html .= '</div>'."\n";
+			$html .= '</div>'."\n";
 			$this->m_pageNavHtml = $html;
 		}
 		else
 		{
 			print "ERROR: current is empty.\n";
 		}
+	}
+	public function myurlencode($path)
+	{
+		return preg_replace('#/+#','/',str_replace('%2F','/',urlencode($path)));
 	}
 	// JUST PATH - END
 	//////////////////////////////////////////////////////////////////////////////
