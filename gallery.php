@@ -637,7 +637,38 @@ class Gallery
 			}
 			$this->m_html .= "</div>";
 		}
+		else if(isMobile() && $this->allPics($this->celldata['path']->str()))
+		{
+			$kd = True;
+			$SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
+			$this->m_html .= "<div style=\"text-align:center\">";
+			$files = myscandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str(), '/.*/', 'name', 0);
+			foreach($files as $line)
+			{
+				if(!$this->inExcludes($line))
+				{
+					$this->m_html .= "<a href=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\">";
+					$this->m_html .= "<img src=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\" style=\"width:100%;margin:3px;\">";
+					$this->m_html .= "</a><br>";
+				}
+			}
+			$this->m_html .= "</div>";
+		}
 		return $kd;
+	}
+
+	private function allPics($path)
+	{
+		$res = True;
+		$files = myscandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str(), '/.*/', 'name', 0);
+		foreach($files as $line)
+		{
+			if(!$this->inExcludes($line) && !isimage($line))
+			{
+				$res = False;
+			}
+		}
+		return $res;
 	}
 
 	//public function collateInfo()

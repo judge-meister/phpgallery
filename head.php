@@ -15,7 +15,7 @@ echo pageTitle($G->getPath());
 
  <link rev="stylesheet" type="text/css" href="<?php echo CSS; ?>" rel="stylesheet" media="screen,all">
 
- <meta http-equiv=Content-Type content="text/html; charset=ISO-8859-1" >
+ <meta http-equiv=Content-Type content="text/html, charset=ISO-8859-1" >
  <meta http-equiv="content-style-type" content="text/css" >
  <!--[if IE]>
  <style type="text/css" media="all">@import url(/css/galleryIEfixes.css);</style>
@@ -23,7 +23,7 @@ echo pageTitle($G->getPath());
 
  <link rel="shortcut icon" href="<?php echo IMAGE_ROOT.favicon($G->getPath()); ?>" type="image/x-icon">
 
- <meta name="viewport" content="width=device-width; initial-scale=1.0;" > <!-- maximum-scale=1.0;" -->
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" > <!-- maximum-scale=1.0;" -->
  <link rel="apple-touch-icon" href="<?php echo IMAGE_ROOT; ?>template/engage.png" />
 
  <meta name="googlebot" content="noindex,noarchive,nofollow" >
