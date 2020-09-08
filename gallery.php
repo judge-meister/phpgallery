@@ -426,19 +426,19 @@ class Gallery
 			$html .= '<table><tr>'."\n";
 			$html .= '<td class="spacel"   >       </td>'."\n";
 			$html .= '<td class="prevdir"  >';
-			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.$this->myurlencode($parent.'/'.$before).'">'.$beforestr.'</a></td>'."\n";
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.myurlencode($parent.'/'.$before).'">'.$beforestr.'</a></td>'."\n";
 			$html .= '<td class="firstpage">';
-			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.$this->myurlencode($this->celldata['path']->str().'/'.$current).'">'.$firststr.'</a></td>'."\n";
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.myurlencode($this->celldata['path']->str().'/'.$current).'">'.$firststr.'</a></td>'."\n";
 			$html .= '<td class="prevpage" >';
-			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($prevnum).'&path='.$this->myurlencode($this->celldata['path']->str().'/'.$current).'">'.$prevnumstr.'</a></td>'."\n";
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($prevnum).'&path='.myurlencode($this->celldata['path']->str().'/'.$current).'">'.$prevnumstr.'</a></td>'."\n";
 			$html .= '<td class="up"       >';
-			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.$this->myurlencode($up).'">[up]</a></td>'."\n";
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.myurlencode($up).'">[up]</a></td>'."\n";
 			$html .= '<td class="nextpage" >';
-			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($nextnum).'&path='.$this->myurlencode($this->celldata['path']->str().'/'.$current).'">'.$nextnumstr.'</a></td>'."\n";
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($nextnum).'&path='.myurlencode($this->celldata['path']->str().'/'.$current).'">'.$nextnumstr.'</a></td>'."\n";
 			$html .= '<td class="lastpage" >';
-			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($last)   .'&path='.$this->myurlencode($this->celldata['path']->str().'/'.$current).'">'.$laststr.'</a></td>'."\n";
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($last)   .'&path='.myurlencode($this->celldata['path']->str().'/'.$current).'">'.$laststr.'</a></td>'."\n";
 			$html .= '<td class="nextdir"  >';
-			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.$this->myurlencode($parent.'/'.$after).'">'.$afterstr.'</a></td>'."\n";
+			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.myurlencode($parent.'/'.$after).'">'.$afterstr.'</a></td>'."\n";
 			$html .= '<td class="spacer"   >       </td>'."\n";
 			$html .= '</tr></table>'."\n";
 
@@ -449,10 +449,6 @@ class Gallery
 		{
 			print "ERROR: current is empty.\n";
 		}
-	}
-	public function myurlencode($path)
-	{
-		return preg_replace('#/+#','/',str_replace('%2F','/',urlencode($path)));
 	}
 	// JUST PATH - END
 	//////////////////////////////////////////////////////////////////////////////
@@ -600,16 +596,31 @@ class Gallery
 	}
 	private function movieLength($file) // LOADING INFO
 	{
-		$min = $secs = '';
+		$timestrhrs = '';
+		$ihrs = $imins = $isecs = 0;
 		//$this->debug->display("[".$file."]");
 		if (in_array($file, array_keys($this->m_comments)))
 		{
 			//$this->debug->display($file);
 			$length = $this->m_comments[$file];
-			$min = sprintf("%d",(int)($length/60.0));
-			$secs = sprintf("%02d",(int)($length-($min*60)));
+			$ihrs = (int)($length/3600);
+			$imins = (int)(($length-($ihrs*3600))/60);
+			$isecs = (int)($length-($ihrs*3600)-($imins*60));
+
+			if($ihrs>0) {
+				$timestr = sprintf("%d:%02d:%02d",$ihrs,$imins,$isecs);
+			}
+			else {
+				$timestr = sprintf("%d:%02d",$imins,$isecs);
+			}
+			/*	$tim = sprintf()
+				$mins = sprintf("%02d",$imins);}
+			else{$mins = sprintf("%d",$imins);}
+			$hrs = sprintf("%d",(int)($length/3600));
+			$mins = sprintf("%d",(int)($length/60.0));
+			$secs = sprintf("%02d",(int)($length-($min*60)));*/
 		}
-		return array($min, $secs);
+		return $timestr;
 	}
 	private function inExcludes($file) // LOADING INFO - REALLY A UTILITY
 	{

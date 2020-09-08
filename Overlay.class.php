@@ -18,12 +18,13 @@ class Overlay
 		self::$ovly->addElement('img')->set('class','playbutton');//->set('src',$img)
 		return $this;
 	}
-	public function mkTimeLabel($min, $secs, $offset)
+	//public function mkTimeLabel($min, $secs, $offset)
+	public function mkTimeLabel($timestr, $offset)
 	{
 		self::$ovly = HtmlTag::createElement('div')->addClass('caption_offset');
 		//	set('style',CssStyle::createStyle()->set('margin-top',$offset.'px'));
 		$o = HtmlTag::createElement('div')->addClass('caption_format')
-				->setText($min.':'.$secs.' mins');
+				->setText($timestr);
 		self::$ovly->addElement($o);
 		return $this;
 	}
