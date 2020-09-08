@@ -115,46 +115,92 @@ window.onresize = function(event) {
 };
 
 // options for the floatbox image overlay code
-fbPageOptions =
+fbOptions =
 {
+  global: {
+	// Appearance
+	//overlayOpacity: 90,
+	outerBorder: 0,
+	innerBorder: 0,
+	outerBorderRadius: 1,
+	padding: 0,
+	panelPadding: 1,
+	shadowType: 'none',
+
+	// Animations
+	//doAnimations: false,
+	overlayFadeTime: 0.1,
+	resizeTime: 0.2,
+	//fadeTime: 2.0,
+	transitionTime: 0.1,
+	// image Transitions: none is fastest, crossfade looks cool
+	//imageTransition: 'none',
+	imageTransition: 'crossfade',
+	//zoomSource: 'null',
+
+	// Colors
+	//colorTheme: 'black',
+	//boxColor: '#000',
+	//innerBorderColor: '#000',
+
+	// Size
+	enableImageResize: true,
+	inFrameResize: true,
+	//resizeTool: 'topleft',
+	autoFitSpace: 1,
+	//autoFit: false,
+
+	// Position
+
+	// Controls
+	showClose: false,
+	showControlText: false,
+	//enableKeyboardNav: true,
+
+	// Galleries
+	enableWrap: false,
+	navType: 'overlay',
+	showNavOverlay: false,
+	numIndexLinks: 4,
+	showItemNumber: false,
+
+	// General
+	boxScroll: true,
+	pageScroll: true,
+	autoGallery: true,
+	activateMedia: true,
+	//preloadLimit: 500,
+	keepCentered: false,
+	//titleAsCaption: false,
+
+
+	// Unknown
+	//preloadAll: true,
+	//showCaption: false,
+	//imageFadeDuration: 1.0,
+  }
+};
+/*
   theme: 'auto',
-  preloadAll: false,
-  enableWrap: false,
-  autoGallery: true,
-  activateMedia: true,
-  doAnimations: false,
+  //preloadAll: true,
+  doAnimations: true,
   resizeDuration: 0.7,
-  imageFadeDuration: 0.0,
-  overlayFadeDuration: 0,
-  overlayOpacity:  95,
-  graphicsType: 'auto',
-  //numIndexLinks: 10,
   indexLinksPanel: 'control',
   showIndexThumbs: false,
   outsideClickCloses: true,
   slideInterval: 5,
   startPaused: true,
   showPlayPause: false,
-  outerBorder: 0,
   innerBorder: 0,
-  padding: 0,
   shadowType: 'none',
-  showCaption: false,
-  showItemNumber: false,
-  showClose: false,
   showControlsText: false,
   navType: 'none',
   outerBorderRadius: 0,
   addPlayButton: false,
   //autoPlayVideo: true,
   //autoEndVideo: true,
-  titleAsCaption: false,
-  enableKeyboardNav: true,
-  inFrameResize: false,
-  keepCentered: false,
-  boxScroll: true,
-  pageScroll: true,
 };
+*/
 
  </script>
  <?php $cfg = Config::getInstance(); if($cfg->get('logon')==True) { login_links(); } ?>
