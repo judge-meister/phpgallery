@@ -166,13 +166,13 @@ class Path
 	public function hasPages()			{ return  dotFileExists($this->m_path, '.pages'); }
 	public function hasLatest()			{ return  dotFileExists($this->m_path, '.latest'); }
 	
-	public function getImgSize($image) { return getImgSize($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$image); }
-	public function fileExists($file)  { return file_exists($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$file) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file); }
-	private function openFile($path) { return file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
-	public function openLogo()       { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.logo'      ); }
-	public function openFavourites() { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.favourites'); }
-	public function openDu()         { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.du'        ); }
-	public function openPages()      { return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.pages'     ); }
+	public function getImgSize($image)	{ return getImgSize($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$image); }
+	public function fileExists($file)	{ return file_exists($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/'.$file) || file_exists($_SERVER['DOCUMENT_ROOT'].'/'.$file); }
+	private function openFile($path)	{ return file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); }
+	public function openLogo()			{ return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.logo'      ); }
+	public function openFavourites()	{ return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.favourites'); }
+	public function openDu()			{ return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.du'        ); }
+	public function openPages()			{ return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.pages'     ); }
 }
 
 define('THUMBSIZE', 120);
@@ -194,25 +194,25 @@ $stdIgnores = array(".","..",'reiserfs_priv','.pics','.picasaoriginals','.AppleD
 
 global $mediaTypes;
 $mediaTypes = array(
-	     "movie" => array('ext'=>array('.avi','.divx','.mpg','.wmv','.mov','.mpeg','.rm','.rmvb','.rmm','.asf','.mkv','.swf','.mp4','.m4v','.mpe','.mpa','.qt','.3pg','.flv'),
-	     		      'thm'=>array(IMAGE_ROOT.'MovieClip.png',102,120)),
-	     "image" => array('ext'=>array('.jpg','.jpeg','.jpe','.gif','.png','.bmp','.tbn'), /*,'.pcx','.tif','.tiff','.pbm','.pgm','.ppm','.tga','.xbm','.xpm','.xcf'*/ 
-	     		      'thm'=>array('',0,0)),
+		"movie" => array('ext'=>array('.avi','.divx','.mpg','.wmv','.mov','.mpeg','.rm','.rmvb','.rmm','.asf','.mkv','.swf','.mp4','.m4v','.mpe','.mpa','.qt','.3pg','.flv'),
+						'thm'=>array(IMAGE_ROOT.'MovieClip.png',102,120)),
+		"image" => array('ext'=>array('.jpg','.JPG','.jpeg','.jpe','.gif','.png','.bmp','.tbn'), /*,'.pcx','.tif','.tiff','.pbm','.pgm','.ppm','.tga','.xbm','.xpm','.xcf'*/ 
+						'thm'=>array('',0,0)),
 
-	     "css"   => array('ext'=>array('.css'), 'thm'=>array(IMAGE_ROOT.'file_css.png',120,120)),
-	     "dmg"   => array('ext'=>array('.dmg'), 'thm'=>array(IMAGE_ROOT.'file_dmg.png',120,120)),
-	     "doc"   => array('ext'=>array('.doc'), 'thm'=>array(IMAGE_ROOT.'file_doc.png',120,120)),
-	     "exe"   => array('ext'=>array('.exe'), 'thm'=>array(IMAGE_ROOT.'file_exe.png',120,120)),
-	     "htm"   => array('ext'=>array('.html','.htm','.asp','.shtml'), 'thm'=>array(IMAGE_ROOT.'file_html.png',120,120)),
-	     "ini"   => array('ext'=>array('.ini'), 'thm'=>array(IMAGE_ROOT.'file_ini.png',120,120)),
-	     "pdf"   => array('ext'=>array('.pdf'), 'thm'=>array(IMAGE_ROOT.'file_pdf.png',120,120)),
-	     "php"   => array('ext'=>array('.php'), 'thm'=>array(IMAGE_ROOT.'file_php.png',120,120)),
-	     /*"thm"   => array('ext'=>array('.thm'), 'thm'=>array('',0,0)),*/
-	     "txt"   => array('ext'=>array('.txt'), 'thm'=>array(IMAGE_ROOT.'file_txt.png',120,120)),
-	     "xml"   => array('ext'=>array('.xml'), 'thm'=>array(IMAGE_ROOT.'file_xml.png',120,120)),
-	     "zip"   => array('ext'=>array('.zip','.tar','.rar','.gz'), 'thm'=>array(IMAGE_ROOT.'file_zip.png',120,120)),
-	     
-	     "misc"  => array('ext'=>array('.*'),   'thm'=>array(IMAGE_ROOT.'file_blank.png',120,120))
+		"css"   => array('ext'=>array('.css'), 'thm'=>array(IMAGE_ROOT.'file_css.png',120,120)),
+		"dmg"   => array('ext'=>array('.dmg'), 'thm'=>array(IMAGE_ROOT.'file_dmg.png',120,120)),
+		"doc"   => array('ext'=>array('.doc'), 'thm'=>array(IMAGE_ROOT.'file_doc.png',120,120)),
+		"exe"   => array('ext'=>array('.exe'), 'thm'=>array(IMAGE_ROOT.'file_exe.png',120,120)),
+		"htm"   => array('ext'=>array('.html','.htm','.asp','.shtml'), 'thm'=>array(IMAGE_ROOT.'file_html.png',120,120)),
+		"ini"   => array('ext'=>array('.ini'), 'thm'=>array(IMAGE_ROOT.'file_ini.png',120,120)),
+		"pdf"   => array('ext'=>array('.pdf'), 'thm'=>array(IMAGE_ROOT.'file_pdf.png',120,120)),
+		"php"   => array('ext'=>array('.php'), 'thm'=>array(IMAGE_ROOT.'file_php.png',120,120)),
+		/*"thm"   => array('ext'=>array('.thm'), 'thm'=>array('',0,0)),*/
+		"txt"   => array('ext'=>array('.txt'), 'thm'=>array(IMAGE_ROOT.'file_txt.png',120,120)),
+		"xml"   => array('ext'=>array('.xml'), 'thm'=>array(IMAGE_ROOT.'file_xml.png',120,120)),
+		"zip"   => array('ext'=>array('.zip','.tar','.rar','.gz'), 'thm'=>array(IMAGE_ROOT.'file_zip.png',120,120)),
+
+		"misc"  => array('ext'=>array('.*'),   'thm'=>array(IMAGE_ROOT.'file_blank.png',120,120))
 	);
 global $nonMediaTypes;
 $nonMediaTypes = array();
@@ -242,13 +242,13 @@ $stdIncludes = array();
 $includeCategories = array("movie", "image", "css", "htm", "pdf", "txt", "xml");
 foreach($mediaTypes as $key => $val)
 {
-    if(in_array($key, $includeCategories)) /* == "movie" || $key == "image")*/
-    {
-        $stdIncludes = array_merge($stdIncludes, $mediaTypes[$key]['ext']);
-    }
+	if(in_array($key, $includeCategories)) /* == "movie" || $key == "image")*/
+	{
+		$stdIncludes = array_merge($stdIncludes, $mediaTypes[$key]['ext']);
+	}
 }
 //var_dump($stdIncludes);
-		
+
 function mediatype($path, $type)
 {
 	global $mediaTypes;
@@ -262,11 +262,19 @@ function isNonMedia($path)
 	$e = substr($path, strrpos($path, '.'));
 	return (in_array($e, $nonMediaTypes) && !is_dir($path));
 }
-function isimage($path) { return mediatype(strtolower($path), 'image'); }
-function ismovie($path) { //printDebug("ismovie() "); 
+function isimage($path) 
+{ 
+	return mediatype(strtolower($path), 'image'); 
+}
+function ismovie($path) 
+{ 
+	//printDebug("ismovie() "); 
 	return mediatype(strtolower($path), 'movie'); 
 }
-function ismedia($path) { return isimage($path) || ismovie($path); }
+function ismedia($path) 
+{ 
+	return isimage($path) || ismovie($path); 
+}
 
 function cleanStr($s)
 {
@@ -382,7 +390,7 @@ function hasIndex($d)			{ return (dotFileExists($d, 'igallery.html') || dotFileE
 #function hasDebug($d)			{ return  dotFileExists($d, '.debug'); } // used to display debugging statements
 #function hasThumbs($d)			{ return  dotFileExists($d, '.thumbs'); } // used in www2.alsscan.com for model pages
 #function hasGalleryIgnore($d)	{ return  dotFileExists($d, '.gallery_ignore'); } // not sure this is actually required
-#function hasImgsize($d)			{ return  dotFileExists($d, '.imgsize'); } // list of image dimensions
+#function hasImgsize($d)		{ return  dotFileExists($d, '.imgsize'); } // list of image dimensions
 #function hasPics($d)			{ return  dotFileExists($d, '.pics'); } // hidden dir full of thumbnails
 #function hasAlpha($d)			{ return  dotFileExists($d, '.alpha'); }
 #function hasAlphabet($d)		{ return  dotFileExists($d, '.alphabet'); }
@@ -391,7 +399,7 @@ function hasIndex($d)			{ return (dotFileExists($d, 'igallery.html') || dotFileE
 #function hasFavourites($d)		{ return  dotFileExists($d, '.favourites'); }
 #function hasBookmarks($d)		{ return  dotFileExists($d, '.bookmarks'); }
 #function hasRollovers($d)		{ return  dotFileExists($d, '.rollovers'); }
-#function hasReverse($d)			{ return  dotFileExists($d, '.reverse'); }
+#function hasReverse($d)		{ return  dotFileExists($d, '.reverse'); }
 
 function mkOverlay($s,$o=-90) { return '<div style="margin-top:'.$o.'px;">'.$s.'</div>'; }
 
@@ -404,11 +412,11 @@ function getIgnores($path)
 
 function inExcludes($file, $ignores)
 {
-    var_dump(getExt($file));
-    if(!in_array(getExt($file), $stdIncludes))
-    {
-        return true;
-    }
+	var_dump(getExt($file));
+		if(!in_array(getExt($file), $stdIncludes))
+	{
+		return true;
+	}
 	else if(in_array(basename($file), $ignores))
 	{
 		return true;
@@ -474,13 +482,13 @@ function title($d)
 	}
 	else
 	{
-        $str = basename(dirname($d))."/".basename($d);
-        if (strlen($str) > 93)
-        {
-            $str = substr($str, 0 , 45)."...".substr($str, -45, -1);
-        }
+		$str = basename(dirname($d))."/".basename($d);
+		if (strlen($str) > 93)
+		{
+			$str = substr($str, 0 , 45)."...".substr($str, -45, -1);
+		}
 		//return basename(dirname($d))."/".basename($d);
-        return $str;
+		return $str;
 	}
 }
 
@@ -493,11 +501,11 @@ function title2($d)
 	}
 	else
 	{
-        $str = basename($d);
-        if (strlen($str) > 92)
-        {
-            $str = substr($str, 0 , 45)."...".substr($str, -45, -1);
-        }
+		$str = basename($d);
+		if (strlen($str) > 92)
+		{
+			$str = substr($str, 0 , 45)."...".substr($str, -45, -1);
+		}
 		return $str;
 	}
 }
@@ -548,6 +556,11 @@ function myscandir($dir, $exp, $how='name', $desc=0)
 		}
 	}
 	return(array_keys($r));
+}
+
+function myurlencode($path)
+{
+	return preg_replace('#/+#','/',str_replace('%2F','/',urlencode($path)));
 }
 
 function isMobile()
