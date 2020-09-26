@@ -40,8 +40,8 @@
 
 if(!defined('INCLUDE_CHECK')) { define('INCLUDE_CHECK',true); }
 
-if(!isset($_POST['PHPUNIT']))      { include( gethostname().'/config.php' ); } 
-else   if($_POST['PHPUNIT']!=True) { include( gethostname().'/config.php' ); }
+if(!isset($_POST['PHPUNIT']))      { include( 'config.php' ); } 
+else   if($_POST['PHPUNIT']!=True) { include( 'config.php' ); }
 
 require_once( 'functions.php' );
 require_once( 'Span.class.php' );

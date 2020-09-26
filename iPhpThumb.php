@@ -1,6 +1,6 @@
 <?php
 
-require_once( gethostname().'/config.php' );
+require_once( 'config.php' );
 if(defined('PHPTHUMB')) {
     define('PHPTHUMB_CFG', $_SERVER['DOCUMENT_ROOT'].PHPTHUMB.'phpThumb.config.php');
 }
