@@ -543,8 +543,10 @@ function myscandir($dir, $exp, $how='name', $desc=0)
 	if ($dh) {
 		while (($fname = readdir($dh)) !== false) {
 			if (preg_match($exp, $fname)) {
-				$stat = stat("$dir/$fname");
-				$r[$fname] = ($how == 'name')? $fname: $stat[$how];
+				if(file_exists(realpath("$dir/$fname"))) {
+					$stat = stat("$dir/$fname");
+					$r[$fname] = ($how == 'name')? $fname: $stat[$how];
+				}
 			}
 		}
 		closedir($dh);
