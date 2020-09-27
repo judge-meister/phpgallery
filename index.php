@@ -122,25 +122,25 @@ if(param('PHPUNIT') != True)
 //	<form name="gallery" action="< ? php echo PROGRAM; ? >" method="get">
 //	</form>
 ?>	
-	<div id="title">
+    <div id="title">
 
-	    <?php echo title($G->getPath()); ?>
+        <?php echo title($G->getPath()); ?>
 
-	</div>
+    </div>
 
 
 <?php 
-	try {
-		$wholePage = $G->wholePages();
-		$using_kindgirls = $G->kindgirls();
-		if(!$wholePage && !$using_kindgirls)
-		{
-			$G->buildThumbs();
-		}
-		$PG->buildThumbs();
-		$G->pagebreakcomment();
-		$PG->pageNavigation(basename(param('path')), $G->getNumItems()); 
-		echo $PG->getPageNavHtml();
+    try {
+        $wholePage = $G->wholePages();
+        $using_kindgirls = $G->kindgirls();
+        if(!$wholePage && !$using_kindgirls)
+        {
+            $G->buildThumbs();
+        }
+        $PG->buildThumbs();
+        $G->pagebreakcomment();
+        $PG->pageNavigation(basename(param('path')), $G->getNumItems()); 
+        echo $PG->getPageNavHtml(true);
     }
     catch (Exception $e) {
         echo '<pre>';
@@ -170,19 +170,19 @@ if(param('PHPUNIT') != True)
 <?php
 if($using_kindgirls)
 {
-	$PG->pageNavigation(basename(param('path')));
-    echo $PG->getPageNavHtml();
+    $PG->pageNavigation(basename(param('path')));
+    echo $PG->getPageNavHtml(false);
 }
 ?>
 
 <script type="text/javascript" src="/js/lazy.js"></script>
 <div id="appModeNote" style="display:none;">
-	<em><a href="">Refresh!</a></em>
+    <em><a href="">Refresh!</a></em>
 </div>
 
 </body>
 </html>
 
 <?php
-}	
+}
 ?>

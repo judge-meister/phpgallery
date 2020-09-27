@@ -322,9 +322,22 @@ class Gallery
 	{
 		return $this->m_item_count;
 	}
-	public function getPageNavHtml() // PUBLISH HTML // ACCESSOR?
+	public function getPageNavHtml($top=true /*$rightLink=""*/) // PUBLISH HTML // ACCESSOR?
 	{
-		return $this->m_pageNavHtml;
+        if($this->allPics($this->celldata['path']->str())) {
+            if($top) {
+                if(param('large') == 1) {
+                    $html = str_replace("%rlink%", '<a href="'.$this->rootLink.'">[small]</a>', $this->m_pageNavHtml);
+                } else {
+                    $html = str_replace("%rlink%", '<a href="'.$this->rootLink.'&large=1">[large]</a>', $this->m_pageNavHtml);
+                }
+            } else {
+                $html = str_replace("%rlink%", '<a href="#top">[top]</a>', $this->m_pageNavHtml);
+            }
+        } else {
+            $html = str_replace("%rlink%", "", $this->m_pageNavHtml);
+        }
+        return $html;
 	}
 	/*
 	* Displays a table containing links to previous and next directory and page and parent
@@ -439,11 +452,12 @@ class Gallery
 			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($last)   .'&path='.myurlencode($this->celldata['path']->str().'/'.$current).'">'.$laststr.'</a></td>'."\n";
 			$html .= '<td class="nextdir"  >';
 			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.myurlencode($parent.'/'.$after).'">'.$afterstr.'</a></td>'."\n";
-			$html .= '<td class="spacer"   ><a href="#top">[top]</a>       </td>'."\n";
+			$html .= '<td class="spacer"   >%rlink%       </td>'."\n";
 			$html .= '</tr></table>'."\n";
 
 			$html .= '</div>'."\n";
 			$this->m_pageNavHtml = $html;
+            $this->rootLink = PROGRAM.'?opt='.$this->options(1).'&path='.myurlencode($this->celldata['path']->str().'/'.$current);
 		}
 		else
 		{
@@ -654,20 +668,7 @@ class Gallery
 	public function kindgirls() // RETURNS HTML - NEARLY
 	{
 		$kd = False;
-		if($this->celldata['path']->hasPages())
-		{
-			$SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
-			$kd = True;
-			$this->m_html .= "<div style=\"text-align:center\">";
-			foreach($this->celldata['path']->openPages() as $line)
-			{
-				$this->m_html .= "<a href=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\">";
-				$this->m_html .= "<img src=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\" style=\"width:100%;margin:3px;\">";
-				$this->m_html .= "</a><br>";
-			}
-			$this->m_html .= "</div>";
-		}
-		else if(isMobile() && $this->allPics($this->celldata['path']->str()))
+		if(((isMobile() || param('large') == 1) && $this->allPics($this->celldata['path']->str())) || ($this->celldata['path']->hasPages()) )
 		{
 			$kd = True;
 			$SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
@@ -678,7 +679,7 @@ class Gallery
 				if(!$this->inExcludes($line))
 				{
 					$this->m_html .= "<a href=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\">";
-					$this->m_html .= "<img src=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\" style=\"width:100%;margin:3px;\">";
+					$this->m_html .= "<img src=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\" style=\"max-width:100%;margin:3px;\">";
 					$this->m_html .= "</a><br>";
 				}
 			}
