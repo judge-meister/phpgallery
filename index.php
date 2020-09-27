@@ -171,6 +171,7 @@ if(param('PHPUNIT') != True)
 if($using_kindgirls)
 {
 	$PG->pageNavigation(basename(param('path')));
+    echo $PG->getPageNavHtml();
 }
 ?>
 

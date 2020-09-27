@@ -439,7 +439,7 @@ class Gallery
 			$html .= '<a href="'.PROGRAM.'?opt='.$this->options($last)   .'&path='.myurlencode($this->celldata['path']->str().'/'.$current).'">'.$laststr.'</a></td>'."\n";
 			$html .= '<td class="nextdir"  >';
 			$html .= '<a href="'.PROGRAM.'?opt='.$this->options(1)       .'&path='.myurlencode($parent.'/'.$after).'">'.$afterstr.'</a></td>'."\n";
-			$html .= '<td class="spacer"   >       </td>'."\n";
+			$html .= '<td class="spacer"   ><a href="#top">[top]</a>       </td>'."\n";
 			$html .= '</tr></table>'."\n";
 
 			$html .= '</div>'."\n";
