@@ -3,19 +3,19 @@ if(!defined('INCLUDE_CHECK')) { define('INCLUDE_CHECK',true); }
 
 if(gethostname() == "skynet") 
 {
-	$_SERVER['DOCUMENT_ROOT'] = "/home/www/html";
-	$root = "/home/www/html";
-	$path = "/testing/testpage/"; 
-	$path = "/secret/sdc1/kindgirls.com/videos/960x540";
-	$parent = "/secret/sdc1/kindgirls.com/videos";
+    $_SERVER['DOCUMENT_ROOT'] = "/home/www/html";
+    $root = "/home/www/html";
+    $path = "/testing/testpage/"; 
+    $path = "/secret/sdc1/kindgirls.com/videos/960x540";
+    $parent = "/secret/sdc1/kindgirls.com/videos";
 }
 else 
 {
-	$_SERVER['DOCUMENT_ROOT'] = "/Users/judge/Sites";
-	$root = "/Users/judge/Sites";
-	$path = "/testpage/"; 
-	$path = "/Pictures/kindgirls/gals.kindgirls.com/NakedBy";
-	$parent = "/Pictures/kindgirls/gals.kindgirls.com";
+    $_SERVER['DOCUMENT_ROOT'] = "/Users/judge/Sites";
+    $root = "/Users/judge/Sites";
+    $path = "/testpage/"; 
+    $path = "/Pictures/kindgirls/gals.kindgirls.com/NakedBy";
+    $parent = "/Pictures/kindgirls/gals.kindgirls.com";
 }
 echo "Start\n";
 $_GET['path'] = $path;
@@ -37,7 +37,7 @@ echo title($G->getPath())."\n";
 
 $PG->buildThumbs();
 $G->buildThumbs();
-$PG->pageNavigation(basename($path));
+$PG->pageNavigation(basename($path), $G->getNumItems());
 
 echo $G->getHtml();
 
