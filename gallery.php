@@ -358,6 +358,11 @@ class Gallery
 	* - $this->option() - provides new options to add to new urls
 	* - PROGRAM
 	* - param('path')
+	*
+	* notes data relationship to current:
+	* - up                        - parent folder name
+	* - next/prev/first/last page - content of current folder
+	* - next/prev folder          - content of parent folder
 	*/
 	public function pageNavigation($current="", $item_count) // THIS SHOULD BE A NEW CLASS
 	{
@@ -461,7 +466,7 @@ class Gallery
 		}
 		else
 		{
-			print "ERROR: current is empty.\n";
+			/*print "ERROR: current is empty.\npath=".$this->celldata['path']->str()." current=".$current;*/
 		}
 	}
 	// JUST PATH - END
