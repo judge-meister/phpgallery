@@ -23,20 +23,6 @@
 //
 // --------------------------------------------------------------------
 
-//try {
-/*function myErrorHandler($errno, $errstr, $errfile, $errline) { ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
-<html><body>
-<?php
-    echo "<b>Custom error:</b> [$errno] $errstr<br>";
-    echo " Error on line $errline in $errfile<br>";
-    echo "</body></html>";
-    echo "\n";
-    die();
-}
-*/
-// Set user-defined error handler function
-//set_error_handler("myErrorHandler");
 
 if(!defined('INCLUDE_CHECK')) { define('INCLUDE_CHECK',true); }
 
@@ -51,67 +37,42 @@ require_once( 'gallery.php' );
 $cfg = Config::getInstance();
 $cfg->set('logon',False);
 
-/*}
-catch (Exception $e) { ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
-<html><body><pre>
-<?php
-        echo 'Caught exception: ', $e->getMessage(), "\n";
-        echo $e->getTraceAsString();
-        die();
-}*/
-
-//if(LOGIN_ENABLED == True && param('PHPUNIT') != True)
-//{
-//	require $_SERVER['DOCUMENT_ROOT'].LOGIN_PATH.'/user_check.php';
-//	require $_SERVER['DOCUMENT_ROOT'].LOGIN_PATH.'/logoff.php';
-//	//$Config['logon']=True;
-//  $cfg->set('logon',True);
-//}
-
 function getBrowserWidth()
 {
-	if(isset($_COOKIE['currBrowserWidth']))
-	{
-		return (int)$_COOKIE['currBrowserWidth'];
-	}
-	return 1280;
+    if(isset($_COOKIE['currBrowserWidth']))
+    {
+        return (int)$_COOKIE['currBrowserWidth'];
+    }
+    return 1280;
 }
 
+if(param('PHPUNIT') == True) 
+{
+    die();
+}
 
 // ----------------------------------- //
 // ------- S T A R T   H E R E ------- //
 // ----------------------------------- //
 
-//echo "PHPUNIT = ".param('PHPUNIT')."\n";
-if(param('PHPUNIT') != True) 
+// handle media - like videos
+if(param('media') != NULL)
 {
-	if(param('media') != NULL)
-	{
-		$SITE_PORT = $_SERVER['SERVER_NAME'];
-		// check if we are being accessed via ssh tunnel and localhost:8080/
-		if($_SERVER['SERVER_NAME'] == 'localhost' && $_SERVER['SERVER_PORT'] != 80)
-		{
-			$SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
-		}
-		header("Location: http://".$SITE_PORT."/".param('media'));
-		//print($SITE_PORT."\n");
-		//var_dump($_SERVER);
-		die();
-	}
-    try {
-	    //$Config['screenWidth'] = getBrowserWidth();
-	    //Config::screenWidth = getBrowserWidth();
-	    $G = new Gallery($stdIgnores, getBrowserWidth(), param('path'), param('opt'));
-		$PG = new Gallery($stdIgnores, getBrowserWidth(), dirname(param('path')), param('opt'));
-	} catch (Exception $e) { ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
-<html><body><pre>
-<?php
-        echo 'Caught exception: ', $e->getMessage(), "\n";
-        echo $e->getTraceAsString();
-        die();
+    $SITE_PORT = $_SERVER['SERVER_NAME'];
+    // check if we are being accessed via a port other that 80 (eg. ssh tunnel and localhost:8080/)
+    if($_SERVER['SERVER_PORT'] != 80)
+    {
+        $SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
     }
+    header("Location: http://".$SITE_PORT."/".param('media'));
+    //print($SITE_PORT."\n");
+    //var_dump($_SERVER);
+    die();
+}
+    
+$G = new Gallery($stdIgnores, getBrowserWidth(), param('path'), param('opt'));
+$PG = new Gallery($stdIgnores, getBrowserWidth(), dirname(param('path')), param('opt'));
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/DTD/strict.dtd">
 <html>
@@ -119,9 +80,7 @@ if(param('PHPUNIT') != True)
 <body>
 <?php if($cfg->get('logon') == True) { login_panel(); } ?>
 <?php
-//	<form name="gallery" action="< ? php echo PROGRAM; ? >" method="get">
-//	</form>
-?>	
+?>
     <div id="title">
 
         <?php echo title($G->getPath()); ?>
@@ -151,28 +110,25 @@ if(param('PHPUNIT') != True)
     }
 ?>
 
-<!-- div class="thumbnails" id="thumbnails" -->
- <!-- div style="< ? php echo $G->getThumbWidth($wholePage); ? >" id="thumbnails" class="centredthumbs" -->
  <div style="width: 98%" id="thumbnails" class="centredthumbs">
   <?php
-  try {
-      echo $G->getHtml(); 
-  }
-  catch (Exception $e) {
-      echo "Caught exception: ", $e->getMessage(), "\n";
-      echo $e->getTraceAsString();
-      die();
-  }
+    try {
+        echo $G->getHtml(); 
+    }
+    catch (Exception $e) {
+        echo "Caught exception: ", $e->getMessage(), "\n";
+        echo $e->getTraceAsString();
+        die();
+    }
   ?>
  </div>
- <!-- /div -->
 
 <?php
-if($using_kindgirls)
-{
-    $PG->pageNavigation(basename(param('path')));
-    echo $PG->getPageNavHtml(false);
-}
+    if($using_kindgirls)
+    {
+        $PG->pageNavigation(basename(param('path')));
+        echo $PG->getPageNavHtml(false);
+    }
 ?>
 
 <script type="text/javascript" src="/js/lazy.js"></script>
@@ -183,6 +139,3 @@ if($using_kindgirls)
 </body>
 </html>
 
-<?php
-}
-?>
