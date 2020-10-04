@@ -138,7 +138,7 @@ class Path
 		{
 			$this->m_path = TOP;
 		}
-		else if(substr($this->m_path, 1) != "/")
+		else if(substr($this->m_path, 0, 1) != "/")
 		{
 			$this->m_path = "/".$this->m_path;
 		}
