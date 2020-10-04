@@ -322,9 +322,10 @@ class Gallery
 	{
 		return $this->m_item_count;
 	}
-	public function getPageNavHtml($top=true /*$rightLink=""*/) // PUBLISH HTML // ACCESSOR?
+	public function getPageNavHtml($top=true, $path) // PUBLISH HTML // ACCESSOR?
 	{
-        if($this->allPics($this->celldata['path']->str())) {
+        echo "<!-- [getPageNavHtml]allPics=".$this->allPics($path)." -->";
+        if($this->allPics($path)) { //this->celldata['path']->str())) {
             if($top) {
                 if(param('large') == 1) {
                     $html = str_replace("%rlink%", '<a href="'.$this->rootLink.'">[small]</a>', $this->m_pageNavHtml);
@@ -615,6 +616,7 @@ class Gallery
 	}
 	private function movieLength($file) // LOADING INFO
 	{
+        $timestr = '';
 		$timestrhrs = '';
 		$ihrs = $imins = $isecs = 0;
 		//$this->debug->display("[".$file."]");
@@ -673,6 +675,16 @@ class Gallery
 	public function kindgirls() // RETURNS HTML - NEARLY
 	{
 		$kd = False;
+		if($this->celldata['path']->hasIgnore())
+		{
+			echo "<!-- [kindgirls]read .ignores -->"; 
+            $this->m_ignores = array_merge($this->m_ignores, getIgnores($this->celldata['path']->str()));
+		}
+        echo "<!-- [kindgirls]isMobile=".isMobile()." -->";
+        echo "<!-- [kindgirls]large=".param('large')." -->";
+        echo "<!-- [kindgirls]path=".$this->celldata['path']->str()."-->";
+        echo "<!-- [kindgirls]allPics=".$this->allPics($this->celldata['path']->str())." -->";
+        echo "<!-- [kindgirls]hasPages=".$this->celldata['path']->hasPages()." -->";
 		if(((isMobile() || param('large') == 1) && $this->allPics($this->celldata['path']->str())) || ($this->celldata['path']->hasPages()) )
 		{
 			$kd = True;
@@ -681,10 +693,11 @@ class Gallery
 			$files = myscandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str(), '/.*/', 'name', 0);
 			foreach($files as $line)
 			{
-				if(!$this->inExcludes($line))
+				if(!$this->inExcludes($line) && (isimage($line)))
 				{
-					$this->m_html .= "<a href=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\">";
-					$this->m_html .= "<img src=\"http://".$SITE_PORT.$this->celldata['path']->str()."/".$line."\" style=\"max-width:100%;margin:3px;\">";
+                    echo "<!-- [kindgirls] ".$line." -->";
+					$this->m_html .= "<a href=\"http://".$_SERVER['HTTP_HOST'].$this->celldata['path']->str()."/".$line."\">";
+					$this->m_html .= "<img src=\"http://".$_SERVER['HTTP_HOST'].$this->celldata['path']->str()."/".$line."\" style=\"max-width:100%;margin:3px;\">";
 					$this->m_html .= "</a><br>";
 				}
 			}
@@ -695,33 +708,28 @@ class Gallery
 
 	private function allPics($path)
 	{
+        $ci = 0;
+        $cn = 0;
 		$res = True;
-		$files = myscandir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str(), '/.*/', 'name', 0);
-		foreach($files as $line)
-		{
-			if(!$this->inExcludes($line) && !isimage($line))
-			{
-				$res = False;
+		$files = myscandir($_SERVER['DOCUMENT_ROOT'].$path, '/.*/', 'name', 0);
+		foreach($files as $line) {
+			if(!$this->inExcludes($line) && !isimage($line)) {
+                $cn = $cn + 1;
+            } else if(!$this->inExcludes($line)) {
+                //echo "<!-- [allPics]".$line."  is image -->";
+				$ci = $ci + 1;
 			}
 		}
+        echo "<!-- [allPics()] path=".$path." ci=".$ci."  cn=".$cn." perc=".($ci/($cn+$ci))." -->";
+        if ($ci/($cn+$ci) < 0.5) {
+            $res = False;
+        }
 		return $res;
 	}
 
-	//public function collateInfo()
-	//{
-		// get ignores - yes
-		// get logo items
-		// get file list
-		// filter excluded items from file list
-		// categorize items as directory, image, movie, nonMedia
-	//}
-	
-	/* build the thumbnails
-	 * - remove ignored items
-	 * - look for calendars, comments, bookmarks, favourites, folder disk sizes, .logo files
-	*/
-	public function buildThumbs() // MAIN ENTRY POINT AND CREATES HTML
-	{
+    /* read the hidden control files to populate various data items */
+    public function readHiddenFiles()
+    {
 		global $mediaTypes;
 		$this->celldata['dir'] = "";
 		if($this->celldata['path']->hasIgnore())
@@ -743,6 +751,24 @@ class Gallery
 		$this->bookmarks = readBookmarks($this->celldata['path'], $this->m_ignores);
 		$this->favourites = readFavourites($this->celldata['path'], $this->m_ignores);
 		$this->m_du = readDu($this->celldata['path']);
+    }
+	//public function collateInfo()
+	//{
+		// get ignores - yes
+		// get logo items
+		// get file list
+		// filter excluded items from file list
+		// categorize items as directory, image, movie, nonMedia
+	//}
+	
+	/* build the thumbnails
+	 * - remove ignored items
+	 * - look for calendars, comments, bookmarks, favourites, folder disk sizes, .logo files
+	*/
+	public function buildThumbs() // MAIN ENTRY POINT AND CREATES HTML
+	{
+		global $mediaTypes;
+        $this->readHiddenFiles();
 		$this->doLogo();
 
 		// scan the directory for all the files using either descending modification time order or ascending alphanumeric order
@@ -856,18 +882,20 @@ function readBookmarks($path, $ignores) // LOADING INFO
 	$bookmarks = array();
 	if($path->hasBookmarks())
 	{
-		foreach($path->openLogo() as $line)
-		{
-			if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
-			{
-				//echo "<p>".$lines[$i];
-				$pieces = explode(",", $line);
-				if(!in_array($pieces[0], $ignores))
-				{
-					if($path->fileExists($pieces[0]))
-					{
-						// add to bookmark array stored in this->
-						$bookmarks[$pieces[0]]=$pieces[1];
+        if($path->hasLogo()) {
+		    foreach($path->openLogo() as $line)
+		    {
+			    if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
+			    {
+				    //echo "<p>".$lines[$i];
+				    $pieces = explode(",", $line);
+				    if(!in_array($pieces[0], $ignores))
+				    {
+					    if($path->fileExists($pieces[0]))
+					    {
+						    // add to bookmark array stored in this->
+						    $bookmarks[$pieces[0]]=$pieces[1];
+                        }
 					}
 				}
 			}

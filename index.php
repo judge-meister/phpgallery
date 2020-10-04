@@ -58,13 +58,13 @@ if(param('PHPUNIT') == True)
 // handle media - like videos
 if(param('media') != NULL)
 {
-    $SITE_PORT = $_SERVER['SERVER_NAME'];
+    //$SITE_PORT = $_SERVER['SERVER_NAME'];
     // check if we are being accessed via a port other that 80 (eg. ssh tunnel and localhost:8080/)
-    if($_SERVER['SERVER_PORT'] != 80)
-    {
-        $SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
-    }
-    header("Location: http://".$SITE_PORT."/".param('media'));
+    //if($_SERVER['SERVER_PORT'] != "80")
+    //{
+    //    $SITE_PORT = $_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'];
+    //}
+    header("Location: http://".$_SERVER['HTTP_HOST'].param('media'));
     //print($SITE_PORT."\n");
     //var_dump($_SERVER);
     die();
@@ -81,25 +81,49 @@ $PG = new Gallery($stdIgnores, getBrowserWidth(), dirname(param('path')), param(
 <?php if($cfg->get('logon') == True) { login_panel(); } ?>
 <?php
 ?>
-    <div id="title">
+  <div id="title">
+    <?php echo title($G->getPath()); ?>
 
-        <?php echo title($G->getPath()); ?>
-
-    </div>
-
+<?php
+echo "<!-- SERVER_NAME:SERVER_PORT=".$_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT']."   SITE_PORT=".$SITE_PORT." -->";
+echo "<!-- PHP_SELF     = ".  $_SERVER['PHP_SELF']." -->";
+echo "<!-- GATEWAY_INTERFACE = ".  $_SERVER['GATEWAY_INTERFACE']."  -->";
+echo "<!-- SERVER_ADDR  = ".  $_SERVER['SERVER_ADDR']."  -->";
+echo "<!-- SERVER_NME   = ".  $_SERVER['SERVER_NAME']."  -->";
+echo "<!-- SERVER_SOFTWARE = ".  $_SERVER['SERVER_SOFTWARE']."  -->";
+echo "<!-- SERVER_PROTOCOL = ".  $_SERVER['SERVER_PROTOCOL']."  -->";
+echo "<!-- REQUEST_METHOD = ".  $_SERVER['REQUEST_METHOD']."  -->";
+echo "<!-- REQUEST_TIME = ".  $_SERVER['REQUEST_TIME']."  -->";
+echo "<!-- QUERY_STRING = ".  $_SERVER['QUERY_STRING']."  -->";
+echo "<!-- HTTP_ACCEPT  = ".  $_SERVER['HTTP_ACCEPT']."  -->";
+echo "<!-- HTTP_HOST    = ".  $_SERVER['HTTP_HOST']."  -->";
+echo "<!-- HTTP_REFERER = ".  $_SERVER['HTTP_REFERER']."  -->";
+echo "<!-- REMOTE_ADDR  = ".  $_SERVER['REMOTE_ADDR']."  -->";
+echo "<!-- REMOTE_PORT  = ".  $_SERVER['REMOTE_PORT']."  -->";
+echo "<!-- SCRIPT_FILENAME = ".  $_SERVER['SCRIPT_FILENAME']."  -->";
+echo "<!-- SERVER_PORT  = ".  $_SERVER['SERVER_PORT']."  -->";
+echo "<!-- SCRIPT_NAME  = ".  $_SERVER['SCRIPT_NAME']."  -->";
+?>
+  </div>
+<!-- <?php echo "path=".param('path'); ?> -->
 
 <?php 
     try {
+        //$G->readHiddenFiles();
         $wholePage = $G->wholePages();
         $using_kindgirls = $G->kindgirls();
+        echo "<!-- kd=".$using_kindgirls." -->";
         if(!$wholePage && !$using_kindgirls)
         {
+            $G->readHiddenFiles();
             $G->buildThumbs();
         }
+        $PG->readHiddenFiles();
         $PG->buildThumbs();
         $G->pagebreakcomment();
         $PG->pageNavigation(basename(param('path')), $G->getNumItems()); 
-        echo $PG->getPageNavHtml(true);
+        echo "<!-- call PG->getPageNavHtml() -->";
+        echo $PG->getPageNavHtml(true, param('path'));
     }
     catch (Exception $e) {
         echo '<pre>';
@@ -126,8 +150,9 @@ $PG = new Gallery($stdIgnores, getBrowserWidth(), dirname(param('path')), param(
 <?php
     if($using_kindgirls)
     {
-        $PG->pageNavigation(basename(param('path')));
-        echo $PG->getPageNavHtml(false);
+        $PG->pageNavigation(basename(param('path')), $G->getNumItems());
+        echo "<!-- call PG->getPageNavHtml() -->";
+        echo $PG->getPageNavHtml(false, param('path'));
     }
 ?>
 
