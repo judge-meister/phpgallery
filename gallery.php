@@ -720,8 +720,9 @@ class Gallery
 				$ci = $ci + 1;
 			}
 		}
-        echo "<!-- [allPics()] path=".$path." ci=".$ci."  cn=".$cn." perc=".($ci/($cn+$ci))." -->";
-        if ($ci/($cn+$ci) < 0.5) {
+        if ($cn+$ci >= 0) { $perc = $ci/($cn+$ci); } else { $perc = 0.0; }
+        echo "<!-- [allPics()] path=".$path." ci=".$ci."  cn=".$cn." perc=".$perc." -->";
+        if ($perc < 0.5) {
             $res = False;
         }
 		return $res;
