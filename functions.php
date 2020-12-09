@@ -149,7 +149,7 @@ class Path
 	public function hasThumbs()			{ return  dotFileExists($this->m_path, '.thumbs'); } // used in www2.alsscan.com for model pages
 	public function hasGalleryIgnore()	{ return  dotFileExists($this->m_path, '.gallery_ignore'); } // not sure this is actually required
 	public function hasTitle()			{ return  dotFileExists($this->m_path, '.title'); } // optional page title
-	public function hasIgnore()			{ return  dotFileExists($this->m_path, '.ignore'); } // list of files/dirs to ignore
+	public function hasIgnore()			{ return  dotFileExists($this->m_path, '.ignores'); } // list of files/dirs to ignore
 	public function hasImgsize()		{ return  dotFileExists($this->m_path, '.imgsize'); } // list of image dimensions
 	public function hasPics()			{ return  dotFileExists($this->m_path, '.pics'); } // hidden dir full of thumbnails
 	public function hasLogo()			{ return  dotFileExists($this->m_path, '.logo'); } // list of dir to thumbs associations
@@ -383,7 +383,7 @@ function dotFileExists($d,$f)
 }
 function hasModelDB($d)			{ return  dotFileExists($d, '.modeldb'); } // used to call modeldetails for specific directories
 function hasTitle($d)			{ return  dotFileExists($d, '.title'); } // optional page title
-function hasIgnore($d)			{ return  dotFileExists($d, '.ignore'); } // list of files/dirs to ignore
+function hasIgnore($d)			{ return  dotFileExists($d, '.ignores'); } // list of files/dirs to ignore
 function hasLogo($d)			{ return  dotFileExists($d, '.logo'); } // list of dir to thumbs associations
 function hasIndex($d)			{ return (dotFileExists($d, 'igallery.html') || dotFileExists($d, 'igallery.php')); }
 
@@ -406,7 +406,7 @@ function mkOverlay($s,$o=-90) { return '<div style="margin-top:'.$o.'px;">'.$s.'
 
 function getIgnores($path)
 {
-	$ignores = file($_SERVER['DOCUMENT_ROOT'].'/'.$path.'/.ignore', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	$ignores = file($_SERVER['DOCUMENT_ROOT'].'/'.$path.'/.ignores', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 	if ($ignores == False) { return array(); } else { return $ignores; }
 }
 
