@@ -551,10 +551,11 @@ function myscandir($dir, $exp, $how='name', $desc=0)
 		}
 		closedir($dh);
 		if ($desc) {
+            natsort($r);
 			arsort($r);
 		}
 		else {
-			asort($r);
+            natsort($r);
 		}
 	}
 	return(array_keys($r));
