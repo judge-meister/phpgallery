@@ -2,30 +2,7 @@
 
 require_once('include_check.php');
 
-/*$Config = array(
-*		'wplus'=>6,
-*		'full_ht'=>145,
-*		'cell_ht'=>120,
-*		'cell_wt'=>120,
-*		'pagesize'=>100,
-*		'maxPageWt'=>1200,
-*		'phpThumbs'=>False,
-*		'debug'=>False
-*	);
-*/
-		/*
-*class Config
-*{
-*	const full_ht=145;
-*	const cell_ht=120;
-*	const cell_wt=120;
-*	const maxPageWt = 1200;
-*	const wplus = 6;
-*	//public pagesize = 100;
-*	const phpThumbs = False;
-*	//debug = False;
-*	//screenWidth = 0;
-*}*/
+define('THUMBSIZE', 140);
 
 class Config 
 {
@@ -34,9 +11,9 @@ class Config
 	//Array to hold global settings
 	private static $config = array(
 		'wplus'     => 6,
-		'full_ht'   => 145,
-		'cell_ht'   => 120,
-		'cell_wt'   => 120,
+		'full_ht'   => THUMBSIZE+25, //145,
+		'cell_ht'   => THUMBSIZE,
+		'cell_wt'   => THUMBSIZE,
 		'pagesize'  => 1000,
 		'maxPageWt' => 1200,
 		'phpThumbs' => False,
@@ -175,7 +152,6 @@ class Path
 	public function openPages()			{ return $this->openFile($_SERVER['DOCUMENT_ROOT'].$this->m_path.'/.pages'     ); }
 }
 
-define('THUMBSIZE', 120);
 define('MAXITEMS', 100);
 define('STARTURL', PROGRAM.'?'.$_SERVER['QUERY_STRING']);
 
@@ -195,24 +171,24 @@ $stdIgnores = array(".","..",'reiserfs_priv','.pics','.picasaoriginals','.AppleD
 global $mediaTypes;
 $mediaTypes = array(
 		"movie" => array('ext'=>array('.avi','.divx','.mpg','.wmv','.mov','.mpeg','.rm','.rmvb','.rmm','.asf','.mkv','.swf','.mp4','.m4v','.mpe','.mpa','.qt','.3pg','.flv'),
-						'thm'=>array(IMAGE_ROOT.'MovieClip.png',102,120)),
+						'thm'=>array(IMAGE_ROOT.'MovieClip.png',floor(THUMBSIZE*0.85),THUMBSIZE)),
 		"image" => array('ext'=>array('.jpg','.JPG','.jpeg','.jpe','.gif','.png','.bmp','.tbn'), /*,'.pcx','.tif','.tiff','.pbm','.pgm','.ppm','.tga','.xbm','.xpm','.xcf'*/ 
 						'thm'=>array('',0,0)),
 
-		"css"   => array('ext'=>array('.css'), 'thm'=>array(IMAGE_ROOT.'file_css.png',120,120)),
-		"dmg"   => array('ext'=>array('.dmg'), 'thm'=>array(IMAGE_ROOT.'file_dmg.png',120,120)),
-		"doc"   => array('ext'=>array('.doc'), 'thm'=>array(IMAGE_ROOT.'file_doc.png',120,120)),
-		"exe"   => array('ext'=>array('.exe'), 'thm'=>array(IMAGE_ROOT.'file_exe.png',120,120)),
-		"htm"   => array('ext'=>array('.html','.htm','.asp','.shtml'), 'thm'=>array(IMAGE_ROOT.'file_html.png',120,120)),
-		"ini"   => array('ext'=>array('.ini'), 'thm'=>array(IMAGE_ROOT.'file_ini.png',120,120)),
-		"pdf"   => array('ext'=>array('.pdf'), 'thm'=>array(IMAGE_ROOT.'file_pdf.png',120,120)),
-		"php"   => array('ext'=>array('.php'), 'thm'=>array(IMAGE_ROOT.'file_php.png',120,120)),
+		"css"   => array('ext'=>array('.css'), 'thm'=>array(IMAGE_ROOT.'file_css.png',THUMBSIZE,THUMBSIZE)),
+		"dmg"   => array('ext'=>array('.dmg'), 'thm'=>array(IMAGE_ROOT.'file_dmg.png',THUMBSIZE,THUMBSIZE)),
+		"doc"   => array('ext'=>array('.doc'), 'thm'=>array(IMAGE_ROOT.'file_doc.png',THUMBSIZE,THUMBSIZE)),
+		"exe"   => array('ext'=>array('.exe'), 'thm'=>array(IMAGE_ROOT.'file_exe.png',THUMBSIZE,THUMBSIZE)),
+		"htm"   => array('ext'=>array('.html','.htm','.asp','.shtml'), 'thm'=>array(IMAGE_ROOT.'file_html.png',THUMBSIZE,THUMBSIZE)),
+		"ini"   => array('ext'=>array('.ini'), 'thm'=>array(IMAGE_ROOT.'file_ini.png',THUMBSIZE,THUMBSIZE)),
+		"pdf"   => array('ext'=>array('.pdf'), 'thm'=>array(IMAGE_ROOT.'file_pdf.png',THUMBSIZE,THUMBSIZE)),
+		"php"   => array('ext'=>array('.php'), 'thm'=>array(IMAGE_ROOT.'file_php.png',THUMBSIZE,THUMBSIZE)),
 		/*"thm"   => array('ext'=>array('.thm'), 'thm'=>array('',0,0)),*/
-		"txt"   => array('ext'=>array('.txt'), 'thm'=>array(IMAGE_ROOT.'file_txt.png',120,120)),
-		"xml"   => array('ext'=>array('.xml'), 'thm'=>array(IMAGE_ROOT.'file_xml.png',120,120)),
-		"zip"   => array('ext'=>array('.zip','.tar','.rar','.gz'), 'thm'=>array(IMAGE_ROOT.'file_zip.png',120,120)),
+		"txt"   => array('ext'=>array('.txt'), 'thm'=>array(IMAGE_ROOT.'file_txt.png',THUMBSIZE,THUMBSIZE)),
+		"xml"   => array('ext'=>array('.xml'), 'thm'=>array(IMAGE_ROOT.'file_xml.png',THUMBSIZE,THUMBSIZE)),
+		"zip"   => array('ext'=>array('.zip','.tar','.rar','.gz'), 'thm'=>array(IMAGE_ROOT.'file_zip.png',THUMBSIZE,THUMBSIZE)),
 
-		"misc"  => array('ext'=>array('.*'),   'thm'=>array(IMAGE_ROOT.'file_blank.png',120,120))
+		"misc"  => array('ext'=>array('.*'),   'thm'=>array(IMAGE_ROOT.'file_blank.png',THUMBSIZE,THUMBSIZE))
 	);
 global $nonMediaTypes;
 $nonMediaTypes = array();
@@ -301,7 +277,7 @@ function displayName($s)
 	$base = 110;
 	//$width = 88; //for font 150%
 	//$width = 78; //for font 180%
-	$width = 109;
+	$width = THUMBSIZE-16;//109;
 	$j = 0;
 	$linecount = 1;
 	$breaks = array();
@@ -454,11 +430,17 @@ function getImgSize($path)
 	//list($this->m_width, $this->m_height, $type, $attr) = getimagesize($_SERVER['DOCUMENT_ROOT'].'/'.$this->m_path.'/'.$this->m_thumb);
 	if(file_exists($path) && is_file($path))
 	{
-		return getimagesize($path);
+		//return getimagesize($path);
+        list($w, $h, $t, $a) = getimagesize($path);
+        if ($h < THUMBSIZE) {
+            $w = $w*(THUMBSIZE/$h); /*120x100 => 160x(100*(160/120)) => 160x133*/
+            $h = THUMBSIZE;
+        }
+        return array($w, $h, "", "");
 	}
 	else
 	{
-		return array(120, 120, "", "");
+		return array(THUMBSIZE, THUMBSIZE, "", "");
 	}
 }
 

@@ -33,6 +33,11 @@ echo pageTitle($G->getPath());
 
  <!-- link media="only screen"  href="/css/iPhone.css" type="text/css" rel="stylesheet" / -->
 
+ <style>
+ img.rollover:hover {margin-top:-<?php echo THUMBSIZE; ?>px; overflow:hidden;}
+ #rollover {overflow: hidden; height:<?php echo THUMBSIZE ?>px;}
+ </style>
+
  <script language="JavaScript" type="text/javascript">
 
 var url

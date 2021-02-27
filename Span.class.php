@@ -2,6 +2,7 @@
 	
 require_once( 'Overlay.class.php' );
 
+
 // -------------- S P A N   C L A S S E S ---------------------------------------
 class Span
 {
@@ -15,8 +16,8 @@ class Span
 		$this->url = $this->mkUrl(array($cell['path']->str(), $cell['dir']));
 		$this->wp = (int)$cell['width']+$cfg->get('wplus');
 		$this->h = (int)$cell['height'];
-		$this->dflt_ht = 122;
-		$this->dflt_wt = 120;
+		$this->dflt_ht = THUMBSIZE+2;
+		$this->dflt_wt = THUMBSIZE;
 		$this->imgurl = $this->mkImgUrl($cell['path']->str(), $cell['thumb']);
 		$this->id = null;
 		$this->class = null;
@@ -27,7 +28,7 @@ class Span
 		
 		$this->anchor = HtmlTag::createElement('a')->setText(captionName($this->cell['caption'],$this->cell['width']));
 		
-		$this->img = HtmlTag::createELement('img')->addClass($this->class)->set('src',$this->imgurl);
+		$this->img = HtmlTag::createElement('img')->addClass($this->class)->set('src',$this->imgurl);
 		$this->imgStyle = createCSS($this->cell['width']+4,$this->cell['height']);
 	}
 	function mkUrl($paths)
@@ -58,12 +59,20 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 		$this->cell = $cell;
 		$this->cell['img_ht'] = 0;
 		$this->url = $this->mkUrl(array($cell['path']->str(), $cell['dir']));
-		$this->wp = (int)$cell['width']+$cfg->get('wplus');
-		$this->h = (int)$cell['height'];
+        if ($cell['height'] > 0) {
+		  $this->wp = floor($cell['width']*THUMBSIZE/$cell['height'])+$cfg->get('wplus');
+        } else {
+          $this->wp = THUMBSIZE+$cfg->get('wplus');
+        }
+		$this->h = THUMBSIZE; //(int)$cell['height'];
 		$this->imgurl = $this->mkImgUrl($cell['path']->str(), $cell['thumb']);
 		$this->id = null;
 		//$this->class = null;  ->addClass($this->class)
 		
+		$this->span = HtmlTag::createElement('span')
+			->set('style',createCSS($this->wp,$cfg->get('full_ht')));
+		$this->span->showTextBeforeContent(True);
+
 		$this->html = HtmlTag::createElement('span')
 			->set('style',createCSS($this->wp, $cfg->get('full_ht')));
 		$this->html->showTextBeforeContent(True);
@@ -75,10 +84,10 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 	}
 	function setRollover()
 	{
-		$this->h = (int)$this->cell['height'] * 2;
+		$this->h = THUMBSIZE * 2; //(int)$this->cell['height'] * 2;
 		$this->id = "rollover";
 		$this->img->addClass("rollover");
-		$this->imgStyle = createCSS($this->cell['width'], $this->h);
+		$this->imgStyle = createCSS(floor($this->cell['width']*THUMBSIZE/$this->cell['height']), $this->h);
 	}
 	function getWidth() { return $this->wp; }
 	function html()
@@ -87,7 +96,7 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 		$this->span->addClass('spanBase spanLogo');
 
 		$this->anchor->set('href',PROGRAM."?opt=".$this->cell['opt']."&path=".$this->url)
-			->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px'));
+			->set('style',CssStyle::createStyle()->set('height',THUMBSIZE.'px'));
 		$div = HtmlTag::createElement('div')->id($this->id);
 		$this->img->set('style',$this->imgStyle);
 
@@ -251,7 +260,7 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 	}
 	function html()
 	{
-		$this->span->setText(comment('span_dir : '.$this->cell['du']));
+		$this->span->setText(comment('span_dir : du:'.$this->cell['du'].' wp:'.$this->wp.' width:'.$this->cell['width'].' height:'.$this->cell['height'].' '.THUMBSIZE));
 		$this->span->addClass('spanBase spanDir');
 
 		$this->span->showTextBeforeContent(True);
