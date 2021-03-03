@@ -11,7 +11,7 @@ class Config
 	//Array to hold global settings
 	private static $config = array(
 		'wplus'     => 6,
-		'full_ht'   => THUMBSIZE+25, //145,
+		'full_ht'   => THUMBSIZE+5, //+25, //145,
 		'cell_ht'   => THUMBSIZE,
 		'cell_wt'   => THUMBSIZE,
 		'pagesize'  => 1000,

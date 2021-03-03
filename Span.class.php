@@ -97,7 +97,7 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 
 		$this->anchor->set('href',PROGRAM."?opt=".$this->cell['opt']."&path=".$this->url)
 			->set('style',CssStyle::createStyle()->set('height',THUMBSIZE.'px'));
-		$div = HtmlTag::createElement('div')->id($this->id);
+		$div = HtmlTag::createElement('div')->id($this->id)->set('style',CssStyle::createStyle()->set('margin-bottom','-17px'));
 		$this->img->set('style',$this->imgStyle);
 
 		$div->addElement($this->img);
@@ -188,7 +188,7 @@ class SpanPhoto extends SpanLogo // SpanLogo + image
 
 		$this->anchor->set('href',$this->url); //->set('rel','doSlideshow:true')
 		$this->anchor->set('title',$this->cell['image']);
-		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px'));
+		$div = HtmlTag::createElement('div')->set('style',CssStyle::createStyle()->set('height',$this->dflt_ht.'px')->set('margin-bottom','-17px'));
 			//->setText($overlay); // **
 		$img = HtmlTag::createElement('img')->addClass('thumb')
 			->set('style',$this->imgStyle)
@@ -222,7 +222,7 @@ class SpanIcon extends SpanLogo // SpanLogo + image
 		// these styles need to be classes and put in css file
 		$div1 = HtmlTag::createElement('div')
 			->set('style',CssStyle::createStyle()->set('width',$this->dflt_ht.'px')->set('height',$this->dflt_ht.'px')
-			->set('background-image',"url('".FILE_BLANK."')")->set('background-size',$this->dflt_ht.'px'));
+			->set('background-image',"url('".FILE_BLANK."')")->set('background-size',$this->dflt_ht.'px')->set('margin-bottom','-20px'));
 		$div2 = HtmlTag::createElement('div')
 			->set('style',CssStyle::createStyle()->set('padding','90px 20px')->set('color','#ddd')
 			->set('font','bold 200% arial')->set('text-align','left'));
