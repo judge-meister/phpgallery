@@ -156,9 +156,6 @@ define('MAXITEMS', 100);
 define('STARTURL', PROGRAM.'?'.$_SERVER['QUERY_STRING']);
 
 
-require_once('HtmlTag.class.php');
-require_once('iPhpThumb.php');
-
 define('FILE_FOLDER', IMAGE_ROOT.'file_folder.png');
 define('FILE_BLANK',  IMAGE_ROOT.'file_blank.png');
 define('PLAY_BUTTON', IMAGE_ROOT.'play_button_overlay_50x50.png');

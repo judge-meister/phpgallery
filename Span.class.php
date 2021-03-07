@@ -1,6 +1,8 @@
 <?php
 	
 require_once( 'Overlay.class.php' );
+require_once( 'HtmlTag.class.php' );
+require_once( 'iPhpThumb.php' );
 
 
 // -------------- S P A N   C L A S S E S ---------------------------------------

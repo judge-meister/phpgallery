@@ -36,178 +36,19 @@ echo pageTitle($G->getPath());
  <style>
  img.rollover:hover {margin-top:-<?php echo THUMBSIZE; ?>px; overflow:hidden;}
  #rollover {overflow: hidden; height:<?php echo THUMBSIZE ?>px;}
+ #thumbnails span a {font-size: 8pt;
+                     color: #fff;
+                     text-shadow: 2px 2px 4px #000, -2px 2px 4px #000, 2px -2px 4px #000, -2px -2px 4px #000; 
+                     /*text-decoration: none;*/
+                     color: #fff;}
+  a img {background-color:#fff;}
+  a img:hover {opacity: 0.8;}
  </style>
 
- <script language="JavaScript" type="text/javascript">
+ <script type="text/javascript" src="<?php echo PROGRAM; ?>js/wiredpussy.js"></script>
+ <script type="text/javascript" src="<?php echo PROGRAM; ?>js/phpgallery.js"></script>
+ <script type="text/javascript" src="<?php echo PROGRAM; ?>js/floatbox_settings.js"></script>
 
-var url
-function changepage(formObject)
-{
-  url = formObject.options[formObject.options.selectedIndex].value;
-  if(url != "empty") {
-    window.location = url;
-    url = "";
-  }
-}
-
-function DoSubmission()
-{
-  document.gallery.submit();
-}
-
-// WiredPussy scripts
-function showall()
-{
-  var wpsites=['devicebondage','boundgangbangs','electrosluts','everythingbutt','theupperfloor','fuckingmachines','hogtied','sexandsubmission','thetrainingofo','waterbondage','whippedass','wiredpussy','pissing','publicdisgrace'];
-  for (i=0;i<wpsites.length;i++) {
-    document.getElementById("1"+wpsites[i]).style.display = "block";
-    element = document.getElementById("2"+wpsites[i]);
-    if (element != null) { element.style.display = "block"; }
-    document.getElementById("x"+wpsites[i]).style.backgroundColor = "#000000";
-    //document.getElementById("x"+wpsites[i]+"1").style.backgroundColor = "#000000";
-  }
-  //document.getElementById("all").style.display = "block";
-  document.getElementById("xall").style.backgroundColor = "#f47c0e";
-}
-
-// WiredPussy scripts
-function hideshow(id, action)
-{
-  var wpsites=['devicebondage','boundgangbangs','electrosluts','everythingbutt','theupperfloor','fuckingmachines','hogtied','sexandsubmission','thetrainingofo','waterbondage','whippedass','wiredpussy','pissing','publicdisgrace'];
-  if (action=="show") {
-    for (i=0;i<wpsites.length;i++) {
-      //document.getElementById(wpsites[i]).style.display = "none";
-      document.getElementById("1"+wpsites[i]).style.display = "none";
-      element = document.getElementById("2"+wpsites[i]);
-      if (element != null) { element.style.display = "none"; }
-      document.getElementById("x"+wpsites[i]).style.backgroundColor = "#000000";
-      //document.getElementById("x"+wpsites[i]+"1").style.backgroundColor = "#000000";
-    }
-    document.getElementById("1"+id).style.display = "block";
-    element = document.getElementById("2"+id);
-    if (element != null) { element.style.display = "block"; }
-    document.getElementById("x"+id).style.backgroundColor = "#f47c0e";
-    //document.getElementById("x"+id+"1").style.backgroundColor = "#f47c0e";
-  }
-}
-// read a cookie by name and return the value
-function readCookie(name) {
-	var nameEQ = name + "=";
-	var ca = document.cookie.split(';');
-	for(var i=0;i < ca.length;i++) {
-		var c = ca[i];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c.indexOf(nameEQ) == 0)
-		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	}
-	return null;
-}
-// read and update the currBrowserWidth cookie value
-// write the previous width and if different to the current width then reload the page
-function browserResCookie() {
-	var prevBrowserWidth = 0;
-	var x = readCookie('currBrowserWidth')
-	if (x) { prevBrowserWidth = +x; }
-	document.cookie='prevBrowserWidth='+prevBrowserWidth+'; expires=; path=/';
-	document.cookie='currBrowserWidth='+window.outerWidth+'; expires=; path=/';
-	if (prevBrowserWidth != window.outerWidth) { location.reload(); }
-}
-browserResCookie(); // called to insturgate the browser width checking
-
-// create an 'onresize' event handler that checks changes in browser width
-window.onresize = function(event) {
-	browserResCookie();
-};
-
-// options for the floatbox image overlay code
-fbOptions =
-{
-  global: {
-	// Appearance
-	//overlayOpacity: 90,
-	outerBorder: 0,
-	innerBorder: 0,
-	outerBorderRadius: 1,
-	padding: 0,
-	panelPadding: 1,
-	shadowType: 'none',
-
-	// Animations
-	//doAnimations: false,
-	overlayFadeTime: 0.1,
-	resizeTime: 0.2,
-	//fadeTime: 2.0,
-	transitionTime: 0.1,
-	// image Transitions: none is fastest, crossfade looks cool
-	//imageTransition: 'none',
-	imageTransition: 'crossfade',
-	//zoomSource: 'null',
-
-	// Colors
-	//colorTheme: 'black',
-	//boxColor: '#000',
-	//innerBorderColor: '#000',
-
-	// Size
-	enableImageResize: true,
-	inFrameResize: true,
-	//resizeTool: 'topleft',
-	autoFitSpace: 1,
-	//autoFit: false,
-
-	// Position
-
-	// Controls
-	showClose: false,
-	showControlText: false,
-	//enableKeyboardNav: true,
-
-	// Galleries
-	enableWrap: false,
-	navType: 'overlay',
-	showNavOverlay: false,
-	numIndexLinks: 4,
-	showItemNumber: false,
-
-	// General
-	boxScroll: true,
-	pageScroll: true,
-	autoGallery: true,
-	activateMedia: true,
-	//preloadLimit: 500,
-	keepCentered: false,
-	//titleAsCaption: false,
-
-
-	// Unknown
-	//preloadAll: true,
-	//showCaption: false,
-	//imageFadeDuration: 1.0,
-  }
-};
-/*
-  theme: 'auto',
-  //preloadAll: true,
-  doAnimations: true,
-  resizeDuration: 0.7,
-  indexLinksPanel: 'control',
-  showIndexThumbs: false,
-  outsideClickCloses: true,
-  slideInterval: 5,
-  startPaused: true,
-  showPlayPause: false,
-  innerBorder: 0,
-  shadowType: 'none',
-  showControlsText: false,
-  navType: 'none',
-  outerBorderRadius: 0,
-  addPlayButton: false,
-  //autoPlayVideo: true,
-  //autoEndVideo: true,
-};
-*/
-
- </script>
  <?php $cfg = Config::getInstance(); if($cfg->get('logon')==True) { login_links(); } ?>
 
 </head>

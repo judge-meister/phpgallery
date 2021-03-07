@@ -189,7 +189,7 @@ table#thumbnailstable div {border: 1px solid #eee;}
                    color: #ddd; font-size: 100%;}
                    overflow: hidden;}
 .spanLogoMovieImage {border: 1px solid #f77;}
-img.spanLogoMovieImage:hover {opacity: 0.4;}
+/*img.spanLogoMovieImage:hover {opacity: 0.4;}*/
 
 .spanLogo a {overflow: hidden; }
 
