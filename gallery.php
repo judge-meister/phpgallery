@@ -127,6 +127,7 @@ class Gallery
 		$this->m_ignores = $stdIgnores;
 		$this->m_parent_ignores = $stdIgnores;
 		$this->m_comments = array();
+        $this->m_movie_dim = array();
 		$this->favourites = array();
 		$this->bookmarks = array();
 		$this->rowWidth = 0;
@@ -534,6 +535,8 @@ class Gallery
 								{
 									$this->celldata['caption'] = str_replace("_"," ",basename($pieces[0]));
 									$this->celldata['movieLen'] = $this->movieLength(basename($pieces[0]));
+                                    $this->celldata['movieDim'] = $this->m_movie_dim[basename($pieces[0])];
+                                    //echo "<!-- 538 movieDim for ".basename($pieces[0])." = ".$this->celldata['movieDim']." -->\n";
 									$this->m_html .= $this->span_logo_movie()."\n";
 									array_push($this->ordered_file_list, $pieces[0]);
 									$this->m_logofiles[] = $pieces[1];
@@ -610,6 +613,8 @@ class Gallery
 		$this->celldata['image'] = $file;
 		$this->celldata['caption'] = $file;
 		$this->celldata['movieLen'] = $this->movieLength($file);
+        $this->celldata['movieDim'] = $this->m_movie_dim[$file];
+        //echo "<!-- 616 movieDim for ".$file." = ".$this->celldata['movieDim']." -->\n";
 		$this->m_html .= $this->span_logo_movie();
 		array_push($this->ordered_file_list, $file);
 		$this->m_item_count++;
@@ -748,6 +753,11 @@ class Gallery
 		{
 			include_once($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/comments.php');
 			$this->m_comments = getComments();
+            //$this->m_movie_dim = array(); 
+            if (function_exists('getDims')) {
+                $this->m_movie_dim = getDims();
+                //echo "<!-- called getDims() ".var_dump($this->m_movie_dim)."-->\n";
+            } //else { echo "<!-- no function getDims()-->\n"; }
 		}
 		$this->bookmarks = readBookmarks($this->celldata['path'], $this->m_ignores);
 		$this->favourites = readFavourites($this->celldata['path'], $this->m_ignores);

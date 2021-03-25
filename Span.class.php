@@ -80,9 +80,10 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 		$this->html->showTextBeforeContent(True);
 		
 		$this->anchor = HtmlTag::createElement('a')->setText(captionName($this->cell['caption'],$this->cell['width']-2));
+		$this->h = THUMBSIZE; //(int)$this->cell['height'] * 2;
 		
 		$this->img = HtmlTag::createELement('img')->set('src',$this->imgurl);
-		$this->imgStyle = createCSS($this->cell['width'],$this->cell['height']);
+		$this->imgStyle = createCSS($this->cell['width']*THUMBSIZE/$this->cell['height'],THUMBSIZE);
 	}
 	function setRollover()
 	{
@@ -145,11 +146,17 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 		$overlayTime = null;
 		//list($min,$secs) = $this->cell['movieLen'];
 		//if($min != "" || $secs != "") {
-		if($this->cell['movieLen']) {
+		if($this->cell['movieLen'] && $this->cell['movieDim']) {
 			//$overlayTime = Overlay::create()->mkTimeLabel($min,$secs,5)->html();
 			//$overlayTime = Overlay::create()->mkTimeLabel($min,$secs,-30)->html();
-			$overlayTime = Overlay::create()->mkTimeLabel($this->cell['movieLen'],-30)->html();
+            //echo "<!-- MovieLen ".$this->cell['movieLen']." and MovieDim ".$this->cell['movieDim']." -->\n";
+			$overlayTime = Overlay::create()->mkTimeLabel($this->cell['movieDim']." ".$this->cell['movieLen'],-30)->html();
 		}
+        elseif($this->cell['movieLen'])
+        {
+            //echo "<!-- just movieLen ".$this->cell['movieLen']."-->\n";
+			$overlayTime = Overlay::create()->mkTimeLabel($this->cell['movieLen'],-30)->html();
+        }
 		$this->img->set('style',$this->imgStyle)->addClass('spanLogoMovieImage');
 		$div->addElement($this->img);
 		//$div->addElement($overlayBtn);

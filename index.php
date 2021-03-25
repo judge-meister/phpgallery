@@ -103,6 +103,7 @@ echo "<!-- REMOTE_PORT  = ".  $_SERVER['REMOTE_PORT']."  -->";
 echo "<!-- SCRIPT_FILENAME = ".  $_SERVER['SCRIPT_FILENAME']."  -->";
 echo "<!-- SERVER_PORT  = ".  $_SERVER['SERVER_PORT']."  -->";
 echo "<!-- SCRIPT_NAME  = ".  $_SERVER['SCRIPT_NAME']."  -->";
+echo "<!-- REQUEST_URI  = ".  $_SERVER['REQUEST_URI']."  -->";
 ?>
   </div>
 <!-- <?php echo "path=".param('path'); ?> -->
@@ -155,6 +156,18 @@ echo "<!-- SCRIPT_NAME  = ".  $_SERVER['SCRIPT_NAME']."  -->";
         echo $PG->getPageNavHtml(false, param('path'));
     }
 ?>
+
+<!-- div id="pagenavigation"><a style="margin-left: 25px;" href="http://sandbox:8080/mkcomments?link=<?php 
+    $link = str_replace("&","%amp%", "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']); 
+    $link = str_replace("?","%ques%", $link);
+    echo $link; ?>">[add video length]</a>
+    <a style="margin-left: 10px;" href="">[convert to mp4]</a>
+    <a style="margin-left: 10px;" href="">[hide non-mp4]</a>
+    <a style="margin-left: 10px;" href="">[make thumbs]</a>
+<?php if (basename(param('path')) == "torrents") { 
+    echo "<a style=\"margin-left: 10px;\" href=\"\">[tidy up torrents]</a>";
+    } ?>
+    </div -->
 
 <script type="text/javascript" src="/js/lazy.js"></script>
 <div id="appModeNote" style="display:none;">
