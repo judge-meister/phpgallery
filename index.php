@@ -86,24 +86,24 @@ $PG = new Gallery($stdIgnores, getBrowserWidth(), dirname(param('path')), param(
 
 <?php
 echo "<!-- SERVER_NAME:SERVER_PORT=".$_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT']."   SITE_PORT=".$SITE_PORT." -->";
-echo "<!-- PHP_SELF     = ".  $_SERVER['PHP_SELF']." -->";
-echo "<!-- GATEWAY_INTERFACE = ".  $_SERVER['GATEWAY_INTERFACE']."  -->";
-echo "<!-- SERVER_ADDR  = ".  $_SERVER['SERVER_ADDR']."  -->";
-echo "<!-- SERVER_NME   = ".  $_SERVER['SERVER_NAME']."  -->";
-echo "<!-- SERVER_SOFTWARE = ".  $_SERVER['SERVER_SOFTWARE']."  -->";
-echo "<!-- SERVER_PROTOCOL = ".  $_SERVER['SERVER_PROTOCOL']."  -->";
-echo "<!-- REQUEST_METHOD = ".  $_SERVER['REQUEST_METHOD']."  -->";
-echo "<!-- REQUEST_TIME = ".  $_SERVER['REQUEST_TIME']."  -->";
-echo "<!-- QUERY_STRING = ".  $_SERVER['QUERY_STRING']."  -->";
-echo "<!-- HTTP_ACCEPT  = ".  $_SERVER['HTTP_ACCEPT']."  -->";
-echo "<!-- HTTP_HOST    = ".  $_SERVER['HTTP_HOST']."  -->";
-echo "<!-- HTTP_REFERER = ".  $_SERVER['HTTP_REFERER']."  -->";
-echo "<!-- REMOTE_ADDR  = ".  $_SERVER['REMOTE_ADDR']."  -->";
-echo "<!-- REMOTE_PORT  = ".  $_SERVER['REMOTE_PORT']."  -->";
-echo "<!-- SCRIPT_FILENAME = ".  $_SERVER['SCRIPT_FILENAME']."  -->";
-echo "<!-- SERVER_PORT  = ".  $_SERVER['SERVER_PORT']."  -->";
-echo "<!-- SCRIPT_NAME  = ".  $_SERVER['SCRIPT_NAME']."  -->";
-echo "<!-- REQUEST_URI  = ".  $_SERVER['REQUEST_URI']."  -->";
+echo "<!-- PHP_SELF          = ".  $_SERVER['PHP_SELF']         ." -->";
+echo "<!-- GATEWAY_INTERFACE = ".  $_SERVER['GATEWAY_INTERFACE']  ."  -->";
+echo "<!-- SERVER_ADDR       = ".  $_SERVER['SERVER_ADDR']      ."  -->";
+echo "<!-- SERVER_NME        = ".  $_SERVER['SERVER_NAME']      ."  -->";
+echo "<!-- SERVER_SOFTWARE   = ".  $_SERVER['SERVER_SOFTWARE']  ."  -->";
+echo "<!-- SERVER_PROTOCOL   = ".  $_SERVER['SERVER_PROTOCOL']  ."  -->";
+echo "<!-- REQUEST_METHOD    = ".  $_SERVER['REQUEST_METHOD']   ."  -->";
+echo "<!-- REQUEST_TIME      = ".  $_SERVER['REQUEST_TIME']     ."  -->";
+echo "<!-- QUERY_STRING      = ".  $_SERVER['QUERY_STRING']     ."  -->";
+echo "<!-- HTTP_ACCEPT       = ".  $_SERVER['HTTP_ACCEPT']      ."  -->";
+echo "<!-- HTTP_HOST         = ".  $_SERVER['HTTP_HOST']        ."  -->";
+echo "<!-- HTTP_REFERER      = ".  $_SERVER['HTTP_REFERER']     ."  -->";
+echo "<!-- REMOTE_ADDR       = ".  $_SERVER['REMOTE_ADDR']      ."  -->";
+echo "<!-- REMOTE_PORT       = ".  $_SERVER['REMOTE_PORT']      ."  -->";
+echo "<!-- SCRIPT_FILENAME   = ".  $_SERVER['SCRIPT_FILENAME']  ."  -->";
+echo "<!-- SERVER_PORT       = ".  $_SERVER['SERVER_PORT']      ."  -->";
+echo "<!-- SCRIPT_NAME       = ".  $_SERVER['SCRIPT_NAME']      ."  -->";
+echo "<!-- REQUEST_URI       = ".  $_SERVER['REQUEST_URI']      ."  -->";
 ?>
   </div>
 <!-- <?php echo "path=".param('path'); ?> -->
