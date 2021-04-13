@@ -182,7 +182,7 @@ table#thumbnailstable div {border: 1px solid #eee;}
 .spanDirDiv {border: 1px solid #f77; margin-left: 0px; margin-right:0px; white-space: nowrap}
 .spanDirDivNoBorder {border: 0px solid #fff; margin-left: 0px; margin-right: 0px;}
 .spanDirFormat {padding: 0px 0px; display: table-cell; vertical-align: middle; color: #ddd;
-                font: 175% arial; text-align: center;}
+                font: 175% sans-serif; text-align: center;}
 .spanLogoMovieDiv {margin-right: 2px; 
                    margin-bottom: -17px;
                    text-shadow: 1px 1px 2px #333, -1px 1px 2px #333, 1px -1px 2px #333, -1px -1px 2px #333; 
