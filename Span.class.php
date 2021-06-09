@@ -1,5 +1,6 @@
 <?php
 	
+	
 require_once( 'Overlay.class.php' );
 require_once( 'HtmlTag.class.php' );
 require_once( 'iPhpThumb.php' );
@@ -61,11 +62,11 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 		$this->cell = $cell;
 		$this->cell['img_ht'] = 0;
 		$this->url = $this->mkUrl(array($cell['path']->str(), $cell['dir']));
-        if ($cell['height'] > 0) {
-		  $this->wp = floor($cell['width']*THUMBSIZE/$cell['height'])+$cfg->get('wplus');
-        } else {
-          $this->wp = THUMBSIZE+$cfg->get('wplus');
-        }
+		if ($cell['height'] > 0) {
+			$this->wp = floor($cell['width']*THUMBSIZE/$cell['height'])+$cfg->get('wplus');
+		} else {
+			$this->wp = THUMBSIZE+$cfg->get('wplus');
+		}
 		$this->h = THUMBSIZE; //(int)$cell['height'];
 		$this->imgurl = $this->mkImgUrl($cell['path']->str(), $cell['thumb']);
 		$this->id = null;
@@ -83,7 +84,9 @@ class SpanLogo extends Span // path, dir, thumb, width, height, img_ht, caption,
 		$this->h = THUMBSIZE; //(int)$this->cell['height'] * 2;
 		
 		$this->img = HtmlTag::createELement('img')->set('src',$this->imgurl);
-		$this->imgStyle = createCSS($this->cell['width']*THUMBSIZE/$this->cell['height'],THUMBSIZE);
+		if($this->cell['height'] > 0) {
+		    $this->imgStyle = createCSS($this->cell['width']*THUMBSIZE/$this->cell['height'],THUMBSIZE);
+		}
 	}
 	function setRollover()
 	{
@@ -152,11 +155,11 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
             //echo "<!-- MovieLen ".$this->cell['movieLen']." and MovieDim ".$this->cell['movieDim']." -->\n";
 			$overlayTime = Overlay::create()->mkTimeLabel($this->cell['movieDim']." ".$this->cell['movieLen'],-30)->html();
 		}
-        elseif($this->cell['movieLen'])
-        {
-            //echo "<!-- just movieLen ".$this->cell['movieLen']."-->\n";
+		elseif($this->cell['movieLen'])
+		{
+			//echo "<!-- just movieLen ".$this->cell['movieLen']."-->\n";
 			$overlayTime = Overlay::create()->mkTimeLabel($this->cell['movieLen'],-30)->html();
-        }
+		}
 		$this->img->set('style',$this->imgStyle)->addClass('spanLogoMovieImage');
 		$div->addElement($this->img);
 		//$div->addElement($overlayBtn);
@@ -328,6 +331,7 @@ class SpanDir extends SpanLogo // SpanLogo + img_url
 		
 	}
 }
-
 	
+	
+// vi:noet 
 ?>
