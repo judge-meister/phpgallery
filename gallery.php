@@ -127,7 +127,7 @@ class Gallery
 		$this->m_ignores = $stdIgnores;
 		$this->m_parent_ignores = $stdIgnores;
 		$this->m_comments = array();
-        $this->m_movie_dim = array();
+		$this->m_movie_dim = array();
 		$this->favourites = array();
 		$this->bookmarks = array();
 		$this->rowWidth = 0;
@@ -325,21 +325,21 @@ class Gallery
 	}
 	public function getPageNavHtml($top=true, $path) // PUBLISH HTML // ACCESSOR?
 	{
-        echo "<!-- [getPageNavHtml]allPics=".$this->allPics($path)." -->";
-        if($this->allPics($path)) { //this->celldata['path']->str())) {
-            if($top) {
-                if(param('large') == 1) {
-                    $html = str_replace("%rlink%", '<a href="'.$this->rootLink.'">[small]</a>', $this->m_pageNavHtml);
-                } else {
-                    $html = str_replace("%rlink%", '<a href="'.$this->rootLink.'&large=1">[large]</a>', $this->m_pageNavHtml);
-                }
-            } else {
-                $html = str_replace("%rlink%", '<a href="#top">[top]</a>', $this->m_pageNavHtml);
-            }
-        } else {
-            $html = str_replace("%rlink%", "", $this->m_pageNavHtml);
-        }
-        return $html;
+		echo "<!-- [getPageNavHtml]allPics=".$this->allPics($path)." -->";
+		if($this->allPics($path)) { //this->celldata['path']->str())) {
+			if($top) {
+				if(param('large') == 1) {
+					$html = str_replace("%rlink%", '<a href="'.$this->rootLink.'">[small]</a>', $this->m_pageNavHtml);
+				} else {
+				$html = str_replace("%rlink%", '<a href="'.$this->rootLink.'&large=1">[large]</a>', $this->m_pageNavHtml);
+				}
+			} else {
+				$html = str_replace("%rlink%", '<a href="#top">[top]</a>', $this->m_pageNavHtml);
+			}
+		} else {
+			$html = str_replace("%rlink%", "", $this->m_pageNavHtml);
+		}
+		return $html;
 	}
 	/*
 	* Displays a table containing links to previous and next directory and page and parent
@@ -535,8 +535,8 @@ class Gallery
 								{
 									$this->celldata['caption'] = str_replace("_"," ",basename($pieces[0]));
 									$this->celldata['movieLen'] = $this->movieLength(basename($pieces[0]));
-                                    $this->celldata['movieDim'] = $this->m_movie_dim[basename($pieces[0])];
-                                    //echo "<!-- 538 movieDim for ".basename($pieces[0])." = ".$this->celldata['movieDim']." -->\n";
+									$this->celldata['movieDim'] = $this->m_movie_dim[basename($pieces[0])];
+									//echo "<!-- 538 movieDim for ".basename($pieces[0])." = ".$this->celldata['movieDim']." -->\n";
 									$this->m_html .= $this->span_logo_movie()."\n";
 									array_push($this->ordered_file_list, $pieces[0]);
 									$this->m_logofiles[] = $pieces[1];
@@ -613,15 +613,15 @@ class Gallery
 		$this->celldata['image'] = $file;
 		$this->celldata['caption'] = $file;
 		$this->celldata['movieLen'] = $this->movieLength($file);
-        $this->celldata['movieDim'] = $this->m_movie_dim[$file];
-        //echo "<!-- 616 movieDim for ".$file." = ".$this->celldata['movieDim']." -->\n";
+		$this->celldata['movieDim'] = $this->m_movie_dim[$file];
+		//echo "<!-- 616 movieDim for ".$file." = ".$this->celldata['movieDim']." -->\n";
 		$this->m_html .= $this->span_logo_movie();
 		array_push($this->ordered_file_list, $file);
 		$this->m_item_count++;
 	}
 	private function movieLength($file) // LOADING INFO
 	{
-        $timestr = '';
+		$timestr = '';
 		$timestrhrs = '';
 		$ihrs = $imins = $isecs = 0;
 		//$this->debug->display("[".$file."]");
@@ -667,9 +667,12 @@ class Gallery
 		}
 		else
 		{
-			 if(substr(basename($file),0,1) == ".") { return true; }
-			 if(substr(basename($file),0,3) == ":2e") { return true; }
-			 if(getExt($file) == ".$$$") { return true; }
+			// starts with a dot
+			if((substr(basename($file),0,1) == ".") && (strcmp($file, '.picasaoriginals') != 0)) { return true; }
+			// starts with a :2e
+			if(substr(basename($file),0,3) == ":2e") { return true; }
+			// file extension is .$$$
+			if(getExt($file) == ".$$$") { return true; }
 		}
 		$c = count($this->m_ignores) + count($this->m_logofiles);
 		//$this->debug->display("false inExcludes ".$c."<br>");
@@ -683,13 +686,13 @@ class Gallery
 		if($this->celldata['path']->hasIgnore())
 		{
 			echo "<!-- [kindgirls]read .ignores -->"; 
-            $this->m_ignores = array_merge($this->m_ignores, getIgnores($this->celldata['path']->str()));
+			$this->m_ignores = array_merge($this->m_ignores, getIgnores($this->celldata['path']->str()));
 		}
-        echo "<!-- [kindgirls]isMobile=".isMobile()." -->";
-        echo "<!-- [kindgirls]large=".param('large')." -->";
-        echo "<!-- [kindgirls]path=".$this->celldata['path']->str()."-->";
-        echo "<!-- [kindgirls]allPics=".$this->allPics($this->celldata['path']->str())." -->";
-        echo "<!-- [kindgirls]hasPages=".$this->celldata['path']->hasPages()." -->";
+		echo "<!-- [kindgirls]isMobile=".isMobile()." -->";
+		echo "<!-- [kindgirls]large=".param('large')." -->";
+		echo "<!-- [kindgirls]path=".$this->celldata['path']->str()."-->";
+		echo "<!-- [kindgirls]allPics=".$this->allPics($this->celldata['path']->str())." -->";
+		echo "<!-- [kindgirls]hasPages=".$this->celldata['path']->hasPages()." -->";
 		if(((isMobile() || param('large') == 1) && $this->allPics($this->celldata['path']->str())) || ($this->celldata['path']->hasPages()) )
 		{
 			$kd = True;
@@ -700,7 +703,7 @@ class Gallery
 			{
 				if(!$this->inExcludes($line) && (isimage($line)))
 				{
-                    echo "<!-- [kindgirls] ".$line." -->";
+					echo "<!-- [kindgirls] ".$line." -->";
 					$this->m_html .= "<a href=\"http://".$_SERVER['HTTP_HOST'].$this->celldata['path']->str()."/".$line."\">";
 					$this->m_html .= "<img src=\"http://".$_SERVER['HTTP_HOST'].$this->celldata['path']->str()."/".$line."\" style=\"max-width:100%;margin:3px;\">";
 					$this->m_html .= "</a><br>";
@@ -713,29 +716,29 @@ class Gallery
 
 	private function allPics($path)
 	{
-        $ci = 0;
-        $cn = 0;
+		$ci = 0;
+		$cn = 0;
 		$res = True;
 		$files = myscandir($_SERVER['DOCUMENT_ROOT'].$path, '/.*/', 'name', 0);
 		foreach($files as $line) {
 			if(!$this->inExcludes($line) && !isimage($line)) {
-                $cn = $cn + 1;
-            } else if(!$this->inExcludes($line)) {
-                //echo "<!-- [allPics]".$line."  is image -->";
+				$cn = $cn + 1;
+			} else if(!$this->inExcludes($line)) {
+				//echo "<!-- [allPics]".$line."  is image -->";
 				$ci = $ci + 1;
 			}
 		}
-        if ($cn+$ci >= 0) { $perc = $ci/($cn+$ci); } else { $perc = 0.0; }
-        echo "<!-- [allPics()] path=".$path." ci=".$ci."  cn=".$cn." perc=".$perc." -->";
-        if ($perc < 0.5) {
-            $res = False;
-        }
+		if ($cn+$ci > 0) { $perc = $ci/($cn+$ci); } else { $perc = 0.0; }
+		echo "<!-- [allPics()] path=".$path." ci=".$ci."  cn=".$cn." perc=".$perc." -->";
+		if ($perc < 0.5) {
+			$res = False;
+		}
 		return $res;
 	}
 
-    /* read the hidden control files to populate various data items */
-    public function readHiddenFiles()
-    {
+	/* read the hidden control files to populate various data items */
+	public function readHiddenFiles()
+	{
 		global $mediaTypes;
 		$this->celldata['dir'] = "";
 		if($this->celldata['path']->hasIgnore())
@@ -753,16 +756,16 @@ class Gallery
 		{
 			include_once($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/comments.php');
 			$this->m_comments = getComments();
-            //$this->m_movie_dim = array(); 
-            if (function_exists('getDims')) {
-                $this->m_movie_dim = getDims();
-                //echo "<!-- called getDims() ".var_dump($this->m_movie_dim)."-->\n";
-            } //else { echo "<!-- no function getDims()-->\n"; }
+			//$this->m_movie_dim = array(); 
+			if (function_exists('getDims')) {
+				$this->m_movie_dim = getDims();
+				//echo "<!-- called getDims() ".var_dump($this->m_movie_dim)."-->\n";
+			} //else { echo "<!-- no function getDims()-->\n"; }
 		}
 		$this->bookmarks = readBookmarks($this->celldata['path'], $this->m_ignores);
 		$this->favourites = readFavourites($this->celldata['path'], $this->m_ignores);
 		$this->m_du = readDu($this->celldata['path']);
-    }
+	}
 	//public function collateInfo()
 	//{
 		// get ignores - yes
@@ -779,7 +782,7 @@ class Gallery
 	public function buildThumbs() // MAIN ENTRY POINT AND CREATES HTML
 	{
 		global $mediaTypes;
-        $this->readHiddenFiles();
+	$this->readHiddenFiles();
 		$this->doLogo();
 
 		// scan the directory for all the files using either descending modification time order or ascending alphanumeric order
@@ -893,20 +896,20 @@ function readBookmarks($path, $ignores) // LOADING INFO
 	$bookmarks = array();
 	if($path->hasBookmarks())
 	{
-        if($path->hasLogo()) {
-		    foreach($path->openLogo() as $line)
-		    {
-			    if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
-			    {
-				    //echo "<p>".$lines[$i];
-				    $pieces = explode(",", $line);
-				    if(!in_array($pieces[0], $ignores))
-				    {
-					    if($path->fileExists($pieces[0]))
-					    {
-						    // add to bookmark array stored in this->
-						    $bookmarks[$pieces[0]]=$pieces[1];
-                        }
+		if($path->hasLogo()) {
+			foreach($path->openLogo() as $line)
+			{
+				if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
+				{
+					//echo "<p>".$lines[$i];
+					$pieces = explode(",", $line);
+					if(!in_array($pieces[0], $ignores))
+					{
+						if($path->fileExists($pieces[0]))
+						{
+							// add to bookmark array stored in this->
+							$bookmarks[$pieces[0]]=$pieces[1];
+						}
 					}
 				}
 			}
@@ -952,4 +955,4 @@ function readDu($path) // LOADING INFO
 	}
 	return $du;
 }
-
+// vi:noet

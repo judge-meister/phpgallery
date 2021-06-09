@@ -163,7 +163,7 @@ define('FAV_FOLDER',  IMAGE_ROOT.'file_folder_red.png');
 define('BORDER_ONLY', IMAGE_ROOT.'border.png');
 
 global $stdIgnores;
-$stdIgnores = array(".","..",'reiserfs_priv','.pics','.picasaoriginals','.AppleDB','.AppleDesktop','.AppleDouble','Network Trash Folder','.TemporaryItems','Temporary Items','Thumbs.db',':2e*','comments.php','comments');
+$stdIgnores = array(".","..",'reiserfs_priv','.pics',/*'.picasaoriginals',*/'.AppleDB','.AppleDesktop','.AppleDouble','Network Trash Folder','.TemporaryItems','Temporary Items','Thumbs.db',':2e*','comments.php','comments');
 
 global $mediaTypes;
 $mediaTypes = array(
@@ -428,12 +428,12 @@ function getImgSize($path)
 	if(file_exists($path) && is_file($path))
 	{
 		//return getimagesize($path);
-        list($w, $h, $t, $a) = getimagesize($path);
-        if ($h < THUMBSIZE) {
-            $w = $w*(THUMBSIZE/$h); /*120x100 => 160x(100*(160/120)) => 160x133*/
-            $h = THUMBSIZE;
-        }
-        return array($w, $h, "", "");
+		list($w, $h, $t, $a) = getimagesize($path);
+		if ($h < THUMBSIZE) {
+			$w = $w*(THUMBSIZE/$h); /*120x100 => 160x(100*(160/120)) => 160x133*/
+			$h = THUMBSIZE;
+		}
+		return array($w, $h, "", "");
 	}
 	else
 	{
@@ -530,11 +530,11 @@ function myscandir($dir, $exp, $how='name', $desc=0)
 		}
 		closedir($dh);
 		if ($desc) {
-            natsort($r);
+			natsort($r);
 			arsort($r);
 		}
 		else {
-            natsort($r);
+			natsort($r);
 		}
 	}
 	return(array_keys($r));
@@ -553,4 +553,5 @@ function isMobile()
 
 	//header('Location: http://detectmobilebrowser.com/mobile');
 }
+// vi:noet
 ?>
