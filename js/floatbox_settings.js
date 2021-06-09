@@ -15,13 +15,17 @@ fbOptions =
 	// Animations
 	//doAnimations: false,
 	overlayFadeTime: 0.1,
-	resizeTime: 0.2,
+	resizeTime: 0.1,
 	//fadeTime: 2.0,
 	transitionTime: 0.1,
 	// image Transitions: none is fastest, crossfade looks cool
 	//imageTransition: 'none',
 	imageTransition: 'crossfade',
+	//imageTransition: 'slide',
 	//zoomSource: 'null',
+	easing: 1,
+	inflection: 0.5,
+	//animationTime: 1,
 
 	// Colors
 	//colorTheme: 'black',
