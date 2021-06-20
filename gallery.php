@@ -486,7 +486,8 @@ class Gallery
 				{
 					$pieces = explode(",", $line);
 					// filter logo list by search param
-					if((param('s') == NULL) || (strstr($pieces[0], param('s')))) 
+					$pattern = "/[\. \-_]".param('s')."/i";
+					if((param('s') == NULL) || (preg_match($pattern, $pieces[0]) == 1))
 					{
 						if(($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end) || (param('s') != NULL))
 						{
@@ -815,7 +816,8 @@ class Gallery
 				// exclude files already processed by the .logo and .ignore files as well as other standard excludes
 				if(!$this->inExcludes($file) && ($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end))
 				{
-					if((param('s') == NULL) || (strstr($pieces[0], param('s')))) 
+					$pattern = "/[. \-_]".param('s')."/i";
+					if((param('s') == NULL) || (preg_match($pattern, $file) == 1))
 					{
 						if(hasTitle($this->celldata['path']->str().'/'.$file))
 						{
