@@ -43,6 +43,7 @@ echo pageTitle($G->getPath());
                      color: #fff;}
   a img {background-color:#fff;}
   a img:hover {opacity: 0.8;}
+  a img.nohover:hover {opacity: 1.0;}
  </style>
 
  <script type="text/javascript" src="<?php echo PROGRAM; ?>js/wiredpussy.js"></script>

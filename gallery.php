@@ -484,74 +484,78 @@ class Gallery
 				$this->resetCellData();
 				if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
 				{
-					if($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end)
+					$pieces = explode(",", $line);
+					// filter logo list by search param
+					if((param('s') == NULL) || (strstr($pieces[0], param('s')))) 
 					{
-						//echo "<p>".$lines[$i];
-						// .logo [(0 => path), (1 => image), (2 => ?), (3 => dimensions)]
-						$pieces = explode(",", $line);
-						if(!in_array($pieces[0], $this->m_ignores))
+						if(($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end) || (param('s') != NULL))
 						{
-							if($this->celldata['path']->fileExists($pieces[0]))
+							//echo "<p>".$lines[$i];
+							// .logo [(0 => path), (1 => image), (2 => ?), (3 => dimensions)]
+							if(!in_array($pieces[0], $this->m_ignores))
 							{
-								$this->celldata['thumb'] = $pieces[1];
-								if(count($pieces) == 4 && strpos($pieces[3],'x') !== false)
+								if($this->celldata['path']->fileExists($pieces[0]))
 								{
-									list($this->celldata['width'], $this->celldata['height']) = explode("x",$pieces[3]);
-								}
-								else
-								{
-									list($this->celldata['width'], $this->celldata['height'], $type, $attr) = $this->celldata['path']->getImgSize($this->celldata['thumb']);
-								}
-								//$this->celldata['img_ht'] = $this->celldata['height'];
-								$this->normalizeThmSize(false);
-								$this->celldata['dir'] = $pieces[0];
-								if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/'.$pieces[0]))
-								{
-									if(0 !== strcmp($pieces[1],""))
+									$this->celldata['thumb'] = $pieces[1];
+									if(count($pieces) == 4 && strpos($pieces[3],'x') !== false)
 									{
-										$this->celldata['caption'] = str_replace("_"," ",$pieces[0]);
-										$this->m_html .= $this->span_logo()."\n";
-										array_push($this->ordered_file_list, $pieces[0]);
-										$this->m_item_count++;
+										list($this->celldata['width'], $this->celldata['height']) = explode("x",$pieces[3]);
 									}
 									else
 									{
-										if(hasTitle($this->celldata['path']->str().'/'.$pieces[0]))
+										list($this->celldata['width'], $this->celldata['height'], $type, $attr) = $this->celldata['path']->getImgSize($this->celldata['thumb']);
+									}
+									//$this->celldata['img_ht'] = $this->celldata['height'];
+									$this->normalizeThmSize(false);
+									$this->celldata['dir'] = $pieces[0];
+									if(file_exists($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/'.$pieces[0]))
+									{
+										if(0 !== strcmp($pieces[1],""))
 										{
-											$this->celldata['title']=title($this->celldata['path']->str().'/'.$pieces[0]);
+											$this->celldata['caption'] = str_replace("_"," ",$pieces[0]);
+											$this->m_html .= $this->span_logo()."\n";
+											array_push($this->ordered_file_list, $pieces[0]);
+											$this->m_item_count++;
 										}
 										else
 										{
-											$this->celldata['title']=$pieces[0];
+											if(hasTitle($this->celldata['path']->str().'/'.$pieces[0]))
+											{
+												$this->celldata['title']=title($this->celldata['path']->str().'/'.$pieces[0]);
+											}
+											else
+											{
+												$this->celldata['title']=$pieces[0];
+											}
+											$this->celldata['dir'] = $pieces[0];
+											$this->m_html .= $this->span_dir()."\n";
+											array_push($this->ordered_file_list, $pieces[0]);
+											$this->m_item_count++;
+											$this->celldata['dir'] = "";
 										}
-										$this->celldata['dir'] = $pieces[0];
-										$this->m_html .= $this->span_dir()."\n";
+									}
+									else if(file_exists($_SERVER['DOCUMENT_ROOT'].$pieces[0]))
+									{
+										$this->celldata['caption'] = str_replace("_"," ",basename($pieces[0]));
+										$this->celldata['movieLen'] = $this->movieLength(basename($pieces[0]));
+										$this->celldata['movieDim'] = $this->m_movie_dim[basename($pieces[0])];
+										//echo "<!-- 538 movieDim for ".basename($pieces[0])." = ".$this->celldata['movieDim']." -->\n";
+										$this->m_html .= $this->span_logo_movie()."\n";
 										array_push($this->ordered_file_list, $pieces[0]);
+										$this->m_logofiles[] = $pieces[1];
 										$this->m_item_count++;
 										$this->celldata['dir'] = "";
 									}
+									$this->m_logofiles[] = basename($pieces[0]);
 								}
-								else if(file_exists($_SERVER['DOCUMENT_ROOT'].$pieces[0]))
-								{
-									$this->celldata['caption'] = str_replace("_"," ",basename($pieces[0]));
-									$this->celldata['movieLen'] = $this->movieLength(basename($pieces[0]));
-									$this->celldata['movieDim'] = $this->m_movie_dim[basename($pieces[0])];
-									//echo "<!-- 538 movieDim for ".basename($pieces[0])." = ".$this->celldata['movieDim']." -->\n";
-									$this->m_html .= $this->span_logo_movie()."\n";
-									array_push($this->ordered_file_list, $pieces[0]);
-									$this->m_logofiles[] = $pieces[1];
-									$this->m_item_count++;
-									$this->celldata['dir'] = "";
-								}
-								$this->m_logofiles[] = basename($pieces[0]);
 							}
 						}
-					}
-					else if($this->m_item_count < $this->m_start || $this->m_item_count >= $this->m_end)
-					{
-						$pieces = explode(",", $line);
-						$this->m_logofiles[] = basename($pieces[0]);
-						$this->m_item_count++;
+						else if($this->m_item_count < $this->m_start || $this->m_item_count >= $this->m_end)
+						{
+							$pieces = explode(",", $line);
+							$this->m_logofiles[] = basename($pieces[0]);
+							$this->m_item_count++;
+						}
 					}
 				}
 			}
@@ -705,7 +709,7 @@ class Gallery
 				{
 					echo "<!-- [kindgirls] ".$line." -->";
 					$this->m_html .= "<a href=\"http://".$_SERVER['HTTP_HOST'].$this->celldata['path']->str()."/".$line."\">";
-					$this->m_html .= "<img src=\"http://".$_SERVER['HTTP_HOST'].$this->celldata['path']->str()."/".$line."\" style=\"max-width:100%;margin:3px;\">";
+					$this->m_html .= "<img class=\"nohover\" src=\"http://".$_SERVER['HTTP_HOST'].$this->celldata['path']->str()."/".$line."\" style=\"max-width:100%;margin:3px;\">";
 					$this->m_html .= "</a><br>";
 				}
 			}
@@ -782,7 +786,7 @@ class Gallery
 	public function buildThumbs() // MAIN ENTRY POINT AND CREATES HTML
 	{
 		global $mediaTypes;
-	$this->readHiddenFiles();
+		$this->readHiddenFiles();
 		$this->doLogo();
 
 		// scan the directory for all the files using either descending modification time order or ascending alphanumeric order
@@ -811,51 +815,54 @@ class Gallery
 				// exclude files already processed by the .logo and .ignore files as well as other standard excludes
 				if(!$this->inExcludes($file) && ($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end))
 				{
-					if(hasTitle($this->celldata['path']->str().'/'.$file))
+					if((param('s') == NULL) || (strstr($pieces[0], param('s')))) 
 					{
-						$this->celldata['title']=title($this->celldata['path']->str().'/'.$file);
-					}
-					else
-					{
-						$this->celldata['title']=$file;
-					}
-					if(is_dir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/'.$file)) // dir no thumb
-					{
-						$this->celldata['dir'] = $file;
-						$this->m_html .= $this->span_dir()."\n";
-						array_push($this->ordered_file_list, $file);
-						$this->m_item_count++;
-						$this->celldata['dir'] = "";
-					}
-					else if(isimage($file)) //photo thumb
-					{
-						$this->doImage($file);
-					}
-					else if(ismovie($file))
-					{
-						$this->doMovie($file); // calls span_logo_movie
-					}
-					// --- filetype icon handling ---
-					else if(isNonMedia($file))
-					{
-						global $nonMediaThumbs;
-						$this->m_html .= "\n<!-- isNonMedia -->";
-						$e = substr($file, strrpos($file, '.'));
-						list($this->celldata['thumb'],$this->celldata['width'],$this->celldata['height']) = $nonMediaThumbs[$e];
-						$this->celldata['img_ht'] = $this->celldata['height'];
-						$this->celldata['image'] = $file;
-						$this->celldata['caption'] = $file;
-						$this->m_html .= $this->span_photo()."\n";
-						array_push($this->ordered_file_list, $file);
-						$this->m_item_count++;
-					}
-					// --- unknown file types ---
-					else if(!isNonMedia($file))
-					{
-						list($this->celldata['thumb'],$this->celldata['width'],$this->celldata['height']) = $mediaTypes['misc']['thm'];
-						$this->m_html .= $this->span_icon($file,$file)."\n";
-						array_push($this->ordered_file_list, $file);
-						$this->m_item_count++;
+						if(hasTitle($this->celldata['path']->str().'/'.$file))
+						{
+							$this->celldata['title']=title($this->celldata['path']->str().'/'.$file);
+						}
+						else
+						{
+							$this->celldata['title']=$file;
+						}
+						if(is_dir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/'.$file)) // dir no thumb
+						{
+							$this->celldata['dir'] = $file;
+							$this->m_html .= $this->span_dir()."\n";
+							array_push($this->ordered_file_list, $file);
+							$this->m_item_count++;
+							$this->celldata['dir'] = "";
+						}
+						else if(isimage($file)) //photo thumb
+						{
+							$this->doImage($file);
+						}
+						else if(ismovie($file))
+						{
+							$this->doMovie($file); // calls span_logo_movie
+						}
+						// --- filetype icon handling ---
+						else if(isNonMedia($file))
+						{
+							global $nonMediaThumbs;
+							$this->m_html .= "\n<!-- isNonMedia -->";
+							$e = substr($file, strrpos($file, '.'));
+							list($this->celldata['thumb'],$this->celldata['width'],$this->celldata['height']) = $nonMediaThumbs[$e];
+							$this->celldata['img_ht'] = $this->celldata['height'];
+							$this->celldata['image'] = $file;
+							$this->celldata['caption'] = $file;
+							$this->m_html .= $this->span_photo()."\n";
+							array_push($this->ordered_file_list, $file);
+							$this->m_item_count++;
+						}
+						// --- unknown file types ---
+						else if(!isNonMedia($file))
+						{
+							list($this->celldata['thumb'],$this->celldata['width'],$this->celldata['height']) = $mediaTypes['misc']['thm'];
+							$this->m_html .= $this->span_icon($file,$file)."\n";
+							array_push($this->ordered_file_list, $file);
+							$this->m_item_count++;
+						}
 					}
 				}
 				else if(!$this->inExcludes($file) && ($this->m_item_count < $this->m_start || $this->m_item_count >= $this->m_end))
