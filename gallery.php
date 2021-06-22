@@ -486,7 +486,7 @@ class Gallery
 				{
 					$pieces = explode(",", $line);
 					// filter logo list by search param
-					$pattern = "/[\. \-_]".param('s')."/i";
+					$pattern = "/(^|[\. \-_])".param('s')."/i";
 					if((param('s') == NULL) || (preg_match($pattern, $pieces[0]) == 1))
 					{
 						if(($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end) || (param('s') != NULL))
@@ -903,22 +903,20 @@ class Gallery
 function readBookmarks($path, $ignores) // LOADING INFO
 {
 	$bookmarks = array();
-	if($path->hasBookmarks())
+	if($path->hasBookmarks() && $path->hasLogo())
 	{
-		if($path->hasLogo()) {
-			foreach($path->openLogo() as $line)
+		foreach($path->openLogo() as $line)
+		{
+			if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
 			{
-				if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
+				//echo "<p>".$lines[$i];
+				$pieces = explode(",", $line);
+				if(!in_array($pieces[0], $ignores))
 				{
-					//echo "<p>".$lines[$i];
-					$pieces = explode(",", $line);
-					if(!in_array($pieces[0], $ignores))
+					if($path->fileExists($pieces[0]))
 					{
-						if($path->fileExists($pieces[0]))
-						{
-							// add to bookmark array stored in this->
-							$bookmarks[$pieces[0]]=$pieces[1];
-						}
+						// add to bookmark array stored in this->
+						$bookmarks[$pieces[0]]=$pieces[1];
 					}
 				}
 			}
@@ -931,21 +929,18 @@ function readFavourites($path, $ignores) // LOADING INFO
 	$favourites = array();
 	if($path->hasFavourites())
 	{
-		foreach($path->openFavourites() as $line)//for($i=0;$i<count($lines);$i++)
+		foreach($path->openFavourites() as $line)
 		{
-			if(substr( $line, 0, 1 ) != "#") 
+			if(substr( $line, 0, 1 ) == "#") 
+			{ continue; }
+
+			//echo "<p>".$lines[$i];
+			//$pieces = explode(",", $line);
+			if((!in_array($line, $ignores)) && ($path->fileExists($line)))
 			{
-				//echo "<p>".$lines[$i];
-				//$pieces = explode(",", $line);
-				if(!in_array($line, $ignores))
-				{
-					if($path->fileExists($line))
-					{
-						// add to favourites array stored in this->
-						$favourites[] = $line;
-						//echo $line;
-					}
-				}
+				// add to favourites array stored in this->
+				$favourites[] = $line;
+				//echo $line;
 			}
 		}
 	}
@@ -964,4 +959,4 @@ function readDu($path) // LOADING INFO
 	}
 	return $du;
 }
-// vi:noet
+// vi:noet nolist
