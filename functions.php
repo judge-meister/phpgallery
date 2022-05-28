@@ -169,7 +169,7 @@ global $mediaTypes;
 $mediaTypes = array(
 		"movie" => array('ext'=>array('.avi','.divx','.mpg','.wmv','.mov','.mpeg','.rm','.rmvb','.rmm','.asf','.mkv','.swf','.mp4','.m4v','.mpe','.mpa','.qt','.3pg','.flv'),
 						'thm'=>array(IMAGE_ROOT.'MovieClip.png',floor(THUMBSIZE*0.85),THUMBSIZE)),
-		"image" => array('ext'=>array('.jpg','.JPG','.jpeg','.jpe','.gif','.png','.bmp','.tbn'), /*,'.pcx','.tif','.tiff','.pbm','.pgm','.ppm','.tga','.xbm','.xpm','.xcf'*/ 
+		"image" => array('ext'=>array('.jpg','.JPG','.jpeg','.jpe','.gif','.png','.bmp','.tbn','.thm'), /*,'.pcx','.tif','.tiff','.pbm','.pgm','.ppm','.tga','.xbm','.xpm','.xcf'*/ 
 						'thm'=>array('',0,0)),
 
 		"css"   => array('ext'=>array('.css'), 'thm'=>array(IMAGE_ROOT.'file_css.png',THUMBSIZE,THUMBSIZE)),
@@ -553,5 +553,5 @@ function isMobile()
 
 	//header('Location: http://detectmobilebrowser.com/mobile');
 }
-// vi:noet
+// vi:noet nolist
 ?>

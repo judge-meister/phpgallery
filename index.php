@@ -1,8 +1,8 @@
 <?php
 // --------------------------------------------------------------------
-// Re-write of gallery.py cgi script into php to allow addition of 
+// Re-write of gallery.py cgi script into php to allow addition of
 // login system.
-// 
+//
 // need to analyse original gallery.py code for more features
 // - can't find original python code, so further analysis is not an option
 // --------------------------------------------------------------------
@@ -26,7 +26,7 @@
 
 if(!defined('INCLUDE_CHECK')) { define('INCLUDE_CHECK',true); }
 
-if(!isset($_POST['PHPUNIT']))      { include( 'config.php' ); } 
+if(!isset($_POST['PHPUNIT']))      { include( 'config.php' ); }
 else   if($_POST['PHPUNIT']!=True) { include( 'config.php' ); }
 
 require_once( 'functions.php' );
@@ -46,7 +46,7 @@ function getBrowserWidth()
     return 1280;
 }
 
-if(param('PHPUNIT') == True) 
+if(param('PHPUNIT') == True)
 {
     die();
 }
@@ -69,7 +69,13 @@ if(param('media') != NULL)
     //var_dump($_SERVER);
     die();
 }
-    
+
+// set a default start location
+if(param('path') == NULL)
+{
+  $_POST['path'] = "/zvideos";
+}
+
 $G = new Gallery($stdIgnores, getBrowserWidth(), param('path'), param('opt'));
 $PG = new Gallery($stdIgnores, getBrowserWidth(), dirname(param('path')), param('opt'));
 
@@ -108,7 +114,7 @@ echo "<!-- REQUEST_URI       = ".  $_SERVER['REQUEST_URI']      ."  -->";
   </div>
 <!-- <?php echo "path=".param('path'); ?> -->
 
-<?php 
+<?php
     try {
         //$G->readHiddenFiles();
         $wholePage = $G->wholePages();
@@ -122,7 +128,7 @@ echo "<!-- REQUEST_URI       = ".  $_SERVER['REQUEST_URI']      ."  -->";
         $PG->readHiddenFiles();
         $PG->buildThumbs();
         $G->pagebreakcomment();
-        $PG->pageNavigation(basename(param('path')), $G->getNumItems()); 
+        $PG->pageNavigation(basename(param('path')), $G->getNumItems());
         echo "<!-- call PG->getPageNavHtml() -->";
         echo $PG->getPageNavHtml(true, param('path'));
     }
@@ -138,7 +144,7 @@ echo "<!-- REQUEST_URI       = ".  $_SERVER['REQUEST_URI']      ."  -->";
  <div style="width: 98%" id="thumbnails" class="centredthumbs">
   <?php
     try {
-        echo $G->getHtml(); 
+        echo $G->getHtml();
     }
     catch (Exception $e) {
         echo "Caught exception: ", $e->getMessage(), "\n";
@@ -157,14 +163,14 @@ echo "<!-- REQUEST_URI       = ".  $_SERVER['REQUEST_URI']      ."  -->";
     }
 ?>
 
-<!-- div id="pagenavigation"><a style="margin-left: 25px;" href="http://sandbox:8080/mkcomments?link=<?php 
-    $link = str_replace("&","%amp%", "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']); 
+<!-- div id="pagenavigation"><a style="margin-left: 25px;" href="http://sandbox:8080/mkcomments?link=<?php
+    $link = str_replace("&","%amp%", "http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
     $link = str_replace("?","%ques%", $link);
     echo $link; ?>">[add video length]</a>
     <a style="margin-left: 10px;" href="">[convert to mp4]</a>
     <a style="margin-left: 10px;" href="">[hide non-mp4]</a>
     <a style="margin-left: 10px;" href="">[make thumbs]</a>
-<?php if (basename(param('path')) == "torrents") { 
+<?php if (basename(param('path')) == "torrents") {
     echo "<a style=\"margin-left: 10px;\" href=\"\">[tidy up torrents]</a>";
     } ?>
     </div -->
@@ -176,4 +182,3 @@ echo "<!-- REQUEST_URI       = ".  $_SERVER['REQUEST_URI']      ."  -->";
 
 </body>
 </html>
-

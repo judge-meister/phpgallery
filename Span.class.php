@@ -152,7 +152,7 @@ class SpanLogoMovie extends SpanLogo // SpanLogo + movieLen
 		if($this->cell['movieLen'] && $this->cell['movieDim']) {
 			//$overlayTime = Overlay::create()->mkTimeLabel($min,$secs,5)->html();
 			//$overlayTime = Overlay::create()->mkTimeLabel($min,$secs,-30)->html();
-            //echo "<!-- MovieLen ".$this->cell['movieLen']." and MovieDim ".$this->cell['movieDim']." -->\n";
+			//echo "<!-- MovieLen ".$this->cell['movieLen']." and MovieDim ".$this->cell['movieDim']." -->\n";
 			$overlayTime = Overlay::create()->mkTimeLabel($this->cell['movieDim']." ".$this->cell['movieLen'],-30)->html();
 		}
 		elseif($this->cell['movieLen'])
@@ -195,7 +195,7 @@ class SpanPhoto extends SpanLogo // SpanLogo + image
 	}
 	function html()
 	{
-		$this->span->setText(comment('SpanPhoto ARSE'));
+		$this->span->setText(comment('SpanPhoto ARSE - content-type '.mime_content_type($this->picurl)));
 		$this->span->addClass('spanBase spanPhoto');
 
 		$this->anchor->set('href',$this->url); //->set('rel','doSlideshow:true')
@@ -204,6 +204,7 @@ class SpanPhoto extends SpanLogo // SpanLogo + image
 			//->setText($overlay); // **
 		$img = HtmlTag::createElement('img')->addClass('thumb')
 			->set('style',$this->imgStyle)
+			->set('alt',$this->picurl)
 			->set('src',$this->picurl);
 		$div->addElement($img);
 		$this->anchor->addElement($div);

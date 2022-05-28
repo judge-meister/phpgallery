@@ -18,6 +18,11 @@
 //   - special flat html pages are mostly working
 //   - still need to handle database pages
 // - pull down menu navigation - [low priority]
+// - search feature 
+//   - partially implemented (can add &s=search_term to url for page search)
+//   - needs search field in html and results need handling better, like next previous
+//   - needs full site search also, can use locate database
+//
 // 
 // need to analyse original gallery.py code for more features - can't find it, so thats a problem.
 // --------------------------------------------------------------------
@@ -134,7 +139,7 @@ class Gallery
 		$this->prevRowWidth = 0;
 		if($this->celldata['path']->hasDebug())
 		{
-			//$this->Config['debug']=True;
+			//$this->Config['debug'] = True;
 			$this->cfg->set('debug', True);
 			//Config::debug = True;
 		}
@@ -426,7 +431,7 @@ class Gallery
 			}
 			// first and last page if required [1][2] ... [3][5]
 			if($last > 1) {
-				$laststr='['.$last.']';
+				$laststr = '['.$last.']';
 				$firststr = "[1]";
 			} else {
 				$laststr = "";
@@ -479,7 +484,7 @@ class Gallery
 		if($this->celldata['path']->hasLogo()) // .logo
 		{
 			//read .imgsize
-			foreach($this->celldata['path']->openLogo() as $line)//for($i=0;$i<count($lines);$i++)
+			foreach($this->celldata['path']->openLogo() as $line) 
 			{
 				$this->resetCellData();
 				if(strpos($line,',') !== False && substr( $line, 0, 1 ) != "#") 
@@ -522,11 +527,11 @@ class Gallery
 										{
 											if(hasTitle($this->celldata['path']->str().'/'.$pieces[0]))
 											{
-												$this->celldata['title']=title($this->celldata['path']->str().'/'.$pieces[0]);
+												$this->celldata['title'] = title($this->celldata['path']->str().'/'.$pieces[0]);
 											}
 											else
 											{
-												$this->celldata['title']=$pieces[0];
+												$this->celldata['title'] = $pieces[0];
 											}
 											$this->celldata['dir'] = $pieces[0];
 											$this->m_html .= $this->span_dir()."\n";
@@ -539,7 +544,12 @@ class Gallery
 									{
 										$this->celldata['caption'] = str_replace("_"," ",basename($pieces[0]));
 										$this->celldata['movieLen'] = $this->movieLength(basename($pieces[0]));
-										$this->celldata['movieDim'] = $this->m_movie_dim[basename($pieces[0])];
+										if (in_array(basename($pieces[0]), array_keys($this->m_movie_dim))) {
+											$this->celldata['movieDim'] = $this->m_movie_dim[basename($pieces[0])];
+										} 
+										else {
+											$this->celldata['movieDim'] = "";
+										}
 										//echo "<!-- 538 movieDim for ".basename($pieces[0])." = ".$this->celldata['movieDim']." -->\n";
 										$this->m_html .= $this->span_logo_movie()."\n";
 										array_push($this->ordered_file_list, $pieces[0]);
@@ -569,6 +579,10 @@ class Gallery
 		{
 			$this->celldata['thumb'] = '.pics/'.$file;
 		}
+		else if ($this->celldata['path']->fileExists('/.pics/'.removeExt($file).'.png'))
+		{
+			$this->celldata['thumb'] = '.pics/'.removeExt($file).'.png';
+		}
 		else
 		{
 			$this->celldata['thumb'] = $file;
@@ -583,11 +597,26 @@ class Gallery
 		array_push($this->ordered_file_list, $file);
 		$this->m_item_count++;
 	}
+	private function doNonMedia()
+	{
+		global $nonMediaThumbs;
+		$this->m_html .= "\n<!-- isNonMedia -->";
+		$e = substr($file, strrpos($file, '.'));
+		list($this->celldata['thumb'], $this->celldata['width'], $this->celldata['height']) = $nonMediaThumbs[$e];
+		$this->celldata['img_ht'] = $this->celldata['height'];
+		$this->celldata['image'] = $file;
+		$this->celldata['caption'] = $file;
+		$this->m_html .= $this->span_photo()."\n";
+		array_push($this->ordered_file_list, $file);
+		$this->m_item_count++;
+	}
 	private function doMovie($file) // LOADING INFO BUT ALSO RETURNS HTML
 	{
 		global $mediaTypes;
 		$thm = removeExt($file).'.thm';
 		$tbn = removeExt($file).'.tbn';
+		$png = removeExt($file).'.png';
+		$jpg = removeExt($file).'.jpg';
 		if($this->celldata['path']->fileExists($thm))
 		{
 			$this->celldata['thumb'] = $thm;
@@ -596,6 +625,26 @@ class Gallery
 		else if($this->celldata['path']->fileExists('/.pics/'.$thm))
 		{
 			$this->celldata['thumb'] = '.pics/'.$thm;
+			$this->normalizeThmSize();
+		}
+		else if($this->celldata['path']->fileExists($png))
+		{
+			$this->celldata['thumb'] = $png;
+			$this->normalizeThmSize();
+		}
+		else if($this->celldata['path']->fileExists('/.pics/'.$png))
+		{
+			$this->celldata['thumb'] = '.pics/'.$png;
+			$this->normalizeThmSize();
+		}
+		else if($this->celldata['path']->fileExists($jpg))
+		{
+			$this->celldata['thumb'] = $jpg;
+			$this->normalizeThmSize();
+		}
+		else if($this->celldata['path']->fileExists('/.pics/'.$jpg))
+		{
+			$this->celldata['thumb'] = '.pics/'.$jpg;
 			$this->normalizeThmSize();
 		}
 		else if($this->celldata['path']->fileExists($tbn))
@@ -618,8 +667,13 @@ class Gallery
 		$this->celldata['image'] = $file;
 		$this->celldata['caption'] = $file;
 		$this->celldata['movieLen'] = $this->movieLength($file);
-		$this->celldata['movieDim'] = $this->m_movie_dim[$file];
-		//echo "<!-- 616 movieDim for ".$file." = ".$this->celldata['movieDim']." -->\n";
+		if (in_array($file, array_keys($this->m_movie_dim))) {
+			$this->celldata['movieDim'] = $this->m_movie_dim[$file];
+		} 
+		else {
+			$this->celldata['movieDim'] = "";
+		}
+		//echo "<!-- 640 movieDim for ".$file." = ".$this->celldata['movieDim']." -->\n";
 		$this->m_html .= $this->span_logo_movie();
 		array_push($this->ordered_file_list, $file);
 		$this->m_item_count++;
@@ -816,16 +870,16 @@ class Gallery
 				// exclude files already processed by the .logo and .ignore files as well as other standard excludes
 				if(!$this->inExcludes($file) && ($this->m_item_count >= $this->m_start && $this->m_item_count < $this->m_end))
 				{
-					$pattern = "/[. \-_]".param('s')."/i";
+					$pattern = "/(^|[. \-_])".param('s')."/i";
 					if((param('s') == NULL) || (preg_match($pattern, $file) == 1))
 					{
 						if(hasTitle($this->celldata['path']->str().'/'.$file))
 						{
-							$this->celldata['title']=title($this->celldata['path']->str().'/'.$file);
+							$this->celldata['title'] = title($this->celldata['path']->str().'/'.$file);
 						}
 						else
 						{
-							$this->celldata['title']=$file;
+							$this->celldata['title'] = $file;
 						}
 						if(is_dir($_SERVER['DOCUMENT_ROOT'].$this->celldata['path']->str().'/'.$file)) // dir no thumb
 						{
@@ -846,22 +900,13 @@ class Gallery
 						// --- filetype icon handling ---
 						else if(isNonMedia($file))
 						{
-							global $nonMediaThumbs;
-							$this->m_html .= "\n<!-- isNonMedia -->";
-							$e = substr($file, strrpos($file, '.'));
-							list($this->celldata['thumb'],$this->celldata['width'],$this->celldata['height']) = $nonMediaThumbs[$e];
-							$this->celldata['img_ht'] = $this->celldata['height'];
-							$this->celldata['image'] = $file;
-							$this->celldata['caption'] = $file;
-							$this->m_html .= $this->span_photo()."\n";
-							array_push($this->ordered_file_list, $file);
-							$this->m_item_count++;
+						    $this->doNonMedia($file);
 						}
 						// --- unknown file types ---
 						else if(!isNonMedia($file))
 						{
-							list($this->celldata['thumb'],$this->celldata['width'],$this->celldata['height']) = $mediaTypes['misc']['thm'];
-							$this->m_html .= $this->span_icon($file,$file)."\n";
+							list($this->celldata['thumb'], $this->celldata['width'], $this->celldata['height']) = $mediaTypes['misc']['thm'];
+							$this->m_html .= $this->span_icon($file, $file)."\n";
 							array_push($this->ordered_file_list, $file);
 							$this->m_item_count++;
 						}
@@ -916,7 +961,7 @@ function readBookmarks($path, $ignores) // LOADING INFO
 					if($path->fileExists($pieces[0]))
 					{
 						// add to bookmark array stored in this->
-						$bookmarks[$pieces[0]]=$pieces[1];
+						$bookmarks[$pieces[0]] = $pieces[1];
 					}
 				}
 			}
